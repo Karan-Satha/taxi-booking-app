@@ -4,15 +4,27 @@
   box-sizing: border-box;
 }
 
-body {
-  font-family: "Roboto Condensed", sans-serif;
+/*Colors variables*/
+$colors: (
+  primary-blue: #0facf3,
+  primary-purple: #af81c9,
+  border: rgb(187, 205, 221)
+);
+
+@function color($color-name) {
+  @return map-get($colors, $color-name);
 }
 
-/*Variables*/
-:root {
-  --primary-color: #0facf3;
-  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --border: rgb(187, 205, 221);
+$shadows: (
+  main-shadow: 0 2px 8px rgba(0, 0, 0, 0.1)
+);
+
+@function shadow($shadow-name) {
+  @return map-get($shadows, $shadow-name);
+}
+
+body {
+  font-family: "Roboto Condensed", sans-serif;
 }
 
 section {
@@ -40,7 +52,7 @@ section {
   display: table-cell;
   font-size: 70px;
   position: relative;
-  color: #0facf3;
+  color: color(primary-blue);
 }
 
 .logoCar {
@@ -72,11 +84,11 @@ section {
 }
 
 .logoNameC h4:first-child {
-  color: #af81c9;
+  color: color(primary-purple);
 }
 
 .logoNameC h4:last-child {
-  color: #0facf3;
+  color: color(primary-blue);
 }
 
 nav {
@@ -130,7 +142,7 @@ nav {
   height: 75%;
   width: 75%;
   border-radius: 50%;
-  background-color: rgb(15, 172, 243);
+  background-color: color(primary-blue);
   -webkit-transform: translate(-50%, -50%);
   -moz-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
@@ -173,14 +185,14 @@ nav {
 }
 
 .homeSection {
-  background: url(images/landing-plane.png) no-repeat center;
+  background: url(../images/landing-plane.png) no-repeat center;
   position: relative;
   height: 100vh;
 }
 .contactNo {
   width: 50px;
   height: 50px;
-  background-color: var(--primary-color);
+  background-color: color(primary-blue);
   position: absolute;
   top: 40px;
   right: 0px;
@@ -196,7 +208,7 @@ nav {
 .contactEmail {
   width: 50px;
   height: 50px;
-  background-color: var(--primary-color);
+  background-color: color(primary-blue);
   position: absolute;
   top: 100px;
   right: 0px;
@@ -250,13 +262,13 @@ nav {
 
 .pac-container {
   border-radius: 0;
-  box-shadow: var(--box-shadow);
+  box-shadow: shadow(main-shadow);
   margin-top: 3px;
   border-top: 0px solid #fff;
 }
 
 .pac-item:hover {
-  background-color: var(--primary-color);
+  background-color: color(primary-blue);
   color: #fff;
   -webkit-transition-property: background-color;
   -moz-transition-property: background-color;
@@ -282,7 +294,7 @@ nav {
 
 .getQuoteMainContainer {
   outline: none;
-  box-shadow: var(--box-shadow);
+  box-shadow: shadow(main-shadow);
   background-color: rgba(255, 255, 255, 0.95);
   width: 500px;
   height: 420px;
@@ -292,7 +304,7 @@ nav {
   height: 60px;
   display: flex;
   align-items: center;
-  background-color: var(--primary-color);
+  background-color: color(primary-blue);
   color: #fff;
   margin-bottom: 20px;
 }
@@ -362,7 +374,7 @@ nav {
 }
 
 .userAddressInput-click {
-  border: 1px solid #af81c9;
+  border: 1px solid color(primary-purple);
   transition: 1s;
 }
 
@@ -375,7 +387,7 @@ nav {
 #dropOffAddressValid {
   height: 18px;
   font-size: 15px;
-  color: #af81c9;
+  color: color(primary-purple);
   margin-left: 20px;
 }
 
@@ -394,7 +406,7 @@ nav {
   outline: none;
   margin: 7px;
   background-color: rgba(15, 172, 243, 1);
-  box-shadow: var(--box-shadow);
+  box-shadow: shadow(main-shadow);
   color: #fff;
   border-radius: 45px;
   opacity: 1;
@@ -452,7 +464,7 @@ nav {
 .timeDurationDisplay {
   width: 100%;
   height: 70px;
-  border-bottom: 1px solid var(--primary-color);
+  border-bottom: 1px solid color(primary-blue);
   display: flex;
   align-items: center;
 }
@@ -461,7 +473,7 @@ nav {
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  color: #af81c9;
+  color: color(primary-purple);
   display: table;
   margin-left: -13px;
   margin-right: 10px;
@@ -478,7 +490,7 @@ nav {
 .timeLine {
   height: 100%;
   width: 4px;
-  background-color: var(--primary-color);
+  background-color: color(primary-blue);
 }
 
 .distanceMarkerContainer {
@@ -509,7 +521,7 @@ nav {
   height: 30px;
   width: 15px;
   margin-left: -6px;
-  background-image: url(images/BlueCarTopView1.png);
+  background-image: url(../images/BlueCarTopView1.png);
   background-size: cover;
   background-position: center;
   -webkit-animation-name: example; /* Safari 4.0 - 8.0 */

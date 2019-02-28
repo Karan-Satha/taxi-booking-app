@@ -1,0 +1,532 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Roboto Condensed", sans-serif;
+}
+
+/*Variables*/
+:root {
+  --primary-color: #0facf3;
+  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --border: rgb(187, 205, 221);
+}
+
+section {
+  position: relative;
+}
+
+/*Navigation section starts here*/
+
+.navMainContainer {
+  width: 100%;
+  height: 80px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px #ecdef4;
+}
+
+.logoLocationC {
+  height: 80px;
+  width: 80px;
+  display: table;
+}
+
+.logoLocationC > i {
+  vertical-align: middle;
+  text-align: center;
+  display: table-cell;
+  font-size: 70px;
+  position: relative;
+  color: #0facf3;
+}
+
+.logoCar {
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  top: 12px;
+  right: 20px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  display: table;
+}
+
+.logoCar > i {
+  font-size: 24px;
+  text-align: center;
+  vertical-align: middle;
+  display: table-cell;
+  color: #af81c9;
+}
+
+.logoNameC {
+  position: absolute;
+  left: 70px;
+}
+
+.logoNameC h4 {
+  font-size: 25px;
+}
+
+.logoNameC h4:first-child {
+  color: #af81c9;
+}
+
+.logoNameC h4:last-child {
+  color: #0facf3;
+}
+
+nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.toggleNavContainer {
+  position: absolute;
+  right: 20px;
+  top: 5px;
+  width: 70px;
+  height: 70px;
+}
+
+.toggleNavContainer .navInnerContainer {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  border: 10px solid rgba(15, 172, 243, 0.3);
+}
+
+.navInnerContainer-hover {
+  animation-name: zoomOut;
+  animation-duration: 0.5s;
+  animation-timing-function: ease-out;
+  animation-delay: 0;
+  animation-direction: alternate;
+  animation-fill-mode: none;
+  animation-play-state: running;
+}
+
+@keyframes zoomOut {
+  0% {
+    background-color: #ffffff;
+    border: 10px solid #ffffff;
+  }
+
+  100% {
+    background-color: rgba(15, 172, 243, 0.3);
+    border: 10px solid rgba(15, 172, 243, 0.3);
+  }
+}
+
+.toggleNavContainer .navInnerContainer .navIconContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 75%;
+  width: 75%;
+  border-radius: 50%;
+  background-color: rgb(15, 172, 243);
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.toggleNavContainer .navInnerContainer .navIconContainer .barContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.line1,
+.line2,
+.line3 {
+  height: 2px;
+  border-radius: 50px;
+  width: 25px;
+  background-color: #ffffff;
+  margin: 5px 0;
+  transition: 0.5s;
+}
+
+.crossIcon .line1 {
+  -webkit-transform: rotate(-45deg) translate(-5px, 5px);
+  -moz-transform: rotate(-45deg) translate(-5px, 5px);
+  transform: rotate(-45deg) translate(-5px, 5px);
+}
+
+.crossIcon .line2 {
+  opacity: 0;
+}
+
+.crossIcon .line3 {
+  -webkit-transform: rotate(45deg) translate(-5px, -5px);
+  -moz-transform: rotate(45deg) translate(-5px, -5px);
+  transform: rotate(45deg) translate(-5px, -5px);
+}
+
+.homeSection {
+  background: url(../images/landing-plane.png) no-repeat center;
+  position: relative;
+  height: 100vh;
+}
+.contactNo {
+  width: 50px;
+  height: 50px;
+  background-color: var(--primary-color);
+  position: absolute;
+  top: 40px;
+  right: 0px;
+  transition-duration: 1s;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  font-family: "Roboto Condensed", sans-serif;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.contactEmail {
+  width: 50px;
+  height: 50px;
+  background-color: var(--primary-color);
+  position: absolute;
+  top: 100px;
+  right: 0px;
+  transition-duration: 1s;
+  display: flex;
+  align-items: center;
+  color: #fff;
+  font-size: 15px;
+  font-family: "Roboto Condensed", sans-serif;
+  font-weight: bold;
+}
+
+.contactNo:hover {
+  width: 200px;
+  transition-property: width;
+  transition-duration: 1s;
+}
+
+.contactEmail:hover {
+  width: 200px;
+  transition-property: width;
+  transition-duration: 1s;
+}
+
+.fa-phone {
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.fa-envelope {
+  margin-left: 10px;
+  margin-right: 10px;
+  font-size: 30px;
+}
+
+.contactNo:hover:after {
+  content: "+447469954667";
+}
+
+.contactEmail:hover:after {
+  content: "drivehome@gmail.com";
+}
+
+/*Remove powered by google image*/
+.pac-container:after {
+  background-image: none;
+  height: 0px;
+  padding: 0;
+  margin: 0;
+}
+
+.pac-container {
+  border-radius: 0;
+  box-shadow: var(--box-shadow);
+  margin-top: 3px;
+  border-top: 0px solid #fff;
+}
+
+.pac-item:hover {
+  background-color: var(--primary-color);
+  color: #fff;
+  -webkit-transition-property: background-color;
+  -moz-transition-property: background-color;
+  transition-duration: 1s;
+}
+
+.pac-item {
+  border-top: 0.5px solid var(--border);
+  height: 40px;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+}
+
+.pac-item:first-child {
+  border-top: 0px solid #fff;
+}
+
+/*Remove google address icons*/
+.pac-icon {
+  display: none;
+}
+
+.getQuoteMainContainer {
+  outline: none;
+  box-shadow: var(--box-shadow);
+  background-color: rgba(255, 255, 255, 0.95);
+  width: 500px;
+  height: 420px;
+}
+
+.getQuoteTopBanner {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  background-color: var(--primary-color);
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.getQuoteTopBanner h3 {
+  margin-left: 15px;
+}
+
+.pickUpInputContainer,
+.dropOffInputContainer {
+  margin: 1px 15px 10px 15px;
+}
+
+.pickUpInputContainer > p,
+.dropOffInputContainer > p {
+  margin-left: 20px;
+  margin-bottom: 5px;
+}
+
+.inputContainer {
+  position: relative;
+  background-color: rgba(187, 205, 221, 0.3);
+  border-radius: 45px;
+}
+
+.pickUpIconContainer,
+.dropOffIconContainer {
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  top: 14px;
+  left: 10px;
+  border-top-left-radius: 25px;
+  border-bottom-left-radius: 25px;
+  display: table;
+}
+
+.pickUpIconContainer > i,
+.dropOffIconContainer > i {
+  display: table-cell;
+  text-align: center;
+  vertical-align: middle;
+  font-size: 22px;
+  color: #bbcddd;
+  -webkit-text-stroke: 1px #fff;
+}
+
+.userAddressInput {
+  width: 97%;
+  margin: 1.5%;
+  height: 50px;
+  padding-left: 45px;
+  border: 1px solid rgb(187, 205, 221);
+  border-radius: 25px;
+}
+
+.userAddressInput:focus {
+  outline: none;
+  border-style: none;
+  border: 1px solid rgb(15, 172, 243);
+  transition: 1s;
+}
+
+.userAddressInput-focus {
+  background-color: rgba(15, 172, 243, 0.3);
+  transition: 1s;
+}
+
+.userAddressInput-click {
+  border: 1px solid #af81c9;
+  transition: 1s;
+}
+
+.userAddressInputBg-click {
+  background-color: rgba(175, 129, 201, 0.3);
+  transition: 1s;
+}
+
+#pickUpAddressValid,
+#dropOffAddressValid {
+  height: 18px;
+  font-size: 15px;
+  color: #af81c9;
+  margin-left: 20px;
+}
+
+.getQuoteBtnContainer {
+  width: 300px;
+  margin-left: 15px;
+  background-color: rgba(15, 172, 243, 0.2);
+  border-radius: 45px;
+  transition: 1s;
+}
+
+.getQuoteButton {
+  min-width: 286px;
+  height: 50px;
+  border: 1px solid transparent;
+  outline: none;
+  margin: 7px;
+  background-color: rgba(15, 172, 243, 1);
+  box-shadow: var(--box-shadow);
+  color: #fff;
+  border-radius: 45px;
+  opacity: 1;
+}
+
+.removeIconContainerPick,
+.removeIconContainerDrop {
+  height: 40px;
+  width: 20px;
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  display: table;
+  font-size: 24px;
+  color: var(--border);
+  z-index: 99;
+}
+
+.removeIconContainerPick > i,
+.removeIconContainerDrop > i {
+  align-items: center;
+  display: table-cell;
+  vertical-align: middle;
+  -webkit-text-stroke: 3px #fff;
+}
+
+.journeyDetailsDisplay {
+  width: 400px;
+  height: 420px;
+  margin-left: 30px;
+  position: relative;
+  /*	visibility: hidden;*/
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.95);
+}
+
+.homeMainContainer {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 30px;
+  margin-left: 30px;
+}
+
+.journeyDetailsInnerC {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.startLocationDisplay,
+.endLocationDisplay,
+.distanceDisplay,
+.timeDurationDisplay {
+  width: 100%;
+  height: 70px;
+  border-bottom: 1px solid var(--primary-color);
+  display: flex;
+  align-items: center;
+}
+
+.iconContainer {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: #af81c9;
+  display: table;
+  margin-left: -13px;
+  margin-right: 10px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.iconContainer > i {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.timeLine {
+  height: 100%;
+  width: 4px;
+  background-color: var(--primary-color);
+}
+
+.distanceMarkerContainer {
+  width: 60px;
+  position: absolute;
+  top: 18px;
+  left: 0px;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+}
+
+.distanceMarkerContainer div {
+  position: relative;
+}
+
+.distanceMarker {
+  height: 45px;
+  width: 0px;
+  border: 1px dashed #fff;
+  position: absolute;
+  top: 28px;
+  left: 1px;
+}
+
+.car-side {
+  position: relative;
+  height: 30px;
+  width: 15px;
+  margin-left: -6px;
+  background-image: url(../images/BlueCarTopView1.png);
+  background-size: cover;
+  background-position: center;
+  -webkit-animation-name: example; /* Safari 4.0 - 8.0 */
+  -webkit-animation-duration: 3s; /* Safari 4.0 - 8.0 */
+  animation-name: example;
+  animation-duration: 3s;
+  animation-iteration-count: infinite;
+  z-index: 3;
+}
+
+@keyframes example {
+  0% {
+    left: 0px;
+    top: 0px;
+  }
+  100% {
+    left: 0px;
+    top: 70px;
+  }
+}
