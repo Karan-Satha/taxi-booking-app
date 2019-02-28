@@ -1,195 +1,186 @@
 <!DOCTYPE html>
 <html>
-	<head>
-
-		<title>Drive uk Airports</title>
-
-		<meta charset="utf-8" />
-
-		<!--Responsive screen size-->
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-		<!--Call google map API service-->	  
-<!--		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDErEmXGK3klmXelI-OTV1CbjBuDeR1NHg&libraries=places&callback=initAutocomplete" async defer></script>-->
-
-		<!--Get font awesome icons-->
-		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
-
-		<!--Get google fonts-->		
-		<link href="https://fonts.googleapis.com/css?family=Actor|Roboto+Condensed" rel="stylesheet">
-
-		<!--Call CSS file-->
-		<link rel="stylesheet" type="text/css" href="taxibookingCSS.css" />
-
-	</head>
-
-	<body>
-
-		<section>
-			<header>
-				<nav>
-					<div class="navMainContainer">
-
-						<div class="logoLocationC">
-
-							<i class="fas fa-map-marker-alt">
-
-								<div class="logoCar">
-
-									<i class="fas fa-taxi"></i>
-
-								</div>
-
-							</i>
-
-						</div>
-
-					</div>
-
-					<div class="logoNameC">
-						<h4>Heathrow</h4>
-						<h4>Drive</h4>
-					</div>
-
-					<div class="toggleNavContainer">
-						<div class="navInnerContainer" id="zoomOutDiv">
-							<div class="navIconContainer">
-								<div class="barContainer" id="navToggle">
-									<div class="line1"></div>
-									<div class="line2"></div>
-									<div class="line3"></div>
-								</div>
-							</div>
-						</div>					
-					</div>
-
-				</nav>	
-			</header>
-
-		</section>
-
-		<!--Home section starts here-->
-
-		<section class="homeSection">
-
-			<a href="Tel:+447469954667"><div class="contactNo"><i class="fas fa-phone"></i></div></a>
-			<div class="contactEmail"><i class="far fa-envelope"></i></div>
-
-			<div class="homeMainContainer">				
-
-				<div class="getQuoteMainContainer">
-
-					<div class="getQuoteTopBanner">
-
-						<h3>Get your quote today</h3>
-
-					</div>
-
-					<div class="pickUpInputContainer">
-
-						<p><strong>From</strong> (Pick-up Location)</p>
-
-						<div class="inputContainer" id="inputPickContainer">
-
-							<div class="pickUpIconContainer">
-								<i class="fas fa-search-location"></i>
-							</div>
-
-							<div id="clearButtonPick" class="removeIconContainerPick">
-								<i class="fas fa-times"></i>
-							</div>
-
-							<input type="text" class="userAddressInput" id="pickUpLocation" placeholder="Eg: TW6 1EW or Heathrow Terminals 2" />
-
-						</div>
-
-						<div id="pickUpAddressValid"></div>						
-
-					</div>
-
-
-					<div class="dropOffInputContainer">
-
-						<p><strong>To</strong> (Drop-off Location)</p>
-
-						<div class="inputContainer" id="inputDropContainer">
-
-							<div class="dropOffIconContainer">
-								<i class="fas fa-search-location"></i>
-							</div>
-
-							<div id="clearButtonDrop" class="removeIconContainerDrop">
-								<i class="fas fa-times"></i>
-							</div>
-
-							<input type="text" class="userAddressInput" id="dropOffLocation" placeholder="Eg: HA2 8PW or Harrow" />
-
-						</div>
-
-						<div id="dropOffAddressValid"></div>					
-
-					</div>
-
-					<div class="getQuoteBtnContainer" id="getQuoteBtnCId"><button id="getQuote" class="getQuoteButton">Get quote</button></div>
-
-				</div>
-
-				<div class="journeyDetailsDisplay" id="journeyDetailsDisplayId">	
-
-					<div class="timeLine"></div>
-
-					<div class="distanceMarkerContainer">	
-
-						<div class="car-side"></div>
-
-					</div>
-
-					<div class="journeyDetailsInnerC">
-
-						<div class="startLocationDisplay">
-							<div class="iconContainer">
-								<i class="fas fa-map-marker-alt"></i>
-							</div>
-							<div id="depatureFullAddress"></div>
-						</div>
-
-						<div class="endLocationDisplay">
-							<div class="iconContainer">
-								<i class="fas fa-map-marker-alt"></i>
-							</div>
-							<div id="arrivalFullAddress"></div>
-						</div>
-
-						<div class="distanceDisplay">
-							<div class="iconContainer">
-								<i class="fa fa-road"></i>
-							</div>
-							<div id="distanceMile"></div>&nbsp; &nbsp; <strong>OR</strong>&nbsp; &nbsp;<div id="distanceKm"></div>
-						</div>
-
-						<div class="timeDurationDisplay">
-							<div class="iconContainer">
-								<i class="fas fa-clock"></i>
-							</div>
-							<div id="duration"></div>
-						</div>
-
-					</div>
-
-				</div>					
-
-			</div>
-
-		</section>
-
-
-		<!--Call jquery library -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
-		<!--Internal JavaScript file-->
-		<script src="taxibookingJS.js"></script>
-		
-		<!--Call google map API service-->	  
-		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDErEmXGK3klmXelI-OTV1CbjBuDeR1NHg&libraries=places&callback=initAutocomplete" async defer></script>
-	</body>
+  <head>
+    <title>Drive uk Airports</title>
+
+    <meta charset="utf-8" />
+
+    <!--Responsive screen size-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!--Call google map API service-->
+    <!--		<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDErEmXGK3klmXelI-OTV1CbjBuDeR1NHg&libraries=places&callback=initAutocomplete" async defer></script>-->
+
+    <!--Get font awesome icons-->
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+      integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+      crossorigin="anonymous"
+    />
+
+    <!--Get google fonts-->
+    <link
+      href="https://fonts.googleapis.com/css?family=Actor|Roboto+Condensed"
+      rel="stylesheet"
+    />
+
+    <!--Call CSS file-->
+    <link rel="stylesheet" type="text/css" href="taxibookingCSS.css" />
+  </head>
+
+  <body>
+    <section>
+      <header>
+        <nav>
+          <div class="navMainContainer">
+            <div class="logoLocationC">
+              <i class="fas fa-map-marker-alt">
+                <div class="logoCar">
+                  <i class="fas fa-taxi"></i>
+                </div>
+              </i>
+            </div>
+          </div>
+
+          <div class="logoNameC">
+            <h4>Heathrow</h4>
+            <h4>Drive</h4>
+          </div>
+
+          <div class="toggleNavContainer">
+            <div class="navInnerContainer" id="zoomOutDiv">
+              <div class="navIconContainer">
+                <div class="barContainer" id="navToggle">
+                  <div class="line1"></div>
+                  <div class="line2"></div>
+                  <div class="line3"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </header>
+    </section>
+
+    <!--Home section starts here-->
+
+    <section class="homeSection">
+      <a href="Tel:+447469954667"
+        ><div class="contactNo"><i class="fas fa-phone"></i></div
+      ></a>
+      <div class="contactEmail"><i class="far fa-envelope"></i></div>
+
+      <div class="homeMainContainer">
+        <div class="getQuoteMainContainer">
+          <div class="getQuoteTopBanner">
+            <h3>Get your quote today</h3>
+          </div>
+
+          <div class="pickUpInputContainer">
+            <p><strong>From</strong> (Pick-up Location)</p>
+
+            <div class="inputContainer" id="inputPickContainer">
+              <div class="pickUpIconContainer">
+                <i class="fas fa-search-location"></i>
+              </div>
+
+              <div id="clearButtonPick" class="removeIconContainerPick">
+                <i class="fas fa-times"></i>
+              </div>
+
+              <input
+                type="text"
+                class="userAddressInput"
+                id="pickUpLocation"
+                placeholder="Eg: TW6 1EW or Heathrow Terminals 2"
+              />
+            </div>
+
+            <div id="pickUpAddressValid"></div>
+          </div>
+
+          <div class="dropOffInputContainer">
+            <p><strong>To</strong> (Drop-off Location)</p>
+
+            <div class="inputContainer" id="inputDropContainer">
+              <div class="dropOffIconContainer">
+                <i class="fas fa-search-location"></i>
+              </div>
+
+              <div id="clearButtonDrop" class="removeIconContainerDrop">
+                <i class="fas fa-times"></i>
+              </div>
+
+              <input
+                type="text"
+                class="userAddressInput"
+                id="dropOffLocation"
+                placeholder="Eg: HA2 8PW or Harrow"
+              />
+            </div>
+
+            <div id="dropOffAddressValid"></div>
+          </div>
+
+          <div class="getQuoteBtnContainer" id="getQuoteBtnCId">
+            <button id="getQuote" class="getQuoteButton">Get quote</button>
+          </div>
+        </div>
+
+        <div class="journeyDetailsDisplay" id="journeyDetailsDisplayId">
+          <div class="timeLine"></div>
+
+          <div class="distanceMarkerContainer">
+            <div class="car-side"></div>
+          </div>
+
+          <div class="journeyDetailsInnerC">
+            <div class="startLocationDisplay">
+              <div class="iconContainer">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <div id="depatureFullAddress"></div>
+            </div>
+
+            <div class="endLocationDisplay">
+              <div class="iconContainer">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <div id="arrivalFullAddress"></div>
+            </div>
+
+            <div class="distanceDisplay">
+              <div class="iconContainer">
+                <i class="fa fa-road"></i>
+              </div>
+              <div id="distanceMile"></div>
+              &nbsp; &nbsp; <strong>OR</strong>&nbsp; &nbsp;
+              <div id="distanceKm"></div>
+            </div>
+
+            <div class="timeDurationDisplay">
+              <div class="iconContainer">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div id="duration"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!--Call jquery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <!--Internal JavaScript file-->
+    <script src="taxibookingJS.js"></script>
+
+    <!--Call google map API service-->
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDErEmXGK3klmXelI-OTV1CbjBuDeR1NHg&libraries=places&callback=initAutocomplete"
+      async
+      defer
+    ></script>
+  </body>
 </html>
