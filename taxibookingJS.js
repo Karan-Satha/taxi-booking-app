@@ -67,7 +67,7 @@ dropOffLocationInput.addEventListener("change", function() {
   }
 });
 
-//............................ Change input background color
+//............Change input background color
 
 pickUpLocationInput.addEventListener("focus", function() {
   var pickBgColor = document.getElementById("inputPickContainer");

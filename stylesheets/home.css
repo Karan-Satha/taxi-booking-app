@@ -6,6 +6,44 @@
 }
 
 /*Colors variables*/
+nav .navMainContainer .logoLocationC i, nav .navMainContainer .logoLocationC i .logoCar i, .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .pickUpIconContainer i, .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .removeIconContainerPick i, .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .dropOffIconContainer i, .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .removeIconContainerDrop i, .journeyDetailsDisplay .journeyDetailsInnerC .startLocationDisplay .iconContainer i, .journeyDetailsDisplay .journeyDetailsInnerC .endLocationDisplay .iconContainer i, .journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay .iconContainer i, .journeyDetailsDisplay .journeyDetailsInnerC .timeDurationDisplay .iconContainer i {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+
+.journeyDetailsDisplay .journeyDetailsInnerC .startLocationDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .endLocationDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .timeDurationDisplay, nav, .homeSection .homeMainContainer, .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteTopBanner, .pac-item, .journeyDetailsDisplay .distanceMarkerContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-line-pack: center;
+      align-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+}
+
+.journeyDetailsDisplay .journeyDetailsInnerC .startLocationDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .endLocationDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .timeDurationDisplay {
+  width: 100%;
+  height: 70px;
+  border-bottom: 1px solid #0facf3;
+}
+
+.journeyDetailsDisplay .journeyDetailsInnerC .startLocationDisplay .iconContainer, .journeyDetailsDisplay .journeyDetailsInnerC .endLocationDisplay .iconContainer, .journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay .iconContainer, .journeyDetailsDisplay .journeyDetailsInnerC .timeDurationDisplay .iconContainer {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: #af81c9;
+  display: table;
+  margin-left: -13px;
+  margin-right: 10px;
+  background-color: #ffffff;
+  -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
 body {
   font-family: "Roboto Condensed", sans-serif;
 }
@@ -15,30 +53,31 @@ section {
 }
 
 /*Navigation section starts here*/
-.navMainContainer {
+nav {
+  position: relative;
+}
+
+nav .navMainContainer {
   width: 100%;
   height: 80px;
   background-color: #ffffff;
-  -webkit-box-shadow: 0 2px 8px #ecdef4;
-          box-shadow: 0 2px 8px #ecdef4;
+  -webkit-box-shadow: 0 2px 8px #e8daef;
+          box-shadow: 0 2px 8px #e8daef;
 }
 
-.logoLocationC {
+nav .navMainContainer .logoLocationC {
   height: 80px;
   width: 80px;
   display: table;
 }
 
-.logoLocationC > i {
-  vertical-align: middle;
-  text-align: center;
-  display: table-cell;
+nav .navMainContainer .logoLocationC i {
   font-size: 70px;
   position: relative;
   color: #0facf3;
 }
 
-.logoCar {
+nav .navMainContainer .logoLocationC i .logoCar {
   width: 40px;
   height: 40px;
   position: absolute;
@@ -49,20 +88,14 @@ section {
   display: table;
 }
 
-.logoCar > i {
+nav .navMainContainer .logoLocationC i .logoCar i {
   font-size: 24px;
-  text-align: center;
-  vertical-align: middle;
-  display: table-cell;
   color: #af81c9;
 }
 
 .logoNameC {
   position: absolute;
   left: 70px;
-}
-
-.logoNameC h4 {
   font-size: 25px;
 }
 
@@ -72,16 +105,6 @@ section {
 
 .logoNameC h4:last-child {
   color: #0facf3;
-}
-
-nav {
-  position: relative;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
 }
 
 .toggleNavContainer {
@@ -98,6 +121,38 @@ nav {
   width: 100%;
   border-radius: 50%;
   border: 10px solid #a1defa;
+}
+
+.toggleNavContainer .navInnerContainer .navIconContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  height: 75%;
+  width: 75%;
+  border-radius: 50%;
+  background-color: #0facf3;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.toggleNavContainer .navInnerContainer .navIconContainer .barContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.toggleNavContainer .navInnerContainer .navIconContainer .barContainer .line1,
+.toggleNavContainer .navInnerContainer .navIconContainer .barContainer .line2,
+.toggleNavContainer .navInnerContainer .navIconContainer .barContainer .line3 {
+  height: 2px;
+  border-radius: 50px;
+  width: 25px;
+  background-color: #ffffff;
+  margin: 5px 0;
+  -webkit-transition: 0.5s;
+  transition: 0.5s;
 }
 
 .navInnerContainer-hover {
@@ -139,41 +194,9 @@ nav {
   }
 }
 
-.toggleNavContainer .navInnerContainer .navIconContainer {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  height: 75%;
-  width: 75%;
-  border-radius: 50%;
-  background-color: #0facf3;
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-}
-
-.toggleNavContainer .navInnerContainer .navIconContainer .barContainer {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-}
-
-.line1,
-.line2,
-.line3 {
-  height: 2px;
-  border-radius: 50px;
-  width: 25px;
-  background-color: #ffffff;
-  margin: 5px 0;
-  -webkit-transition: 0.5s;
-  transition: 0.5s;
-}
-
 .crossIcon .line1 {
-  -webkit-transform: rotate(-45deg) translate(-5px, 5px);
-  transform: rotate(-45deg) translate(-5px, 5px);
+  -webkit-transform: translate(0px, 7px) rotate(-45deg);
+  transform: translate(0px, 7px) rotate(-45deg);
 }
 
 .crossIcon .line2 {
@@ -181,8 +204,8 @@ nav {
 }
 
 .crossIcon .line3 {
-  -webkit-transform: rotate(45deg) translate(-5px, -5px);
-  transform: rotate(45deg) translate(-5px, -5px);
+  -webkit-transform: translate(0px, -7px) rotate(45deg);
+  transform: translate(0px, -7px) rotate(45deg);
 }
 
 .homeSection {
@@ -191,81 +214,150 @@ nav {
   height: 100vh;
 }
 
-.contactNo {
-  width: 50px;
-  height: 50px;
+.homeSection .homeMainContainer {
+  margin-top: 30px;
+  margin-left: 30px;
+}
+
+.homeSection .homeMainContainer .getQuoteMainContainer {
+  outline: none;
+  -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.95);
+  width: 500px;
+  height: 420px;
+}
+
+.homeSection .homeMainContainer .getQuoteMainContainer .getQuoteTopBanner {
+  height: 60px;
   background-color: #0facf3;
+  color: #fff;
+  margin-bottom: 20px;
+}
+
+.homeSection .homeMainContainer .getQuoteMainContainer .getQuoteTopBanner h3 {
+  margin-left: 15px;
+}
+
+.homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer {
+  margin: 1px 15px 10px 15px;
+}
+
+.homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer p {
+  margin-left: 20px;
+  margin-bottom: 5px;
+}
+
+.homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .pickUpIconContainer {
+  width: 40px;
+  height: 40px;
   position: absolute;
-  top: 40px;
-  right: 0px;
-  -webkit-transition-duration: 1s;
-          transition-duration: 1s;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  color: #ffffff;
-  font-family: "Roboto Condensed", sans-serif;
-  font-weight: bold;
+  top: 14px;
+  left: 10px;
+  border-top-left-radius: 25px;
+  border-bottom-left-radius: 25px;
+  display: table;
+}
+
+.homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .pickUpIconContainer i {
+  font-size: 22px;
+  color: #bbcddd;
+  -webkit-text-stroke: 1px #ffffff;
+}
+
+.homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .removeIconContainerPick {
+  height: 40px;
+  width: 20px;
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  display: table;
   font-size: 24px;
+  color: #bbcddd;
+  z-index: 99;
 }
 
-.contactEmail {
-  width: 50px;
-  height: 50px;
-  background-color: #0facf3;
-  position: absolute;
-  top: 100px;
-  right: 0px;
-  -webkit-transition-duration: 1s;
-          transition-duration: 1s;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  color: #ffffff;
+.homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .removeIconContainerPick i {
+  -webkit-text-stroke: 3px #ffffff;
+}
+
+.homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer #pickUpAddressValid {
+  height: 18px;
   font-size: 15px;
-  font-family: "Roboto Condensed", sans-serif;
-  font-weight: bold;
+  color: #af81c9;
+  margin-left: 20px;
 }
 
-.contactNo:hover {
-  width: 200px;
-  -webkit-transition-property: width;
-  transition-property: width;
-  -webkit-transition-duration: 1s;
-          transition-duration: 1s;
+.homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer {
+  margin: 1px 15px 10px 15px;
 }
 
-.contactEmail:hover {
-  width: 200px;
-  -webkit-transition-property: width;
-  transition-property: width;
-  -webkit-transition-duration: 1s;
-          transition-duration: 1s;
+.homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer p {
+  margin-left: 20px;
+  margin-bottom: 5px;
 }
 
-.fa-phone {
-  margin-left: 10px;
-  margin-right: 10px;
+.homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .dropOffIconContainer {
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  top: 14px;
+  left: 10px;
+  border-top-left-radius: 25px;
+  border-bottom-left-radius: 25px;
+  display: table;
 }
 
-.fa-envelope {
-  margin-left: 10px;
-  margin-right: 10px;
-  font-size: 30px;
+.homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .dropOffIconContainer i {
+  font-size: 22px;
+  color: #bbcddd;
+  -webkit-text-stroke: 1px #ffffff;
 }
 
-.contactNo:hover:after {
-  content: "+447469954667";
+.homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .removeIconContainerDrop {
+  height: 40px;
+  width: 20px;
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  display: table;
+  font-size: 24px;
+  color: #bbcddd;
+  z-index: 99;
 }
 
-.contactEmail:hover:after {
-  content: "drivehome@gmail.com";
+.homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .removeIconContainerDrop i {
+  -webkit-text-stroke: 3px #ffffff;
+}
+
+.homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer #dropOffAddressValid {
+  height: 18px;
+  font-size: 15px;
+  color: #af81c9;
+  margin-left: 20px;
+}
+
+.homeSection .homeMainContainer .getQuoteMainContainer .getQuoteBtnContainer {
+  -webkit-transition: background-color 1s;
+  transition: background-color 1s;
+  width: 300px;
+  margin-left: 15px;
+  background-color: #a1defa;
+  border-radius: 45px;
+}
+
+.homeSection .homeMainContainer .getQuoteMainContainer .getQuoteBtnContainer .getQuoteButton {
+  min-width: 286px;
+  height: 50px;
+  border: 1px solid transparent;
+  outline: none;
+  margin: 7px;
+  background-color: #0facf3;
+  -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  color: #ffffff;
+  border-radius: 45px;
+  opacity: 1;
 }
 
 /*Remove powered by google image*/
@@ -294,12 +386,6 @@ nav {
 .pac-item {
   border-top: 0.5px solid #bbcddd;
   height: 40px;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
   padding-left: 10px;
 }
 
@@ -312,69 +398,10 @@ nav {
   display: none;
 }
 
-.getQuoteMainContainer {
-  outline: none;
-  -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  background-color: rgba(255, 255, 255, 0.95);
-  width: 500px;
-  height: 420px;
-}
-
-.getQuoteTopBanner {
-  height: 60px;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  background-color: #0facf3;
-  color: #fff;
-  margin-bottom: 20px;
-}
-
-.getQuoteTopBanner h3 {
-  margin-left: 15px;
-}
-
-.pickUpInputContainer,
-.dropOffInputContainer {
-  margin: 1px 15px 10px 15px;
-}
-
-.pickUpInputContainer > p,
-.dropOffInputContainer > p {
-  margin-left: 20px;
-  margin-bottom: 5px;
-}
-
 .inputContainer {
   position: relative;
   background-color: #bbcddc4d;
   border-radius: 45px;
-}
-
-.pickUpIconContainer,
-.dropOffIconContainer {
-  width: 40px;
-  height: 40px;
-  position: absolute;
-  top: 14px;
-  left: 10px;
-  border-top-left-radius: 25px;
-  border-bottom-left-radius: 25px;
-  display: table;
-}
-
-.pickUpIconContainer > i,
-.dropOffIconContainer > i {
-  display: table-cell;
-  text-align: center;
-  vertical-align: middle;
-  font-size: 22px;
-  color: #bbcddd;
-  -webkit-text-stroke: 1px #ffffff;
 }
 
 .userAddressInput {
@@ -407,63 +434,9 @@ nav {
 }
 
 .userAddressInputBg-click {
-  background-color: #f3ecf7;
+  background-color: #e8daef;
   -webkit-transition: 1s;
   transition: 1s;
-}
-
-#pickUpAddressValid,
-#dropOffAddressValid {
-  height: 18px;
-  font-size: 15px;
-  color: #af81c9;
-  margin-left: 20px;
-}
-
-.getQuoteBtnContainer {
-  -webkit-transition: background-color 1s;
-  transition: background-color 1s;
-  width: 300px;
-  margin-left: 15px;
-  background-color: #a1defa;
-  border-radius: 45px;
-}
-
-.getQuoteButton {
-  min-width: 286px;
-  height: 50px;
-  border: 1px solid transparent;
-  outline: none;
-  margin: 7px;
-  background-color: #0facf3;
-  -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  color: #ffffff;
-  border-radius: 45px;
-  opacity: 1;
-}
-
-.removeIconContainerPick,
-.removeIconContainerDrop {
-  height: 40px;
-  width: 20px;
-  position: absolute;
-  top: 12px;
-  right: 15px;
-  display: table;
-  font-size: 24px;
-  color: #bbcddd;
-  z-index: 99;
-}
-
-.removeIconContainerPick > i,
-.removeIconContainerDrop > i {
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-  display: table-cell;
-  vertical-align: middle;
-  -webkit-text-stroke: 3px #ffffff;
 }
 
 .journeyDetailsDisplay {
@@ -477,80 +450,29 @@ nav {
   background-color: rgba(255, 255, 255, 0.95);
 }
 
-.homeMainContainer {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
-  margin-top: 30px;
-  margin-left: 30px;
-}
-
-.journeyDetailsInnerC {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-.startLocationDisplay,
-.endLocationDisplay,
-.distanceDisplay,
-.timeDurationDisplay {
-  width: 100%;
-  height: 70px;
-  border-bottom: 1px solid #0facf3;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
-}
-
-.iconContainer {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  color: #af81c9;
-  display: table;
-  margin-left: -13px;
-  margin-right: 10px;
-  background-color: #ffffff;
-  -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.iconContainer > i {
-  display: table-cell;
-  vertical-align: middle;
-  text-align: center;
-}
-
-.timeLine {
+.journeyDetailsDisplay .timeLine {
   height: 100%;
   width: 4px;
   background-color: #0facf3;
 }
 
-.distanceMarkerContainer {
+.journeyDetailsDisplay .distanceMarkerContainer {
   width: 60px;
   position: absolute;
   top: 18px;
   left: 0px;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
-  -ms-flex-line-pack: center;
-      align-content: center;
 }
 
-.distanceMarkerContainer div {
+.journeyDetailsDisplay .distanceMarkerContainer div {
   position: relative;
+}
+
+.journeyDetailsDisplay .journeyDetailsInnerC {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .car-side {
@@ -561,18 +483,12 @@ nav {
   background-image: url(../images/BlueCarTopView1.png);
   background-size: cover;
   background-position: center;
-  -webkit-animation-name: example;
-  /* Safari 4.0 - 8.0 */
-  -webkit-animation-duration: 3s;
-  /* Safari 4.0 - 8.0 */
-  animation-name: example;
-  animation-duration: 3s;
-  -webkit-animation-iteration-count: infinite;
-          animation-iteration-count: infinite;
+  -webkit-animation: carmove 3s infinite;
+          animation: carmove 3s infinite;
   z-index: 3;
 }
 
-@-webkit-keyframes example {
+@-webkit-keyframes carmove {
   0% {
     left: 0px;
     top: 0px;
@@ -583,7 +499,7 @@ nav {
   }
 }
 
-@keyframes example {
+@keyframes carmove {
   0% {
     left: 0px;
     top: 0px;
