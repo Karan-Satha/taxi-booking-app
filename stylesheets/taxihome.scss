@@ -220,155 +220,165 @@ nav {
   @include transform(translate(0px, -7px) rotate(45deg));
 }
 
-.homeSection {
+main {
   background: url(../images/passanger1.png) no-repeat center;
-  position: relative;
-  height: 100vh;
+  min-height: 100vh;
 
-  .homeMainContainer {
-    @extend %flex-center;
-    margin-top: 30px;
-    margin-left: 30px;
+  .homeSection {
+    width: 95%;
+    margin: auto;
 
-    .getQuoteMainContainer {
-      outline: none;
-      box-shadow: shadow(main-shadow);
-      background-color: rgba(255, 255, 255, 0.95);
-      width: 500px;
-      height: 420px;
+    .homeMainContainer {
+      @extend %flex-center;
+      width: 100%;
+      position: relative;
+      top: 30px;
+      justify-content: center;
 
-      .getQuoteTopBanner {
-        height: 60px;
-        @extend %flex-center;
-        background-color: color(primary-blue);
-        color: #fff;
-        margin-bottom: 20px;
+      .getQuoteMainContainer {
+        margin: 20px;
+        outline: none;
+        box-shadow: shadow(main-shadow);
+        background-color: rgba(255, 255, 255, 0.95);
+        width: 500px;
+        height: 420px;
 
-        h3 {
-          margin-left: 15px;
-        }
-      }
-
-      .pickUpInputContainer {
-        margin: 1px 15px 10px 15px;
-
-        p {
-          margin-left: 20px;
-          margin-bottom: 5px;
-        }
-
-        .pickUpIconContainer {
-          width: 40px;
-          height: 40px;
-          position: absolute;
-          top: 14px;
-          left: 10px;
-          border-top-left-radius: 25px;
-          border-bottom-left-radius: 25px;
-          display: table;
-
-          i {
-            @extend %align-center;
-            font-size: 22px;
-            color: color(primary-grey);
-            -webkit-text-stroke: 1px color(primary-white);
-          }
-        }
-
-        .removeIconContainerPick {
-          height: 40px;
-          width: 20px;
-          position: absolute;
-          top: 12px;
-          right: 15px;
-          display: table;
-          font-size: 24px;
-          color: color(primary-grey);
-          z-index: 99;
-
-          i {
-            @extend %align-center;
-            -webkit-text-stroke: 3px color(primary-white);
-          }
-        }
-
-        #pickUpAddressValid {
-          height: 18px;
-          font-size: 15px;
-          color: color(primary-purple);
-          margin-left: 20px;
-        }
-      }
-
-      .dropOffInputContainer {
-        margin: 1px 15px 10px 15px;
-
-        p {
-          margin-left: 20px;
-          margin-bottom: 5px;
-        }
-
-        .dropOffIconContainer {
-          width: 40px;
-          height: 40px;
-          position: absolute;
-          top: 14px;
-          left: 10px;
-          border-top-left-radius: 25px;
-          border-bottom-left-radius: 25px;
-          display: table;
-
-          i {
-            @extend %align-center;
-            font-size: 22px;
-            color: color(primary-grey);
-            -webkit-text-stroke: 1px color(primary-white);
-          }
-        }
-
-        .removeIconContainerDrop {
-          height: 40px;
-          width: 20px;
-          position: absolute;
-          top: 12px;
-          right: 15px;
-          display: table;
-          font-size: 24px;
-          color: color(primary-grey);
-          z-index: 99;
-
-          i {
-            @extend %align-center;
-            -webkit-text-stroke: 3px color(primary-white);
-          }
-        }
-
-        #dropOffAddressValid {
-          height: 18px;
-          font-size: 15px;
-          color: color(primary-purple);
-          margin-left: 20px;
-        }
-      }
-
-      .getQuoteBtnContainer {
-        @include transition(background-color 1s);
-        width: 300px;
-        margin-left: 15px;
-        background-color: color(light-blue);
-        border-radius: 45px;
-
-        .getQuoteButton {
-          min-width: 286px;
-          height: 50px;
-          border: 1px solid transparent;
-          outline: none;
-          margin: 7px;
+        .getQuoteTopBanner {
+          height: 60px;
+          @extend %flex-center;
           background-color: color(primary-blue);
-          box-shadow: shadow(main-shadow);
-          color: color(primary-white);
+          color: #fff;
+          margin-bottom: 20px;
+
+          h3 {
+            margin-left: 15px;
+          }
+        }
+
+        .pickUpInputContainer {
+          margin: 1px 15px 10px 15px;
+
+          p {
+            margin-left: 20px;
+            margin-bottom: 5px;
+          }
+
+          .pickUpIconContainer {
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            top: 14px;
+            left: 10px;
+            border-top-left-radius: 25px;
+            border-bottom-left-radius: 25px;
+            display: table;
+
+            i {
+              @extend %align-center;
+              font-size: 22px;
+              color: color(primary-grey);
+              -webkit-text-stroke: 1px color(primary-white);
+            }
+          }
+
+          .removeIconContainerPick {
+            height: 40px;
+            width: 20px;
+            position: absolute;
+            top: 12px;
+            right: 15px;
+            display: table;
+            font-size: 24px;
+            color: color(primary-grey);
+            z-index: 99;
+
+            i {
+              @extend %align-center;
+              -webkit-text-stroke: 3px color(primary-white);
+            }
+          }
+
+          #pickUpAddressValid {
+            height: 18px;
+            font-size: 15px;
+            color: color(primary-purple);
+            margin-left: 20px;
+          }
+        }
+
+        .dropOffInputContainer {
+          margin: 1px 15px 10px 15px;
+
+          p {
+            margin-left: 20px;
+            margin-bottom: 5px;
+          }
+
+          .dropOffIconContainer {
+            width: 40px;
+            height: 40px;
+            position: absolute;
+            top: 14px;
+            left: 10px;
+            border-top-left-radius: 25px;
+            border-bottom-left-radius: 25px;
+            display: table;
+
+            i {
+              @extend %align-center;
+              font-size: 22px;
+              color: color(primary-grey);
+              -webkit-text-stroke: 1px color(primary-white);
+            }
+          }
+
+          .removeIconContainerDrop {
+            height: 40px;
+            width: 20px;
+            position: absolute;
+            top: 12px;
+            right: 15px;
+            display: table;
+            font-size: 24px;
+            color: color(primary-grey);
+            z-index: 99;
+
+            i {
+              @extend %align-center;
+              -webkit-text-stroke: 3px color(primary-white);
+            }
+          }
+
+          #dropOffAddressValid {
+            height: 18px;
+            font-size: 15px;
+            color: color(primary-purple);
+            margin-left: 20px;
+          }
+        }
+
+        .getQuoteBtnContainer {
+          @include transition(background-color 1s);
+          width: 300px;
+          margin-left: 15px;
+          background-color: color(light-blue);
           border-radius: 45px;
-          opacity: 1;
+
+          .getQuoteButton {
+            min-width: 286px;
+            height: 50px;
+            border: 1px solid transparent;
+            outline: none;
+            margin: 7px;
+            background-color: color(primary-blue);
+            box-shadow: shadow(main-shadow);
+            color: color(primary-white);
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 45px;
+            opacity: 1;
+            cursor: pointer;
+          }
         }
       }
     }
@@ -434,25 +444,25 @@ nav {
   @include transition(1s);
 }
 
-.userAddressInput-focus {
+.changeBgBlue {
   background-color: color(light-blue);
   @include transition(1s);
 }
 
-.userAddressInput-click {
+.changeBorderPurple {
   border: 1px solid color(primary-purple);
   @include transition(1s);
 }
 
-.userAddressInputBg-click {
+.changeBgPurple {
   background-color: color(light-purple);
   @include transition(1s);
 }
 
 .journeyDetailsDisplay {
-  width: 400px;
+  width: 500px;
   height: 420px;
-  margin-left: 30px;
+  margin: 20px;
   position: relative;
   /*	visibility: hidden;*/
   box-shadow: shadow(main-shadow);

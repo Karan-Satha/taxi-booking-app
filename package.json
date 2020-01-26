@@ -1,0 +1,25 @@
+{
+  "name": "es6",
+  "version": "1.0.0",
+  "description": "Es6 taxibooking",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jamunatharan/Online-Taxi-App.git"
+  },
+  "keywords": [
+    "es6"
+  ],
+  "author": "karan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Jamunatharan/Online-Taxi-App/issues"
+  },
+  "homepage": "https://github.com/Jamunatharan/Online-Taxi-App#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0"
+  }
+}

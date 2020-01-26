@@ -6,13 +6,13 @@
 }
 
 /*Colors variables*/
-nav .navMainContainer .logoLocationC i, nav .navMainContainer .logoLocationC i .logoCar i, .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .pickUpIconContainer i, .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .removeIconContainerPick i, .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .dropOffIconContainer i, .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .removeIconContainerDrop i, .journeyDetailsDisplay .journeyDetailsInnerC .startLocationDisplay .iconContainer i, .journeyDetailsDisplay .journeyDetailsInnerC .endLocationDisplay .iconContainer i, .journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay .iconContainer i, .journeyDetailsDisplay .journeyDetailsInnerC .timeDurationDisplay .iconContainer i {
+nav .navMainContainer .logoLocationC i, nav .navMainContainer .logoLocationC i .logoCar i, main .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .pickUpIconContainer i, main .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .removeIconContainerPick i, main .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .dropOffIconContainer i, main .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .removeIconContainerDrop i, .journeyDetailsDisplay .journeyDetailsInnerC .startLocationDisplay .iconContainer i, .journeyDetailsDisplay .journeyDetailsInnerC .endLocationDisplay .iconContainer i, .journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay .iconContainer i, .journeyDetailsDisplay .journeyDetailsInnerC .timeDurationDisplay .iconContainer i {
   display: table-cell;
   vertical-align: middle;
   text-align: center;
 }
 
-.journeyDetailsDisplay .journeyDetailsInnerC .startLocationDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .endLocationDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .timeDurationDisplay, nav, .homeSection .homeMainContainer, .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteTopBanner, .pac-item, .journeyDetailsDisplay .distanceMarkerContainer {
+.journeyDetailsDisplay .journeyDetailsInnerC .startLocationDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .endLocationDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .timeDurationDisplay, nav, main .homeSection .homeMainContainer, main .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteTopBanner, .pac-item, .journeyDetailsDisplay .distanceMarkerContainer {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -208,18 +208,27 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   transform: translate(0px, -7px) rotate(45deg);
 }
 
-.homeSection {
+main {
   background: url(../images/passanger1.png) no-repeat center;
+  min-height: 100vh;
+}
+
+main .homeSection {
+  width: 95%;
+  margin: auto;
+}
+
+main .homeSection .homeMainContainer {
+  width: 100%;
   position: relative;
-  height: 100vh;
+  top: 30px;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
 }
 
-.homeSection .homeMainContainer {
-  margin-top: 30px;
-  margin-left: 30px;
-}
-
-.homeSection .homeMainContainer .getQuoteMainContainer {
+main .homeSection .homeMainContainer .getQuoteMainContainer {
+  margin: 20px;
   outline: none;
   -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -228,27 +237,27 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   height: 420px;
 }
 
-.homeSection .homeMainContainer .getQuoteMainContainer .getQuoteTopBanner {
+main .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteTopBanner {
   height: 60px;
   background-color: #0facf3;
   color: #fff;
   margin-bottom: 20px;
 }
 
-.homeSection .homeMainContainer .getQuoteMainContainer .getQuoteTopBanner h3 {
+main .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteTopBanner h3 {
   margin-left: 15px;
 }
 
-.homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer {
+main .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer {
   margin: 1px 15px 10px 15px;
 }
 
-.homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer p {
+main .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer p {
   margin-left: 20px;
   margin-bottom: 5px;
 }
 
-.homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .pickUpIconContainer {
+main .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .pickUpIconContainer {
   width: 40px;
   height: 40px;
   position: absolute;
@@ -259,13 +268,13 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   display: table;
 }
 
-.homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .pickUpIconContainer i {
+main .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .pickUpIconContainer i {
   font-size: 22px;
   color: #bbcddd;
   -webkit-text-stroke: 1px #ffffff;
 }
 
-.homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .removeIconContainerPick {
+main .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .removeIconContainerPick {
   height: 40px;
   width: 20px;
   position: absolute;
@@ -277,27 +286,27 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   z-index: 99;
 }
 
-.homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .removeIconContainerPick i {
+main .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .removeIconContainerPick i {
   -webkit-text-stroke: 3px #ffffff;
 }
 
-.homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer #pickUpAddressValid {
+main .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer #pickUpAddressValid {
   height: 18px;
   font-size: 15px;
   color: #af81c9;
   margin-left: 20px;
 }
 
-.homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer {
+main .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer {
   margin: 1px 15px 10px 15px;
 }
 
-.homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer p {
+main .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer p {
   margin-left: 20px;
   margin-bottom: 5px;
 }
 
-.homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .dropOffIconContainer {
+main .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .dropOffIconContainer {
   width: 40px;
   height: 40px;
   position: absolute;
@@ -308,13 +317,13 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   display: table;
 }
 
-.homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .dropOffIconContainer i {
+main .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .dropOffIconContainer i {
   font-size: 22px;
   color: #bbcddd;
   -webkit-text-stroke: 1px #ffffff;
 }
 
-.homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .removeIconContainerDrop {
+main .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .removeIconContainerDrop {
   height: 40px;
   width: 20px;
   position: absolute;
@@ -326,18 +335,18 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   z-index: 99;
 }
 
-.homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .removeIconContainerDrop i {
+main .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .removeIconContainerDrop i {
   -webkit-text-stroke: 3px #ffffff;
 }
 
-.homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer #dropOffAddressValid {
+main .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer #dropOffAddressValid {
   height: 18px;
   font-size: 15px;
   color: #af81c9;
   margin-left: 20px;
 }
 
-.homeSection .homeMainContainer .getQuoteMainContainer .getQuoteBtnContainer {
+main .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteBtnContainer {
   -webkit-transition: background-color 1s;
   transition: background-color 1s;
   width: 300px;
@@ -346,7 +355,7 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   border-radius: 45px;
 }
 
-.homeSection .homeMainContainer .getQuoteMainContainer .getQuoteBtnContainer .getQuoteButton {
+main .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteBtnContainer .getQuoteButton {
   min-width: 286px;
   height: 50px;
   border: 1px solid transparent;
@@ -356,8 +365,11 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
           box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   color: #ffffff;
+  font-size: 20px;
+  font-weight: bold;
   border-radius: 45px;
   opacity: 1;
+  cursor: pointer;
 }
 
 /*Remove powered by google image*/
@@ -421,28 +433,28 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   transition: 1s;
 }
 
-.userAddressInput-focus {
+.changeBgBlue {
   background-color: #a1defa;
   -webkit-transition: 1s;
   transition: 1s;
 }
 
-.userAddressInput-click {
+.changeBorderPurple {
   border: 1px solid #af81c9;
   -webkit-transition: 1s;
   transition: 1s;
 }
 
-.userAddressInputBg-click {
+.changeBgPurple {
   background-color: #e8daef;
   -webkit-transition: 1s;
   transition: 1s;
 }
 
 .journeyDetailsDisplay {
-  width: 400px;
+  width: 500px;
   height: 420px;
-  margin-left: 30px;
+  margin: 20px;
   position: relative;
   /*	visibility: hidden;*/
   -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -509,4 +521,4 @@ nav .navMainContainer .logoLocationC i .logoCar i {
     top: 70px;
   }
 }
-/*# sourceMappingURL=home.css.map */
+/*# sourceMappingURL=taxihome.css.map */
