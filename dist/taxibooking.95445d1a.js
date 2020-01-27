@@ -118,8 +118,9 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   return newRequire;
 })({"scripts/taxibooking.js":[function(require,module,exports) {
-//Change navigation icon style
-navToggle = function navToggle(navIcon) {
+"use strict"; //Change navigation icon style
+
+var navToggle = function navToggle(navIcon) {
   return navIcon.classList.toggle("crossIcon");
 };
 
@@ -139,7 +140,7 @@ navButton.addEventListener("mouseleave", function () {
 
 function initAutocomplete() {
   // Find pickup lacation
-  pickUpLocation = new google.maps.places.Autocomplete(pickUpLocationInput, {
+  var pickUpLocation = new google.maps.places.Autocomplete(pickUpLocationInput, {
     //Return only geocoding results and restrict to UK address
     types: ["geocode"],
     componentRestrictions: {
@@ -147,7 +148,7 @@ function initAutocomplete() {
     }
   }); // Find dropoff lacation
 
-  dropOffLocation = new google.maps.places.Autocomplete(dropOffLocationInput, {
+  var dropOffLocation = new google.maps.places.Autocomplete(dropOffLocationInput, {
     //Return only geocoding results and restrict to UK address
     types: ["geocode"],
     componentRestrictions: {
@@ -163,38 +164,38 @@ var dropOffBgColor = document.getElementById("inputDropContainer");
 var pickUpValidationMsg = document.getElementById("pickUpAddressValid");
 var dropOffValidationMsg = document.getElementById("dropOffAddressValid");
 
-changePickBgBlue = function changePickBgBlue() {
+var changePickBgBlue = function changePickBgBlue() {
   pickUpBgColor.classList.remove("changeBgPurple");
   pickUpBgColor.classList.add("changeBgBlue");
 };
 
-changeDropBgBlue = function changeDropBgBlue() {
+var changeDropBgBlue = function changeDropBgBlue() {
   dropOffBgColor.classList.remove("changeBgPurple");
   dropOffBgColor.classList.add("changeBgBlue");
 };
 
-changePickBgPurple = function changePickBgPurple() {
+var changePickBgPurple = function changePickBgPurple() {
   pickUpValidationMsg.innerHTML = "Please enter a valid address";
   pickUpBgColor.classList.remove("changeBgBlue");
   pickUpBgColor.classList.add("changeBgPurple");
   pickUpLocationInput.classList.add("changeBorderPurple");
 };
 
-changeDropBgPurple = function changeDropBgPurple() {
+var changeDropBgPurple = function changeDropBgPurple() {
   dropOffValidationMsg.innerHTML = "Please enter a valid address";
   dropOffBgColor.classList.remove("changeBgBlue");
   dropOffBgColor.classList.add("changeBgPurple");
   dropOffLocationInput.classList.add("changeBorderPurple");
 };
 
-removePickBgPurple = function removePickBgPurple() {
+var removePickBgPurple = function removePickBgPurple() {
   pickUpValidationMsg.innerHTML = "";
   pickUpBgColor.classList.remove("changeBgPurple");
   pickUpBgColor.classList.remove("changeBgBlue");
   pickUpLocationInput.classList.remove("changeBorderPurple");
 };
 
-removeDropBgPurple = function removeDropBgPurple() {
+var removeDropBgPurple = function removeDropBgPurple() {
   dropOffValidationMsg.innerHTML = "";
   dropOffBgColor.classList.remove("changeBgPurple");
   dropOffBgColor.classList.remove("changeBgBlue");
@@ -307,7 +308,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "60557" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "63272" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

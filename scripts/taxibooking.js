@@ -1,6 +1,7 @@
-//Change navigation icon style
+"use strict";
 
-navToggle = navIcon => navIcon.classList.toggle("crossIcon");
+//Change navigation icon style
+const navToggle = navIcon => navIcon.classList.toggle("crossIcon");
 
 const navButton = document.getElementById("navToggle");
 const zoomOut = document.getElementById("zoomOutDiv");
@@ -20,22 +21,28 @@ navButton.addEventListener("mouseleave", () =>
 //Autocomplete the address fields using google Autocomplete places API
 function initAutocomplete() {
   // Find pickup lacation
-  pickUpLocation = new google.maps.places.Autocomplete(pickUpLocationInput, {
-    //Return only geocoding results and restrict to UK address
-    types: ["geocode"],
-    componentRestrictions: {
-      country: ["gb"]
+  let pickUpLocation = new google.maps.places.Autocomplete(
+    pickUpLocationInput,
+    {
+      //Return only geocoding results and restrict to UK address
+      types: ["geocode"],
+      componentRestrictions: {
+        country: ["gb"]
+      }
     }
-  });
+  );
 
   // Find dropoff lacation
-  dropOffLocation = new google.maps.places.Autocomplete(dropOffLocationInput, {
-    //Return only geocoding results and restrict to UK address
-    types: ["geocode"],
-    componentRestrictions: {
-      country: ["gb"]
+  let dropOffLocation = new google.maps.places.Autocomplete(
+    dropOffLocationInput,
+    {
+      //Return only geocoding results and restrict to UK address
+      types: ["geocode"],
+      componentRestrictions: {
+        country: ["gb"]
+      }
     }
-  });
+  );
 }
 
 const pickUpLocationInput = document.getElementById("pickUpLocation");
@@ -45,38 +52,38 @@ const dropOffBgColor = document.getElementById("inputDropContainer");
 const pickUpValidationMsg = document.getElementById("pickUpAddressValid");
 const dropOffValidationMsg = document.getElementById("dropOffAddressValid");
 
-changePickBgBlue = () => {
+const changePickBgBlue = () => {
   pickUpBgColor.classList.remove("changeBgPurple");
   pickUpBgColor.classList.add("changeBgBlue");
 };
 
-changeDropBgBlue = () => {
+const changeDropBgBlue = () => {
   dropOffBgColor.classList.remove("changeBgPurple");
   dropOffBgColor.classList.add("changeBgBlue");
 };
 
-changePickBgPurple = () => {
+const changePickBgPurple = () => {
   pickUpValidationMsg.innerHTML = "Please enter a valid address";
   pickUpBgColor.classList.remove("changeBgBlue");
   pickUpBgColor.classList.add("changeBgPurple");
   pickUpLocationInput.classList.add("changeBorderPurple");
 };
 
-changeDropBgPurple = () => {
+const changeDropBgPurple = () => {
   dropOffValidationMsg.innerHTML = "Please enter a valid address";
   dropOffBgColor.classList.remove("changeBgBlue");
   dropOffBgColor.classList.add("changeBgPurple");
   dropOffLocationInput.classList.add("changeBorderPurple");
 };
 
-removePickBgPurple = () => {
+const removePickBgPurple = () => {
   pickUpValidationMsg.innerHTML = "";
   pickUpBgColor.classList.remove("changeBgPurple");
   pickUpBgColor.classList.remove("changeBgBlue");
   pickUpLocationInput.classList.remove("changeBorderPurple");
 };
 
-removeDropBgPurple = () => {
+const removeDropBgPurple = () => {
   dropOffValidationMsg.innerHTML = "";
   dropOffBgColor.classList.remove("changeBgPurple");
   dropOffBgColor.classList.remove("changeBgBlue");
@@ -118,7 +125,7 @@ document.getElementById("getQuote").addEventListener("click", () => {
 //Find the distance
 
 function getDistance() {
-  var service = new google.maps.DistanceMatrixService();
+  let service = new google.maps.DistanceMatrixService();
 
   service.getDistanceMatrix(
     {
