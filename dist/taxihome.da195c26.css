@@ -209,7 +209,7 @@ nav .navMainContainer .logoLocationC i .logoCar i {
 }
 
 main {
-  background: url(../images/passanger1.png) no-repeat center;
+  background: url(/passanger1.4940f91f.png) no-repeat center;
   min-height: 100vh;
 }
 
@@ -492,7 +492,7 @@ main .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteBtnContaine
   height: 30px;
   width: 15px;
   margin-left: -6px;
-  background-image: url(../images/BlueCarTopView1.png);
+  background-image: url(/BlueCarTopView1.7e998544.png);
   background-size: cover;
   background-position: center;
   -webkit-animation: carmove 3s infinite;
@@ -521,4 +521,6 @@ main .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteBtnContaine
     top: 70px;
   }
 }
-/*# sourceMappingURL=taxihome.css.map */
+
+
+/*# sourceMappingURL=/taxihome.da195c26.css.map */
