@@ -1,0 +1,6 @@
+*.json
+node_modules
+cache
+vs
+desktop.ini
+/images

@@ -51,6 +51,7 @@ const pickUpBgColor = document.getElementById("inputPickContainer");
 const dropOffBgColor = document.getElementById("inputDropContainer");
 const pickUpValidationMsg = document.getElementById("pickUpAddressValid");
 const dropOffValidationMsg = document.getElementById("dropOffAddressValid");
+const journeyDetail = document.getElementById("journeyDetailsDisplayId");
 
 const changePickBgBlue = () => {
   pickUpBgColor.classList.remove("changeBgPurple");
@@ -63,14 +64,14 @@ const changeDropBgBlue = () => {
 };
 
 const changePickBgPurple = () => {
-  pickUpValidationMsg.innerHTML = "Please enter a valid address";
+  pickUpValidationMsg.innerHTML = "*Please enter a valid address";
   pickUpBgColor.classList.remove("changeBgBlue");
   pickUpBgColor.classList.add("changeBgPurple");
   pickUpLocationInput.classList.add("changeBorderPurple");
 };
 
 const changeDropBgPurple = () => {
-  dropOffValidationMsg.innerHTML = "Please enter a valid address";
+  dropOffValidationMsg.innerHTML = "*Please enter a valid address";
   dropOffBgColor.classList.remove("changeBgBlue");
   dropOffBgColor.classList.add("changeBgPurple");
   dropOffLocationInput.classList.add("changeBorderPurple");
@@ -112,14 +113,19 @@ dropOffLocationInput.addEventListener("focusout", () => {
 
 document.getElementById("getQuote").addEventListener("click", () => {
   // Validate input address
-  pickUpLocationInput.value === ""
-    ? changePickBgPurple()
-    : removePickBgPurple();
-  dropOffLocationInput.value === ""
-    ? changeDropBgPurple()
-    : removeDropBgPurple();
 
-  getDistance();
+  if (pickUpLocationInput.value && dropOffLocationInput.value !== "") {
+    getDistance();
+    journeyDetail.style.display = "block";
+  } else {
+    pickUpLocationInput.value === ""
+      ? changePickBgPurple()
+      : removePickBgPurple();
+    dropOffLocationInput.value === ""
+      ? changeDropBgPurple()
+      : removeDropBgPurple();
+    journeyDetail.style.display = "none";
+  }
 });
 
 //Find the distance
@@ -173,8 +179,7 @@ function getDistance() {
         ).innerHTML = arrivalFullAddress;
       }
 
-      document.getElementById("journeyDetailsDisplayId").style.display =
-        "block";
+      /*journeyDetail.style.display = "block";*/
     }
   );
 }
@@ -191,7 +196,7 @@ document
 
 //Change button BG color on mouse over
 
-const mouseEvent = document.getElementById("getQuote");
+/*const mouseEvent = document.getElementById("getQuote");
 const btnBgColorCng = document.getElementById("getQuoteBtnCId");
 
 mouseEvent.addEventListener(
@@ -202,4 +207,4 @@ mouseEvent.addEventListener(
 mouseEvent.addEventListener(
   "mouseleave",
   () => (btnBgColorCng.style.backgroundColor = "rgba(15, 172, 243, 0.2)")
-);
+);*/

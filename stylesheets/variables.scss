@@ -1,0 +1,72 @@
+/*Colors variables*/
+$colors: (
+  primary-blue: #0facf3,
+  primary-purple: #af81c9,
+  primary-grey: #bbcddd,
+  primary-white: #ffffff,
+  light-grey: #bbcddc4d,
+  border-grey: #e5e5e5,
+  lightest-blue: lighten(#0facf3, 30%),
+  lighter-blue: lighten(#0facf3, 15%),
+  light-purple: lighten(#af81c9, 25%)
+);
+
+@function color($color-name) {
+  @return map-get($colors, $color-name);
+}
+
+$shadows: (
+  main-shadow: 0 2px 8px rgba(0, 0, 0, 0.1)
+);
+
+@function shadow($shadow-name) {
+  @return map-get($shadows, $shadow-name);
+}
+
+@mixin transition($transition) {
+  -webkit-transition: $transition;
+  -ms-transition: $transition;
+  -moz-transition: $transition;
+  -o-transition: $transition;
+  transition: $transition;
+}
+
+@mixin transform($transform) {
+  -webkit-transform: $transform;
+  -ms-transform: $transform;
+  -moz-transform: $transform;
+  -o-transform: $transform;
+  transform: $transform;
+}
+
+%align-center {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
+}
+
+%flex-center {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+%journey-displays {
+  width: 100%;
+  height: 70px;
+  border-bottom: 1px solid color(primary-blue);
+  @extend %flex-center;
+}
+
+%icon-container {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  color: color(primary-purple);
+  display: table;
+  margin-left: -13px;
+  margin-right: 10px;
+  background-color: color(primary-white);
+  box-shadow: shadow(main-shadow);
+}

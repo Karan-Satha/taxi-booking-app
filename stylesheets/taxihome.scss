@@ -1,78 +1,8 @@
+@import "./variables";
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-/*Colors variables*/
-$colors: (
-  primary-blue: #0facf3,
-  primary-purple: #af81c9,
-  primary-grey: #bbcddd,
-  primary-white: #ffffff,
-  light-grey: #bbcddc4d,
-  light-blue: lighten(#0facf3, 30%),
-  light-purple: lighten(#af81c9, 25%)
-);
-
-@function color($color-name) {
-  @return map-get($colors, $color-name);
-}
-
-$shadows: (
-  main-shadow: 0 2px 8px rgba(0, 0, 0, 0.1)
-);
-
-@function shadow($shadow-name) {
-  @return map-get($shadows, $shadow-name);
-}
-
-@mixin transition($transition) {
-  -webkit-transition: $transition;
-  -ms-transition: $transition;
-  -moz-transition: $transition;
-  -o-transition: $transition;
-  transition: $transition;
-}
-
-@mixin transform($transform) {
-  -webkit-transform: $transform;
-  -ms-transform: $transform;
-  -moz-transform: $transform;
-  -o-transform: $transform;
-  transform: $transform;
-}
-
-%align-center {
-  display: table-cell;
-  vertical-align: middle;
-  text-align: center;
-}
-
-%flex-center {
-  display: flex;
-  align-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-%journey-displays {
-  width: 100%;
-  height: 70px;
-  border-bottom: 1px solid color(primary-blue);
-  @extend %flex-center;
-}
-
-%icon-container {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  color: color(primary-purple);
-  display: table;
-  margin-left: -13px;
-  margin-right: 10px;
-  background-color: color(primary-white);
-  box-shadow: shadow(main-shadow);
 }
 
 body {
@@ -153,7 +83,7 @@ nav {
     height: 100%;
     width: 100%;
     border-radius: 50%;
-    border: 10px solid color(light-blue);
+    border: 10px solid color(lightest-blue);
 
     .navIconContainer {
       position: absolute;
@@ -221,25 +151,28 @@ nav {
 }
 
 main {
-  background: url(../images/passanger1.png) no-repeat center;
+  background: url(../images/taxi-background.png) no-repeat center;
   min-height: 100vh;
 
   .homeSection {
-    width: 95%;
+    width: 100%;
     margin: auto;
 
     .homeMainContainer {
       @extend %flex-center;
       width: 100%;
       position: relative;
-      top: 30px;
+      /*top: 30px;*/
       justify-content: center;
+      align-content: flex-start;
+      background-color: rgba(15, 172, 243, 0.5);
+      height: 100vh;
 
       .getQuoteMainContainer {
         margin: 20px;
         outline: none;
         box-shadow: shadow(main-shadow);
-        background-color: rgba(255, 255, 255, 0.95);
+        background-color: color(primary-white);
         width: 500px;
         height: 420px;
 
@@ -358,26 +291,29 @@ main {
         }
 
         .getQuoteBtnContainer {
-          @include transition(background-color 1s);
-          width: 300px;
-          margin-left: 15px;
-          background-color: color(light-blue);
-          border-radius: 45px;
+          @extend %flex-center;
 
           .getQuoteButton {
-            min-width: 286px;
-            height: 50px;
+            min-width: 300px;
+            height: 45px;
             border: 1px solid transparent;
             outline: none;
-            margin: 7px;
+            margin: auto;
             background-color: color(primary-blue);
             box-shadow: shadow(main-shadow);
             color: color(primary-white);
             font-size: 20px;
             font-weight: bold;
-            border-radius: 45px;
+            border-radius: 50px;
             opacity: 1;
             cursor: pointer;
+            border: 7px solid color(lightest-blue);
+            box-sizing: content-box;
+            @include transition(1s);
+          }
+
+          .getQuoteButton:hover {
+            border: 7px solid color(lighter-blue);
           }
         }
       }
@@ -445,7 +381,7 @@ main {
 }
 
 .changeBgBlue {
-  background-color: color(light-blue);
+  background-color: color(lightest-blue);
   @include transition(1s);
 }
 
@@ -466,7 +402,7 @@ main {
   display: none;
   position: relative;
   box-shadow: shadow(main-shadow);
-  background-color: rgba(255, 255, 255, 0.95);
+  background-color: color(primary-white);
 
   .timeLine {
     height: 100%;
