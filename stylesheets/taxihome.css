@@ -21,7 +21,7 @@ nav .navMainContainer .logoLocationC i, nav .navMainContainer .logoLocationC i .
 .journeyDetailsDisplay .journeyDetailsInnerC .startLocationDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .endLocationDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .timeDurationDisplay {
   width: 100%;
   height: 70px;
-  border-bottom: 1px solid #0facf3;
+  border-bottom: 1px solid #e5e5e5;
 }
 
 .journeyDetailsDisplay .journeyDetailsInnerC .startLocationDisplay .iconContainer, .journeyDetailsDisplay .journeyDetailsInnerC .endLocationDisplay .iconContainer, .journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay .iconContainer, .journeyDetailsDisplay .journeyDetailsInnerC .timeDurationDisplay .iconContainer {
@@ -221,7 +221,6 @@ main .homeSection {
 main .homeSection .homeMainContainer {
   width: 100%;
   position: relative;
-  /*top: 30px;*/
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
@@ -294,6 +293,10 @@ main .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContaine
   -webkit-text-stroke: 3px #ffffff;
 }
 
+main .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .removeIconContainerPick i:hover {
+  cursor: pointer;
+}
+
 main .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer #pickUpAddressValid {
   height: 18px;
   font-size: 15px;
@@ -343,6 +346,10 @@ main .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContain
   -webkit-text-stroke: 3px #ffffff;
 }
 
+main .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .removeIconContainerDrop i:hover {
+  cursor: pointer;
+}
+
 main .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer #dropOffAddressValid {
   height: 18px;
   font-size: 15px;
@@ -376,7 +383,7 @@ main .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteBtnContaine
   border: 7px solid #58c5f7;
 }
 
-/*Remove powered by google image*/
+/*Change google default CSS*/
 .pac-container:after {
   background-image: none;
   height: 0px;
@@ -400,7 +407,7 @@ main .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteBtnContaine
 }
 
 .pac-item {
-  border-top: 0.5px solid #bbcddd;
+  border-top: 0.5px solid #e5e5e5;
   height: 40px;
   padding-left: 10px;
 }
@@ -470,6 +477,7 @@ main .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteBtnContaine
   height: 100%;
   width: 4px;
   background-color: #0facf3;
+  z-index: 100;
 }
 
 .journeyDetailsDisplay .distanceMarkerContainer {

@@ -113,7 +113,6 @@ dropOffLocationInput.addEventListener("focusout", () => {
 
 document.getElementById("getQuote").addEventListener("click", () => {
   // Validate input address
-
   if (pickUpLocationInput.value && dropOffLocationInput.value !== "") {
     getDistance();
     journeyDetail.style.display = "block";
@@ -130,7 +129,7 @@ document.getElementById("getQuote").addEventListener("click", () => {
 
 //Find the distance
 
-function getDistance() {
+const getDistance = () => {
   let service = new google.maps.DistanceMatrixService();
 
   service.getDistanceMatrix(
@@ -144,45 +143,63 @@ function getDistance() {
       avoidTolls: false
     },
 
-    function(response, status) {
+    (response, status) => {
       if (status !== google.maps.DistanceMatrixStatus.OK) {
-        alert("Error:", status);
+        alert`(Error: ${status})`;
       } else {
-        // Get value in metres and convert to kilometres
-        let distanceMetre = response.rows[0].elements[0].distance.value;
+        // Get distance value in metres
+        const distanceInMetre = response.rows[0].elements[0].distance.value;
 
-        // Round kilometres to 2nd decimel point
-        document.getElementById("distanceKm").innerHTML =
-          (distanceMetre / 1000).toFixed(2) + " " + "Kilometres";
+        // Convert metres into kilometres and round it to 1st decimel point
+        const distanceInKM = (distanceInMetre / 1000).toFixed(1);
+        document.getElementById(
+          "distanceKm"
+        ).innerHTML = `${distanceInKM} Kilometres`;
 
-        // Change metres to miles
-        let distanceMile = (distanceMetre / 1000) * 0.621371;
-
-        // Round miles to 2nd decimel point
-        document.getElementById("distanceMile").innerHTML =
-          distanceMile.toFixed(2) + " " + "Miles";
+        // Change metres to miles and round miles to 2nd decimel point
+        const distanceInMile = ((distanceInMetre / 1000) * 0.621371).toFixed(1);
+        document.getElementById(
+          "distanceMile"
+        ).innerHTML = `${distanceInMile} Miles`;
 
         // Find the time duration
-        let duration = response.rows[0].elements[0].duration.text;
-        document.getElementById("duration").innerHTML = duration;
+        const travelDuration = response.rows[0].elements[0].duration.text;
+        document.getElementById("duration").innerHTML = travelDuration;
 
         // Find departure address
-        let depatureFullAddress = response.originAddresses[0];
+        const depatureFullAddress = response.originAddresses[0];
         document.getElementById(
           "depatureFullAddress"
         ).innerHTML = depatureFullAddress;
 
         // Find arrival address
-        let arrivalFullAddress = response.destinationAddresses[0];
+        const arrivalFullAddress = response.destinationAddresses[0];
         document.getElementById(
           "arrivalFullAddress"
         ).innerHTML = arrivalFullAddress;
-      }
 
-      /*journeyDetail.style.display = "block";*/
+        const [baseFare, minimumFare, farePerMinute, farePerMile] = [
+          2.5,
+          5,
+          0.15,
+          1.25
+        ];
+
+        const durationInMinute =
+          response.rows[0].elements[0].duration.value / 60;
+        const fareForDuration = durationInMinute * farePerMinute;
+        const fareForDistance = distanceInMile * farePerMile;
+        const totalFare = (
+          fareForDuration +
+          fareForDistance +
+          baseFare +
+          minimumFare
+        ).toFixed(0);
+        document.getElementById("price").innerHTML = `£${totalFare}`;
+      }
     }
   );
-}
+};
 
 //Clear textbox on times button click
 
@@ -193,18 +210,3 @@ document
 document
   .getElementById("clearButtonDrop")
   .addEventListener("click", () => (dropOffLocationInput.value = ""));
-
-//Change button BG color on mouse over
-
-/*const mouseEvent = document.getElementById("getQuote");
-const btnBgColorCng = document.getElementById("getQuoteBtnCId");
-
-mouseEvent.addEventListener(
-  "mouseenter",
-  () => (btnBgColorCng.style.backgroundColor = "rgba(15, 172, 243, 0.4)")
-);
-
-mouseEvent.addEventListener(
-  "mouseleave",
-  () => (btnBgColorCng.style.backgroundColor = "rgba(15, 172, 243, 0.2)")
-);*/
