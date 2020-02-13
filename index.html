@@ -29,7 +29,7 @@
   </head>
 
   <body>
-    <main>
+    <main class="homeMain">
       <section>
         <article>
           <header>
@@ -128,51 +128,58 @@
               </div>
             </div>
           </article>
-          <article>
-            <div class="journeyDetailsDisplay" id="journeyDetailsDisplayId">
-              <div class="timeLine"></div>
-
-              <div class="distanceMarkerContainer">
-                <div class="car-side"></div>
-              </div>
-
-              <div class="journeyDetailsInnerC">
-                <div class="startLocationDisplay">
-                  <div class="iconContainer">
-                    <i class="fas fa-map-marker-alt"></i>
-                  </div>
-                  <div id="depatureFullAddress">Hi</div>
-                </div>
-
-                <div class="endLocationDisplay">
-                  <div class="iconContainer">
-                    <i class="fas fa-map-marker-alt"></i>
-                  </div>
-                  <div id="arrivalFullAddress"></div>
-                </div>
-
-                <div class="distanceDisplay">
-                  <div class="iconContainer">
-                    <i class="fa fa-road"></i>
-                  </div>
-                  <div id="distanceMile"></div>
-                  &nbsp; &nbsp; <strong>OR</strong>&nbsp; &nbsp;
-                  <div id="distanceKm"></div>
-                </div>
-
-                <div class="timeDurationDisplay">
-                  <div class="iconContainer">
-                    <i class="fas fa-clock"></i>
-                  </div>
-                  <div id="duration"></div>
-                </div>
-                <h1 id="price"></h1>
-              </div>
-            </div>
-          </article>
         </div>
       </section>
     </main>
+    <main class="journeyMain">
+      <section class="journeyMainSection">
+        <article class="journeyDetailsDisplay" id="journeyDetailsDisplayId">
+          <div class="timeLine"></div>
+
+          <div class="distanceMarkerContainer">
+            <div class="car-side"></div>
+          </div>
+
+          <div class="journeyDetailsInnerC">
+            <section class="startLocationDisplay">
+              <div class="iconContainer">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <div id="depatureFullAddress"></div>
+            </section>
+
+            <section class="endLocationDisplay">
+              <div class="iconContainer">
+                <i class="fas fa-map-marker-alt"></i>
+              </div>
+              <div id="arrivalFullAddress"></div>
+            </section>
+
+            <section class="distanceDisplay">
+              <div class="iconContainer">
+                <i class="fa fa-road"></i>
+              </div>
+              <div id="distanceMile"></div>
+              <div id="distanceKm"></div>
+            </section>
+
+            <section class="timeDurationDisplay">
+              <div class="iconContainer">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div id="duration"></div>
+            </section>
+
+            <section id="packageInfo">
+              <article id="serviceX"></article>
+              <article id="serviceXL"></article>
+              <article id="serviceXXL"></article>
+            </section>
+          </div>
+        </article>
+      </section>
+    </main>
+
     <!--Call jquery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 

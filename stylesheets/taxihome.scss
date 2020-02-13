@@ -22,7 +22,6 @@ nav {
     width: 100%;
     height: 80px;
     background-color: color(primary-white);
-    // box-shadow: 0 2px 8px #ecdef4;
     box-shadow: 0 2px 8px color(light-purple);
 
     .logoLocationC {
@@ -150,25 +149,32 @@ nav {
   @include transform(translate(0px, -7px) rotate(45deg));
 }
 
-main {
+/* Navigation section ends here */
+
+/* Home section starts here */
+
+.homeMain {
   background: url(../images/taxi-background.png) no-repeat center;
   min-height: 100vh;
 
   .homeSection {
     width: 100%;
+    height: 100vh;
     margin: auto;
+    background-color: rgba(15, 172, 243, 0.5);
 
     .homeMainContainer {
       @extend %flex-center;
-      width: 100%;
+      width: 95%;
+      margin: auto;
       position: relative;
-      justify-content: center;
+      top: 5%;
+      justify-content: flex-start;
       align-content: flex-start;
-      background-color: rgba(15, 172, 243, 0.5);
-      height: 100vh;
+      border: 1px solid red;
 
       .getQuoteMainContainer {
-        margin: 20px;
+        // margin: 10vh 10px 10px 5vw;
         outline: none;
         box-shadow: shadow(main-shadow);
         background-color: color(primary-white);
@@ -299,6 +305,7 @@ main {
 
         .getQuoteBtnContainer {
           @extend %flex-center;
+          margin-top: 20px;
 
           .getQuoteButton {
             min-width: 300px;
@@ -326,43 +333,6 @@ main {
       }
     }
   }
-}
-
-/*Change google default CSS*/
-.pac-container:after {
-  background-image: none;
-  height: 0px;
-  padding: 0;
-  margin: 0;
-}
-
-.pac-container {
-  border-radius: 0;
-  box-shadow: shadow(main-shadow);
-  margin-top: 3px;
-  border-top: 0px solid color(primary-white);
-}
-
-.pac-item:hover {
-  background-color: color(primary-blue);
-  color: color(primary-white);
-  @include transition(1s);
-}
-
-.pac-item {
-  border-top: 0.5px solid color(border-grey);
-  height: 40px;
-  @extend %flex-center;
-  padding-left: 10px;
-}
-
-.pac-item:first-child {
-  border-top: 0px solid color(primary-white);
-}
-
-/*Remove google address icons*/
-.pac-icon {
-  display: none;
 }
 
 .inputContainer {
@@ -402,20 +372,77 @@ main {
   @include transition(1s);
 }
 
+/* Home section ends here */
+
+/* Change google auto address complete default CSS */
+.pac-container:after {
+  background-image: none;
+  height: 0px;
+  padding: 0;
+  margin: 0;
+}
+
+.pac-container {
+  border-radius: 0;
+  box-shadow: shadow(main-shadow);
+  margin-top: 3px;
+  border-top: 0px solid color(primary-white);
+}
+
+.pac-item:hover {
+  background-color: color(primary-blue);
+  color: color(primary-white);
+  @include transition(1s);
+}
+
+.pac-item {
+  border-top: 0.5px solid color(border-grey);
+  height: 40px;
+  @extend %flex-center;
+  padding-left: 10px;
+}
+
+.pac-item:first-child {
+  border-top: 0px solid color(primary-white);
+}
+
+/* Remove google address icons */
+.pac-icon {
+  display: none;
+}
+
+/* Journey details section starts here */
+
+.journeyMain {
+  width: 100%;
+  height: 100vh;
+}
+
+.journeyMainSection {
+  width: 95%;
+  position: relative;
+  top: 5%;
+  margin: auto;
+}
+
 .journeyDetailsDisplay {
   width: 500px;
   height: 420px;
-  margin: 20px;
-  display: none;
+  // margin: 70px 10px 10px 10px;
+  // display: none;
   position: relative;
   box-shadow: shadow(main-shadow);
   background-color: color(primary-white);
+  border-left: 4px solid color(primary-blue);
 
   .timeLine {
-    height: 100%;
-    width: 4px;
-    background-color: color(primary-blue);
-    z-index: 100;
+    position: relative;
+    height: 49px;
+    width: 3px;
+    left: 23px;
+    top: 35px;
+    z-index: 1;
+    background-color: color(primary-purple);
   }
 
   .distanceMarkerContainer {
@@ -443,7 +470,7 @@ main {
 
       .iconContainer {
         @extend %icon-container;
-
+        z-index: 2;
         i {
           @extend %align-center;
         }
@@ -453,7 +480,7 @@ main {
     .endLocationDisplay {
       @extend %journey-displays;
       @extend %flex-center;
-
+      z-index: 2;
       .iconContainer {
         @extend %icon-container;
 
@@ -474,6 +501,10 @@ main {
           @extend %align-center;
         }
       }
+      button {
+        padding: 5px 10px;
+        @extend %button-style;
+      }
     }
 
     .timeDurationDisplay {
@@ -488,6 +519,63 @@ main {
         }
       }
     }
+
+    #packageInfo {
+      @extend %journey-displays;
+      @extend %flex-center;
+      height: 40%;
+      border-bottom: 0px;
+
+      article {
+        width: 31%;
+        margin: auto;
+        height: 90%;
+        border: 2px solid color(border-grey);
+
+        .serviceType {
+          h1 {
+            background-color: color(primary-blue);
+            width: 40px;
+            padding: 3px;
+            font-size: 16px;
+            text-align: center;
+          }
+          img {
+            width: 80%;
+            height: 95%;
+            display: block;
+            margin: 0 auto;
+          }
+
+          div {
+            text-align: center;
+
+            i {
+              background-color: color(border-grey);
+              color: color(primary-grey);
+              padding-top: 5px;
+              padding-bottom: 5px;
+              margin: auto;
+              font-size: 16px;
+              width: 38%;
+
+              span {
+                font-family: "Roboto Condensed", sans-serif;
+                color: #000000;
+              }
+            }
+          }
+
+          button {
+            @extend %button-style;
+            padding: 6px 10px;
+            display: block;
+            margin: 5px auto;
+            width: 80%;
+          }
+        }
+      }
+    }
   }
 }
 
@@ -495,7 +583,7 @@ main {
   position: relative;
   height: 30px;
   width: 15px;
-  margin-left: -6px;
+  margin-left: 17px;
   background-image: url(../images/BlueCarTopView1.png);
   background-size: cover;
   background-position: center;
@@ -510,6 +598,6 @@ main {
   }
   100% {
     left: 0px;
-    top: 70px;
+    top: 58px;
   }
 }

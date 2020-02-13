@@ -1,15 +1,14 @@
-"use strict";
+("use strict");
 
 //Change navigation icon style
 const navToggle = navIcon => navIcon.classList.toggle("crossIcon");
 
 const navButton = document.getElementById("navToggle");
-const zoomOut = document.getElementById("zoomOutDiv");
-
 navButton.onclick = function() {
   navToggle(this);
 };
 
+const zoomOut = document.getElementById("zoomOutDiv");
 navButton.addEventListener("mouseenter", () =>
   zoomOut.classList.add("navInnerContainer-hover")
 );
@@ -115,7 +114,6 @@ document.getElementById("getQuote").addEventListener("click", () => {
   // Validate input address
   if (pickUpLocationInput.value && dropOffLocationInput.value !== "") {
     getDistance();
-    journeyDetail.style.display = "block";
   } else {
     pickUpLocationInput.value === ""
       ? changePickBgPurple()
@@ -128,6 +126,38 @@ document.getElementById("getQuote").addEventListener("click", () => {
 });
 
 //Find the distance
+
+const fare = [
+  {
+    baseFare: 2.5,
+    minimumFare: 5,
+    farePerMinute: 0.15,
+    farePerMile: 1.25,
+    imgUrl: "./images/taxi5.png",
+    person: 4,
+    luggage: 2
+  },
+
+  {
+    baseFare: 3.5,
+    minimumFare: 7,
+    farePerMinute: 0.15,
+    farePerMile: 2.1,
+    imgUrl: "./images/taxi7.png",
+    person: 6,
+    luggage: 2
+  },
+
+  {
+    baseFare: 4,
+    minimumFare: 9,
+    farePerMinute: 0.15,
+    farePerMile: 2.5,
+    imgUrl: "./images/taxi9.png",
+    person: 8,
+    luggage: 3
+  }
+];
 
 const getDistance = () => {
   let service = new google.maps.DistanceMatrixService();
@@ -151,16 +181,23 @@ const getDistance = () => {
         const distanceInMetre = response.rows[0].elements[0].distance.value;
 
         // Convert metres into kilometres and round it to 1st decimel point
-        const distanceInKM = (distanceInMetre / 1000).toFixed(1);
-        document.getElementById(
-          "distanceKm"
-        ).innerHTML = `${distanceInKM} Kilometres`;
+        const distancekm = document.getElementById("distanceKm");
+        (distanceInKM => {
+          distanceInKM = (distanceInMetre / 1000).toFixed(1);
+          distancekm.innerHTML = ` &nbsp;${distanceInKM} Kilometres`;
+          distancekm.style.display = "none";
+        })();
 
         // Change metres to miles and round miles to 2nd decimel point
         const distanceInMile = ((distanceInMetre / 1000) * 0.621371).toFixed(1);
         document.getElementById(
           "distanceMile"
-        ).innerHTML = `${distanceInMile} Miles`;
+        ).innerHTML = `${distanceInMile} miles &nbsp;<button id="inkm">View in KM</button>`;
+
+        // Show distance in KM
+        document.getElementById("inkm").addEventListener("click", () => {
+          distancekm.style.display = "block";
+        });
 
         // Find the time duration
         const travelDuration = response.rows[0].elements[0].duration.text;
@@ -178,25 +215,90 @@ const getDistance = () => {
           "arrivalFullAddress"
         ).innerHTML = arrivalFullAddress;
 
-        const [baseFare, minimumFare, farePerMinute, farePerMile] = [
-          2.5,
-          5,
-          0.15,
-          1.25
-        ];
+        // Assign fare values for 5seater
+        // const fare = [
+        //   {
+        //     fareFiveSeat: [
+        //       {
+        //         baseFare: 2.5,
+        //         minimumFare: 5,
+        //         farePerMinute: 0.15,
+        //         farePerMile: 1.25
+        //       }
+        //     ],
 
-        const durationInMinute =
-          response.rows[0].elements[0].duration.value / 60;
-        const fareForDuration = durationInMinute * farePerMinute;
-        const fareForDistance = distanceInMile * farePerMile;
-        const totalFare = (
-          fareForDuration +
-          fareForDistance +
-          baseFare +
-          minimumFare
-        ).toFixed(0);
-        document.getElementById("price").innerHTML = `£${totalFare}`;
+        //     fareSevenSeat: [
+        //       {
+        //         baseFare: 3.5,
+        //         minimumFare: 7,
+        //         farePerMinute: 0.15,
+        //         farePerMile: 2.1
+        //       }
+        //     ],
+
+        //     fareNineSeat: [
+        //       {
+        //         baseFare: 4,
+        //         minimumFare: 9,
+        //         farePerMinute: 0.15,
+        //         farePerMile: 2.5
+        //       }
+        //     ]
+        //   }
+        // ];
+
+        let durationInMinute = 0;
+        durationInMinute = response.rows[0].elements[0].duration.value / 60;
+
+        // Find total fare for 5seater taxi
+
+        // const totalFare = fare.map(fare => {
+        //   const {
+        //     farePerMinute,
+        //     farePerMile,
+        //     baseFare,
+        //     minimumFare
+        //   } = fare.fareFiveSeat[0];
+
+        //   const fareForXCar = (
+        //     farePerMinute * durationInMinute +
+        //     farePerMile * distanceInMile +
+        //     baseFare +
+        //     minimumFare
+        //   ).toFixed(0);
+
+        //   const `<h1>${fareForXCar}</h1>`;
+
+        //   return
+        // });
+
+        // const maindiv = document.getElementById("packageInfo");
+        // maindiv.innerHTML = totalFare;
+
+        const totalFare = fare.map(fare => {
+          const finalFare = (
+            fare.farePerMinute * durationInMinute +
+            fare.farePerMile * distanceInMile +
+            fare.baseFare +
+            fare.minimumFare
+          ).toFixed(0);
+          return `<div class="serviceType">
+            <h1>£${finalFare}</h1>
+            <img src=${fare.imgUrl} />
+            <div>
+            <i class="fas fa-user-friends"><span> ${fare.person}</span></i>
+            <i class="fas fa-suitcase"><span> ${fare.luggage}</span></i>
+            </div>
+            <button>Select fare</button>
+            </div>`;
+        });
+
+        document.getElementById("serviceX").innerHTML = `${totalFare[0]}`;
+        document.getElementById("serviceXL").innerHTML = `${totalFare[1]}`;
+        document.getElementById("serviceXXL").innerHTML = `${totalFare[2]}`;
       }
+
+      journeyDetail.style.display = "block";
     }
   );
 };
@@ -210,3 +312,35 @@ document
 document
   .getElementById("clearButtonDrop")
   .addEventListener("click", () => (dropOffLocationInput.value = ""));
+
+const travelInfo = [
+  {
+    car: "5 Seater",
+    fare: 2.5,
+    imgUrl: "./images/taxi5.jpg"
+  },
+  {
+    car: "7 Seater",
+    imgUrl: "./images/taxi7.png",
+    fare: 3
+  },
+  {
+    car: "9 Seater",
+    imgUrl: "./images/taxi9.jpg",
+    fare: 3.5
+  }
+];
+
+// const maindiv = document.getElementById("packageInfo");
+// const serviceTypeContainer = `
+// <div>
+// ${travelInfo
+//   .map(
+//     car => `<div>${car.car}</div>
+// <div>${car.fare}</div>
+// <img src=${car.imgUrl} height=${40} width=${60}/>`
+//   )
+//   .join("")}
+// </div>`;
+
+// maindiv.innerHTML = serviceTypeContainer;
