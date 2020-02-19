@@ -154,7 +154,7 @@ nav {
 /* Home section starts here */
 
 .homeMain {
-  background: url(../images/taxi-background.png) no-repeat center;
+  background: url(../images/taxi-background.png) no-repeat bottom;
   min-height: 100vh;
 
   .homeSection {
@@ -179,14 +179,14 @@ nav {
         box-shadow: shadow(main-shadow);
         background-color: color(primary-white);
         width: 500px;
-        height: 420px;
+        // height: 420px;
 
         .getQuoteTopBanner {
-          height: 60px;
+          height: 50px;
           @extend %flex-center;
           background-color: color(primary-blue);
           color: #fff;
-          margin-bottom: 20px;
+          margin-bottom: 10px;
 
           h3 {
             margin-left: 15px;
@@ -194,7 +194,7 @@ nav {
         }
 
         .pickUpInputContainer {
-          margin: 1px 15px 10px 15px;
+          margin: 1px 15px 5px 15px;
 
           p {
             margin-left: 20px;
@@ -249,7 +249,7 @@ nav {
         }
 
         .dropOffInputContainer {
-          margin: 1px 15px 10px 15px;
+          margin: 1px 15px 5px 15px;
 
           p {
             margin-left: 20px;
@@ -305,14 +305,14 @@ nav {
 
         .getQuoteBtnContainer {
           @extend %flex-center;
-          margin-top: 20px;
+          margin-top: 10px;
 
           .getQuoteButton {
             min-width: 300px;
-            height: 45px;
+            height: 43px;
             border: 1px solid transparent;
             outline: none;
-            margin: auto;
+            margin: auto auto 30px auto;
             background-color: color(primary-blue);
             box-shadow: shadow(main-shadow);
             color: color(primary-white);

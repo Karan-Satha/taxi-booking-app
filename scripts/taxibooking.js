@@ -215,65 +215,8 @@ const getDistance = () => {
           "arrivalFullAddress"
         ).innerHTML = arrivalFullAddress;
 
-        // Assign fare values for 5seater
-        // const fare = [
-        //   {
-        //     fareFiveSeat: [
-        //       {
-        //         baseFare: 2.5,
-        //         minimumFare: 5,
-        //         farePerMinute: 0.15,
-        //         farePerMile: 1.25
-        //       }
-        //     ],
-
-        //     fareSevenSeat: [
-        //       {
-        //         baseFare: 3.5,
-        //         minimumFare: 7,
-        //         farePerMinute: 0.15,
-        //         farePerMile: 2.1
-        //       }
-        //     ],
-
-        //     fareNineSeat: [
-        //       {
-        //         baseFare: 4,
-        //         minimumFare: 9,
-        //         farePerMinute: 0.15,
-        //         farePerMile: 2.5
-        //       }
-        //     ]
-        //   }
-        // ];
-
         let durationInMinute = 0;
         durationInMinute = response.rows[0].elements[0].duration.value / 60;
-
-        // Find total fare for 5seater taxi
-
-        // const totalFare = fare.map(fare => {
-        //   const {
-        //     farePerMinute,
-        //     farePerMile,
-        //     baseFare,
-        //     minimumFare
-        //   } = fare.fareFiveSeat[0];
-
-        //   const fareForXCar = (
-        //     farePerMinute * durationInMinute +
-        //     farePerMile * distanceInMile +
-        //     baseFare +
-        //     minimumFare
-        //   ).toFixed(0);
-
-        //   const `<h1>${fareForXCar}</h1>`;
-
-        //   return
-        // });
-
-        // const maindiv = document.getElementById("packageInfo");
-        // maindiv.innerHTML = totalFare;
 
         const totalFare = fare.map(fare => {
           const finalFare = (
@@ -330,17 +273,3 @@ const travelInfo = [
     fare: 3.5
   }
 ];
-
-// const maindiv = document.getElementById("packageInfo");
-// const serviceTypeContainer = `
-// <div>
-// ${travelInfo
-//   .map(
-//     car => `<div>${car.car}</div>
-// <div>${car.fare}</div>
-// <img src=${car.imgUrl} height=${40} width=${60}/>`
-//   )
-//   .join("")}
-// </div>`;
-
-// maindiv.innerHTML = serviceTypeContainer;

@@ -1,5 +1,11 @@
 /*Colors variables*/
-.journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay button, .journeyDetailsDisplay .journeyDetailsInnerC #packageInfo article .serviceType button {
+.journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay button,
+.journeyDetailsDisplay
+  .journeyDetailsInnerC
+  #packageInfo
+  article
+  .serviceType
+  button {
   cursor: pointer;
   outline: none;
   background-color: #0facf3;
@@ -9,33 +15,109 @@
   border-radius: 20px;
 }
 
-nav .navMainContainer .logoLocationC i, nav .navMainContainer .logoLocationC i .logoCar i, .homeMain .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .pickUpIconContainer i, .homeMain .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .removeIconContainerPick i, .homeMain .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .dropOffIconContainer i, .homeMain .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .removeIconContainerDrop i, .journeyDetailsDisplay .journeyDetailsInnerC .startLocationDisplay .iconContainer i, .journeyDetailsDisplay .journeyDetailsInnerC .endLocationDisplay .iconContainer i, .journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay .iconContainer i, .journeyDetailsDisplay .journeyDetailsInnerC .timeDurationDisplay .iconContainer i {
+nav .navMainContainer .logoLocationC i,
+nav .navMainContainer .logoLocationC i .logoCar i,
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .pickUpInputContainer
+  .pickUpIconContainer
+  i,
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .pickUpInputContainer
+  .removeIconContainerPick
+  i,
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .dropOffInputContainer
+  .dropOffIconContainer
+  i,
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .dropOffInputContainer
+  .removeIconContainerDrop
+  i,
+.journeyDetailsDisplay
+  .journeyDetailsInnerC
+  .startLocationDisplay
+  .iconContainer
+  i,
+.journeyDetailsDisplay
+  .journeyDetailsInnerC
+  .endLocationDisplay
+  .iconContainer
+  i,
+.journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay .iconContainer i,
+.journeyDetailsDisplay
+  .journeyDetailsInnerC
+  .timeDurationDisplay
+  .iconContainer
+  i {
   display: table-cell;
   vertical-align: middle;
   text-align: center;
 }
 
-.journeyDetailsDisplay .journeyDetailsInnerC .startLocationDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .endLocationDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .timeDurationDisplay, .journeyDetailsDisplay .journeyDetailsInnerC #packageInfo, nav, .homeMain .homeSection .homeMainContainer, .homeMain .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteTopBanner, .homeMain .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteBtnContainer, .pac-item, .journeyDetailsDisplay .distanceMarkerContainer {
+.journeyDetailsDisplay .journeyDetailsInnerC .startLocationDisplay,
+.journeyDetailsDisplay .journeyDetailsInnerC .endLocationDisplay,
+.journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay,
+.journeyDetailsDisplay .journeyDetailsInnerC .timeDurationDisplay,
+.journeyDetailsDisplay .journeyDetailsInnerC #packageInfo,
+nav,
+.homeMain .homeSection .homeMainContainer,
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .getQuoteTopBanner,
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .getQuoteBtnContainer,
+.pac-item,
+.journeyDetailsDisplay .distanceMarkerContainer {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
   -ms-flex-line-pack: center;
-      align-content: center;
+  align-content: center;
   -webkit-box-align: center;
-      -ms-flex-align: center;
-          align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
   -ms-flex-wrap: wrap;
-      flex-wrap: wrap;
+  flex-wrap: wrap;
 }
 
-.journeyDetailsDisplay .journeyDetailsInnerC .startLocationDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .endLocationDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay, .journeyDetailsDisplay .journeyDetailsInnerC .timeDurationDisplay, .journeyDetailsDisplay .journeyDetailsInnerC #packageInfo {
+.journeyDetailsDisplay .journeyDetailsInnerC .startLocationDisplay,
+.journeyDetailsDisplay .journeyDetailsInnerC .endLocationDisplay,
+.journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay,
+.journeyDetailsDisplay .journeyDetailsInnerC .timeDurationDisplay,
+.journeyDetailsDisplay .journeyDetailsInnerC #packageInfo {
   width: 100%;
   margin: auto;
   height: 15%;
   border-bottom: 0.5px solid #e5e5e5;
 }
 
-.journeyDetailsDisplay .journeyDetailsInnerC .startLocationDisplay .iconContainer, .journeyDetailsDisplay .journeyDetailsInnerC .endLocationDisplay .iconContainer, .journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay .iconContainer, .journeyDetailsDisplay .journeyDetailsInnerC .timeDurationDisplay .iconContainer {
+.journeyDetailsDisplay
+  .journeyDetailsInnerC
+  .startLocationDisplay
+  .iconContainer,
+.journeyDetailsDisplay .journeyDetailsInnerC .endLocationDisplay .iconContainer,
+.journeyDetailsDisplay .journeyDetailsInnerC .distanceDisplay .iconContainer,
+.journeyDetailsDisplay
+  .journeyDetailsInnerC
+  .timeDurationDisplay
+  .iconContainer {
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -45,14 +127,14 @@ nav .navMainContainer .logoLocationC i, nav .navMainContainer .logoLocationC i .
   margin-right: 10px;
   background-color: #ffffff;
   -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 * {
   margin: 0;
   padding: 0;
   -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
@@ -73,7 +155,7 @@ nav .navMainContainer {
   height: 80px;
   background-color: #ffffff;
   -webkit-box-shadow: 0 2px 8px #e8daef;
-          box-shadow: 0 2px 8px #e8daef;
+  box-shadow: 0 2px 8px #e8daef;
 }
 
 nav .navMainContainer .logoLocationC {
@@ -168,19 +250,19 @@ nav .navMainContainer .logoLocationC i .logoCar i {
 
 .navInnerContainer-hover {
   -webkit-animation-name: zoomOut;
-          animation-name: zoomOut;
+  animation-name: zoomOut;
   -webkit-animation-duration: 0.5s;
-          animation-duration: 0.5s;
+  animation-duration: 0.5s;
   -webkit-animation-timing-function: ease-out;
-          animation-timing-function: ease-out;
+  animation-timing-function: ease-out;
   -webkit-animation-delay: 0;
-          animation-delay: 0;
+  animation-delay: 0;
   -webkit-animation-direction: alternate;
-          animation-direction: alternate;
+  animation-direction: alternate;
   -webkit-animation-fill-mode: none;
-          animation-fill-mode: none;
+  animation-fill-mode: none;
   -webkit-animation-play-state: running;
-          animation-play-state: running;
+  animation-play-state: running;
 }
 
 @-webkit-keyframes zoomOut {
@@ -222,7 +304,7 @@ nav .navMainContainer .logoLocationC i .logoCar i {
 /* Navigation section ends here */
 /* Home section starts here */
 .homeMain {
-  background: url(../images/taxi-background.png) no-repeat center;
+  background: url(../images/taxi-background.png) no-repeat bottom;
   min-height: 100vh;
 }
 
@@ -239,43 +321,65 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   position: relative;
   top: 5%;
   -webkit-box-pack: start;
-      -ms-flex-pack: start;
-          justify-content: flex-start;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
   -ms-flex-line-pack: start;
-      align-content: flex-start;
+  align-content: flex-start;
   border: 1px solid red;
 }
 
 .homeMain .homeSection .homeMainContainer .getQuoteMainContainer {
   outline: none;
   -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   background-color: #ffffff;
   width: 500px;
-  height: 420px;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteTopBanner {
-  height: 60px;
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .getQuoteTopBanner {
+  height: 50px;
   background-color: #0facf3;
   color: #fff;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteTopBanner h3 {
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .getQuoteTopBanner
+  h3 {
   margin-left: 15px;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer {
-  margin: 1px 15px 10px 15px;
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .pickUpInputContainer {
+  margin: 1px 15px 5px 15px;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer p {
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .pickUpInputContainer
+  p {
   margin-left: 20px;
   margin-bottom: 5px;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .pickUpIconContainer {
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .pickUpInputContainer
+  .pickUpIconContainer {
   width: 40px;
   height: 40px;
   position: absolute;
@@ -286,13 +390,24 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   display: table;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .pickUpIconContainer i {
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .pickUpInputContainer
+  .pickUpIconContainer
+  i {
   font-size: 22px;
   color: #7a7a7a;
   -webkit-text-stroke: 1px #ffffff;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .removeIconContainerPick {
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .pickUpInputContainer
+  .removeIconContainerPick {
   height: 40px;
   width: 20px;
   position: absolute;
@@ -304,31 +419,62 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   z-index: 99;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .removeIconContainerPick i {
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .pickUpInputContainer
+  .removeIconContainerPick
+  i {
   -webkit-text-stroke: 3px #ffffff;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer .removeIconContainerPick i:hover {
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .pickUpInputContainer
+  .removeIconContainerPick
+  i:hover {
   cursor: pointer;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .pickUpInputContainer #pickUpAddressValid {
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .pickUpInputContainer
+  #pickUpAddressValid {
   height: 18px;
   font-size: 15px;
   color: #af81c9;
   margin-left: 20px;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer {
-  margin: 1px 15px 10px 15px;
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .dropOffInputContainer {
+  margin: 1px 15px 5px 15px;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer p {
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .dropOffInputContainer
+  p {
   margin-left: 20px;
   margin-bottom: 5px;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .dropOffIconContainer {
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .dropOffInputContainer
+  .dropOffIconContainer {
   width: 40px;
   height: 40px;
   position: absolute;
@@ -339,13 +485,24 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   display: table;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .dropOffIconContainer i {
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .dropOffInputContainer
+  .dropOffIconContainer
+  i {
   font-size: 22px;
   color: #7a7a7a;
   -webkit-text-stroke: 1px #ffffff;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .removeIconContainerDrop {
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .dropOffInputContainer
+  .removeIconContainerDrop {
   height: 40px;
   width: 20px;
   position: absolute;
@@ -357,34 +514,60 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   z-index: 99;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .removeIconContainerDrop i {
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .dropOffInputContainer
+  .removeIconContainerDrop
+  i {
   -webkit-text-stroke: 3px #ffffff;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer .removeIconContainerDrop i:hover {
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .dropOffInputContainer
+  .removeIconContainerDrop
+  i:hover {
   cursor: pointer;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .dropOffInputContainer #dropOffAddressValid {
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .dropOffInputContainer
+  #dropOffAddressValid {
   height: 18px;
   font-size: 15px;
   color: #af81c9;
   margin-left: 20px;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteBtnContainer {
-  margin-top: 20px;
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .getQuoteBtnContainer {
+  margin-top: 10px;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteBtnContainer .getQuoteButton {
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .getQuoteBtnContainer
+  .getQuoteButton {
   min-width: 300px;
-  height: 45px;
+  height: 43px;
   border: 1px solid transparent;
   outline: none;
-  margin: auto;
+  margin: auto auto 30px auto;
   background-color: #0facf3;
   -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   color: #ffffff;
   font-size: 20px;
   font-weight: bold;
@@ -393,12 +576,17 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   cursor: pointer;
   border: 7px solid #a1defa;
   -webkit-box-sizing: content-box;
-          box-sizing: content-box;
+  box-sizing: content-box;
   -webkit-transition: 1s;
   transition: 1s;
 }
 
-.homeMain .homeSection .homeMainContainer .getQuoteMainContainer .getQuoteBtnContainer .getQuoteButton:hover {
+.homeMain
+  .homeSection
+  .homeMainContainer
+  .getQuoteMainContainer
+  .getQuoteBtnContainer
+  .getQuoteButton:hover {
   border: 7px solid #58c5f7;
 }
 
@@ -455,7 +643,7 @@ nav .navMainContainer .logoLocationC i .logoCar i {
 .pac-container {
   border-radius: 0;
   -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-top: 3px;
   border-top: 0px solid #ffffff;
 }
@@ -500,7 +688,7 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   height: 420px;
   position: relative;
   -webkit-box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   background-color: #ffffff;
   border-left: 4px solid #0facf3;
 }
@@ -534,7 +722,10 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   left: 0;
 }
 
-.journeyDetailsDisplay .journeyDetailsInnerC .startLocationDisplay .iconContainer {
+.journeyDetailsDisplay
+  .journeyDetailsInnerC
+  .startLocationDisplay
+  .iconContainer {
   z-index: 2;
 }
 
@@ -558,7 +749,12 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   border: 2px solid #e5e5e5;
 }
 
-.journeyDetailsDisplay .journeyDetailsInnerC #packageInfo article .serviceType h1 {
+.journeyDetailsDisplay
+  .journeyDetailsInnerC
+  #packageInfo
+  article
+  .serviceType
+  h1 {
   background-color: #0facf3;
   width: 40px;
   padding: 3px;
@@ -566,18 +762,34 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   text-align: center;
 }
 
-.journeyDetailsDisplay .journeyDetailsInnerC #packageInfo article .serviceType img {
+.journeyDetailsDisplay
+  .journeyDetailsInnerC
+  #packageInfo
+  article
+  .serviceType
+  img {
   width: 80%;
   height: 95%;
   display: block;
   margin: 0 auto;
 }
 
-.journeyDetailsDisplay .journeyDetailsInnerC #packageInfo article .serviceType div {
+.journeyDetailsDisplay
+  .journeyDetailsInnerC
+  #packageInfo
+  article
+  .serviceType
+  div {
   text-align: center;
 }
 
-.journeyDetailsDisplay .journeyDetailsInnerC #packageInfo article .serviceType div i {
+.journeyDetailsDisplay
+  .journeyDetailsInnerC
+  #packageInfo
+  article
+  .serviceType
+  div
+  i {
   background-color: #e5e5e5;
   color: #7a7a7a;
   padding-top: 5px;
@@ -587,12 +799,24 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   width: 38%;
 }
 
-.journeyDetailsDisplay .journeyDetailsInnerC #packageInfo article .serviceType div i span {
+.journeyDetailsDisplay
+  .journeyDetailsInnerC
+  #packageInfo
+  article
+  .serviceType
+  div
+  i
+  span {
   font-family: "Roboto Condensed", sans-serif;
   color: #000000;
 }
 
-.journeyDetailsDisplay .journeyDetailsInnerC #packageInfo article .serviceType button {
+.journeyDetailsDisplay
+  .journeyDetailsInnerC
+  #packageInfo
+  article
+  .serviceType
+  button {
   padding: 6px 10px;
   display: block;
   margin: 5px auto;
@@ -608,7 +832,7 @@ nav .navMainContainer .logoLocationC i .logoCar i {
   background-size: cover;
   background-position: center;
   -webkit-animation: carmove 3s infinite;
-          animation: carmove 3s infinite;
+  animation: carmove 3s infinite;
   z-index: 3;
 }
 
