@@ -4,8 +4,10 @@ $colors: (
   primary-purple: #af81c9,
   primary-grey: #7a7a7a,
   primary-white: #ffffff,
-  light-grey: #e5e5e5,
   border-grey: #e5e5e5,
+  background-color: #f3fbfe,
+  font-blue: #35424d,
+  font-light-grey: #5d6b79,
   lightest-blue: lighten(#0facf3, 30%),
   lighter-blue: lighten(#0facf3, 15%),
   light-purple: lighten(#af81c9, 25%)
@@ -67,6 +69,7 @@ $shadows: (
   margin: auto;
   height: 15%;
   border-bottom: 0.5px solid color(border-grey);
+  color: color(font-light-grey);
   @extend %flex-center;
 }
 
@@ -74,10 +77,10 @@ $shadows: (
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  color: color(primary-purple);
+  color: color(primary-grey);
   display: table;
   margin-left: 10px;
   margin-right: 10px;
-  background-color: color(primary-white);
-  box-shadow: shadow(main-shadow);
+  background-color: color(border-grey);
+  // box-shadow: shadow(main-shadow);
 }

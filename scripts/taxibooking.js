@@ -134,6 +134,9 @@ const fare = [
     farePerMinute: 0.15,
     farePerMile: 1.25,
     imgUrl: "./images/taxi5.png",
+    carType: "Saloon",
+    carDescription:
+      "Medium car with professional driver, suitable for up to 4 people",
     person: 4,
     luggage: 2
   },
@@ -144,6 +147,8 @@ const fare = [
     farePerMinute: 0.15,
     farePerMile: 2.1,
     imgUrl: "./images/taxi7.png",
+    carType: "6 Seater MPV",
+    carDescription: "MPV with professional driver, suitable for up to 6 people",
     person: 6,
     luggage: 2
   },
@@ -154,6 +159,9 @@ const fare = [
     farePerMinute: 0.15,
     farePerMile: 2.5,
     imgUrl: "./images/taxi9.png",
+    carType: "9 Seater people carrier",
+    carDescription:
+      "People carrier with professional driver, suitable for up to 8 people",
     person: 8,
     luggage: 3
   }
@@ -226,13 +234,20 @@ const getDistance = () => {
             fare.minimumFare
           ).toFixed(0);
           return `<div class="serviceType">
-            <h1>£${finalFare}</h1>
-            <img src=${fare.imgUrl} />
-            <div>
+            <h1 class="fare">£${finalFare}</h1>
+            <img class="vehicleImage" src=${fare.imgUrl} />
+
+            <div class="serviceInfo">
+            <h1>${fare.carType}</h1>
+            <p>${fare.carDescription}</p>              
+            <div class="buttonContainer">  
+            <div>                    
             <i class="fas fa-user-friends"><span> ${fare.person}</span></i>
-            <i class="fas fa-suitcase"><span> ${fare.luggage}</span></i>
-            </div>
-            <button>Select fare</button>
+            <i class="fas fa-suitcase"><span> ${fare.luggage}</span></i> 
+            </div>           
+            <button>SELECT FARE</button> 
+            </div>           
+            </div>                        
             </div>`;
         });
 
