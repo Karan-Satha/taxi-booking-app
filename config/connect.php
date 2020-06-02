@@ -1,6 +1,6 @@
 <?php
 // Connect to database
-$conn = mysqli_connect('localhost', 'karan', 'karan1983', 'taxi_db');
+$conn = mysqli_connect('localhost', '*******', '********', 'taxi_db');
 
 // Check connection
 if (!$conn) {
