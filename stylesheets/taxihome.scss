@@ -6,7 +6,7 @@
 }
 
 body {
-  font-family: "Roboto Condensed", sans-serif;
+  font-family: "Quicksand", "Roboto Condensed", "Opens Sans", sans-serif;
 }
 
 section {
@@ -60,12 +60,13 @@ nav {
   position: absolute;
   left: 70px;
   font-size: 25px;
+  font-weight: bolder;
 
-  h4:first-child {
+  p:first-child {
     color: color(primary-purple);
   }
 
-  h4:last-child {
+  p:last-child {
     color: color(primary-blue);
   }
 }
@@ -182,121 +183,106 @@ nav {
           height: 50px;
           @extend %flex-center;
           background-color: color(primary-blue);
-          color: #fff;
+          color: color(font-blue);
           margin-bottom: 10px;
+          font-size: 20px;
 
           h3 {
             margin-left: 15px;
           }
         }
 
-        .pickUpInputContainer {
-          margin: 1px 15px 5px 15px;
+        // Date
+        .mainInputContainer {
+          margin: 1px 15px 1px 15px;
 
           p {
-            margin-left: 20px;
+            margin-left: 5px;
+            margin-bottom: 1px;
+            font-weight: bolder;
             color: color(font-blue);
           }
 
-          .pickUpIconContainer {
-            width: 40px;
-            height: 40px;
-            position: absolute;
-            top: 14px;
-            left: 10px;
-            border-top-left-radius: 25px;
-            border-bottom-left-radius: 25px;
-            display: table;
+          .inputContainer {
+            position: relative;
+            background-color: color(light-grey);
+            display: flex;
+            align-items: center;
 
-            i {
-              @extend %align-center;
-              font-size: 22px;
+            .inputIconContainer {
+              width: 40px;
+              height: 40px;
+              position: absolute;
+              left: 10px;
+              display: table;
+
+              i {
+                @extend %align-center;
+                font-size: 22px;
+                color: color(primary-grey);
+                -webkit-text-stroke: 0.5px color(primary-white);
+              }
+            }
+
+            .removeIconContainer {
+              height: 40px;
+              width: 20px;
+              position: absolute;
+              right: 15px;
+              display: table;
+              font-size: 24px;
               color: color(primary-grey);
-              -webkit-text-stroke: 1px color(primary-white);
+              z-index: 99;
+
+              i {
+                @extend %align-center;
+                -webkit-text-stroke: 2px color(primary-white);
+              }
+
+              i:hover {
+                cursor: pointer;
+              }
             }
-          }
-
-          .removeIconContainerPick {
-            height: 40px;
-            width: 20px;
-            position: absolute;
-            top: 12px;
-            right: 15px;
-            display: table;
-            font-size: 24px;
-            color: color(primary-grey);
-            z-index: 99;
-
-            i {
-              @extend %align-center;
-              -webkit-text-stroke: 3px color(primary-white);
-            }
-
-            i:hover {
-              cursor: pointer;
-            }
-          }
-
-          #pickUpAddressValid {
-            height: 18px;
-            font-size: 15px;
-            color: color(primary-purple);
-            margin-left: 20px;
           }
         }
 
-        .dropOffInputContainer {
-          margin: 1px 15px 5px 15px;
+        ::-webkit-inner-spin-button {
+          display: none;
+        }
 
-          p {
-            margin-left: 20px;
-          }
+        ::-webkit-calendar-picker-indicator {
+          color: color(primary-grey);
+          background-color: color(primary-white);
+          width: 16px;
+          height: 16px;
+          margin-right: 30px;
+        }
 
-          .dropOffIconContainer {
-            width: 40px;
-            height: 40px;
-            position: absolute;
-            top: 14px;
-            left: 10px;
-            border-top-left-radius: 25px;
-            border-bottom-left-radius: 25px;
-            display: table;
+        ::-webkit-datetime-edit-fields-wrapper {
+          font-family: "Open Sans", sans-serif;
+          font-size: 1.1em;
+        }
 
-            i {
-              @extend %align-center;
-              font-size: 22px;
-              color: color(primary-grey);
-              -webkit-text-stroke: 1px color(primary-white);
-            }
-          }
+        ::-webkit-calendar-picker-indicator:hover {
+          cursor: pointer;
+        }
 
-          .removeIconContainerDrop {
-            height: 40px;
-            width: 20px;
-            position: absolute;
-            top: 12px;
-            right: 15px;
-            display: table;
-            font-size: 24px;
-            color: color(primary-grey);
-            z-index: 99;
+        ::-webkit-clear-button {
+          display: none;
+        }
 
-            i {
-              @extend %align-center;
-              -webkit-text-stroke: 3px color(primary-white);
-            }
+        #time {
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          appearance: none;
+        }
 
-            i:hover {
-              cursor: pointer;
-            }
-          }
+        select:required:invalid {
+          color: gray;
+        }
 
-          #dropOffAddressValid {
-            height: 18px;
-            font-size: 15px;
-            color: color(primary-purple);
-            margin-left: 20px;
-          }
+        option {
+          color: black;
         }
 
         .getQuoteBtnContainer {
@@ -304,53 +290,137 @@ nav {
           margin-top: 10px;
 
           .getQuoteButton {
-            min-width: 300px;
-            height: 43px;
-            border: 1px solid transparent;
-            outline: none;
-            margin: auto auto 30px auto;
-            background-color: color(primary-blue);
-            box-shadow: shadow(main-shadow);
-            color: color(primary-white);
-            font-size: 20px;
-            font-weight: bold;
-            border-radius: 50px;
-            opacity: 1;
-            cursor: pointer;
-            border: 7px solid color(lightest-blue);
-            box-sizing: content-box;
-            @include transition(1s);
+            width: 80%;
+            height: 45px;
+            margin: auto;
+            display: block;
+            margin-bottom: 35px;
+            margin-top: 5px;
+            font-size: 1.1em;
+            @extend %button-style;
           }
 
           .getQuoteButton:hover {
-            border: 7px solid color(lighter-blue);
+            position: relative;
+            top: 2px;
+            box-shadow: 0 3px color(font-blue);
           }
         }
+      }
+      .homeMessageContainer {
+        width: 500px;
+        position: absolute;
+        right: 0;
+        top: 0;
+        color: color(font-blue);
+        letter-spacing: 1px;
+        line-height: 1.4;
+        font-family: "Quicksand", "Open Sans", sans-serif;
+        text-rendering: optimizeLegibility;
+        font-size: 2.1em;
+        font-weight: 700;
+        display: table;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .homeMessageContainer:after {
+        border-bottom: 4px solid color(primary-purple);
+        content: "";
+        display: block;
+        width: 40%;
+        border-radius: 2px;
+        margin-top: 20px;
       }
     }
   }
 }
 
-.inputContainer {
-  position: relative;
-  background-color: color(light-grey);
-  // border-radius: 45px;
-}
-
-.userAddressInput {
-  width: 97%;
-  margin: 1.5%;
+.userInputAddress {
+  width: 98%;
+  margin: 1%;
   height: 50px;
   padding-left: 45px;
-  border: 1px solid color(primary-grey);
+  border: 2px solid color(primary-input-grey);
   // border-radius: 25px;
 }
 
-.userAddressInput:focus {
+.userInputAddress:focus {
   outline: none;
   border-style: none;
-  border: 1px solid color(primary-blue);
-  @include transition(1s);
+  border: 3px solid color(primary-blue);
+  // @include transition(1s);
+}
+
+.userInput {
+  width: 98%;
+  margin: 1%;
+  height: 50px;
+  padding-left: 45px;
+  border: 2px solid color(primary-input-grey);
+  // border-radius: 25px;
+}
+
+.userInput:focus {
+  outline: none;
+  border-style: none;
+  border: 3px solid color(primary-blue);
+  // @include transition(1s);
+}
+
+.mainInputContainer {
+  //border: 1px solid red;
+  //margin: 1px 15px 5px 15px;
+}
+
+.mainInputContainer:nth-child(3) {
+  width: 44%;
+  margin: 1px 1px 5px 15px;
+  float: left;
+}
+
+.mainInputContainer:nth-child(3) .userInput {
+  width: 96%;
+  margin: 2%;
+}
+
+.mainInputContainer:nth-child(4) .userInput {
+  width: 96%;
+  margin: 2%;
+}
+
+.mainInputContainer:nth-child(4) {
+  width: 44%;
+  margin: 1px 15px 5px 1px;
+  float: right;
+}
+
+.getQuoteBtnContainer {
+  clear: both;
+}
+
+#pickUpAddressValid {
+  height: 18px;
+  font-size: 15px;
+  color: red;
+}
+
+#dropOffAddressValid {
+  height: 18px;
+  font-size: 15px;
+  color: red;
+}
+
+#dateValid {
+  height: 18px;
+  font-size: 15px;
+  color: red;
+}
+
+#timeValid {
+  height: 18px;
+  font-size: 15px;
+  color: red;
 }
 
 .changeBgBlue {
@@ -358,14 +428,20 @@ nav {
   @include transition(1s);
 }
 
-.changeBorderPurple {
-  border: 1px solid color(primary-purple);
-  @include transition(1s);
+.changeBorderBlue {
+  outline: none;
+  border-style: none;
+  border: 3px solid color(primary-blue);
 }
 
 .changeBgPurple {
   background-color: color(light-purple);
   @include transition(1s);
+}
+
+.changeBorderPurple {
+  border: 3px solid color(primary-purple);
+  // @include transition(1s);
 }
 
 /* Home section ends here */
@@ -413,20 +489,48 @@ nav {
   width: 100%;
   height: 100vh;
   background-color: color(background-color);
+  // display: none;
+}
+
+.editDetailContainer {
+  text-align: center;
+  font-size: 2em;
+  font-weight: bolder;
+  display: table;
+  height: 80px;
+  line-height: 80px;
+  width: 100%;
+}
+
+.editQuoteBtn {
+  @extend %button-style;
+  height: 40px;
+  width: 200px;
+  background: color(background-color);
+  border: 1px solid color(primary-purple);
+  box-shadow: 0 5px color(primary-purple);
+  margin: auto;
+  display: block;
+}
+
+.editQuoteBtn:hover {
+  position: relative;
+  top: 2px;
+  box-shadow: 0 3px color(primary-purple);
 }
 
 .journeyMainSection {
   width: 95%;
   position: relative;
-  top: 5%;
+  top: 40px;
   margin: auto;
   @extend %flex-center;
   align-items: flex-start;
 
   .journeyDetailsDisplay {
-    width: 40%;
+    width: 48.5%;
+    margin-right: 1.5%;
     height: 410px;
-    // display: none;
     position: relative;
     background-color: color(primary-white);
     border-left: 4px solid color(primary-blue);
@@ -460,9 +564,10 @@ nav {
       top: 0;
       left: 0;
 
-      .startLocationDisplay {
+      .journeyDetailDisplay {
         @extend %journey-displays;
         @extend %flex-center;
+        position: relative;
 
         .iconContainer {
           @extend %icon-container;
@@ -473,22 +578,14 @@ nav {
         }
       }
 
-      .endLocationDisplay {
-        @extend %journey-displays;
-        @extend %flex-center;
-        z-index: 2;
-        .iconContainer {
-          @extend %icon-container;
-
-          i {
-            @extend %align-center;
-          }
-        }
+      .journeyDetailDisplay:nth-child(6) {
+        border-bottom: 0px solid color(border-grey);
       }
 
       .distanceDisplay {
         @extend %journey-displays;
         @extend %flex-center;
+        position: relative;
 
         .iconContainer {
           @extend %icon-container;
@@ -502,23 +599,11 @@ nav {
           @extend %button-style;
         }
       }
-
-      .timeDurationDisplay {
-        @extend %journey-displays;
-        @extend %flex-center;
-
-        .iconContainer {
-          @extend %icon-container;
-
-          i {
-            @extend %align-center;
-          }
-        }
-      }
     }
   }
   .selectServiceContainer {
-    width: 60%;
+    width: 48.5%;
+    margin-left: 1.5%;
 
     #packageInfo {
       @extend %flex-center;
@@ -526,7 +611,7 @@ nav {
       align-content: flex-end;
 
       article {
-        width: 90%;
+        width: 100%;
         margin: auto;
         height: 130px;
         background-color: color(primary-white);
@@ -599,6 +684,13 @@ nav {
               width: 150px;
               position: absolute;
               right: 20px;
+              bottom: 20px;
+              box-shadow: 0 5px color(font-blue);
+            }
+
+            button:hover {
+              box-shadow: 0 3px color(font-blue);
+              bottom: 18px;
             }
           }
         }
@@ -617,6 +709,23 @@ nav {
   background-position: center;
   animation: carmove 3s infinite;
   z-index: 3;
+}
+
+.journeyDetailHeading {
+  border-bottom: 0.5px solid color(border-grey);
+  height: 100%;
+  width: 82%;
+  display: table;
+
+  div {
+    color: color(font-blue);
+    display: table-cell;
+    vertical-align: middle;
+
+    div {
+      font-weight: bolder;
+    }
+  }
 }
 
 @keyframes carmove {

@@ -1,0 +1,423 @@
+/*Colors variables*/
+.bookNowBtn {
+  border: 1px solid transparent;
+  outline: none;
+  background-color: #0facf3;
+  border-style: none;
+  -webkit-box-shadow: 0 5px #162a3a;
+          box-shadow: 0 5px #162a3a;
+  cursor: pointer;
+  color: #162a3a;
+  font-weight: bold;
+}
+
+body {
+  background-color: #f3fbfe;
+}
+
+.checkMain {
+  width: 95%;
+  height: 40px;
+  margin: 30px auto 0px auto;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.checkMain .checkMainLine {
+  height: 4px;
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+}
+
+.checkMain .checkMainLine .checkStatus {
+  width: 25%;
+  text-align: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  position: relative;
+}
+
+.checkMain .checkMainLine .checkStatus .checkCircle {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  font-weight: bold;
+  font-size: 1.2em;
+  width: 30px;
+  height: 30px;
+  border-radius: 20px;
+  background-color: #e5e5e5;
+  z-index: 1;
+}
+
+.checkMain .checkMainLine .checkStatus .checkCircle i {
+  -webkit-text-stroke: 1px #00ab66;
+  color: #ffffff;
+}
+
+.checkMain .checkMainLine .checkStatus .checkLine {
+  height: 4px;
+  width: 100%;
+  background-color: #e5e5e5;
+  position: absolute;
+  top: 13px;
+}
+
+.checkMain .checkMainLine .checkStatus p {
+  position: absolute;
+  top: 30px;
+}
+
+.checkStatus:first-child .checkCircle:first-child {
+  background-color: #00ab66;
+  color: #ffffff;
+}
+
+.checkStatus:first-child .checkLine:nth-child(2) {
+  background-color: #00ab66;
+}
+
+.bookingMain {
+  width: 95%;
+  margin: auto;
+}
+
+.bookingMain .journeyInfo {
+  height: 500px;
+  width: 40%;
+  margin-top: 30px;
+  background-color: #ffffff;
+  float: left;
+}
+
+.bookingMain .journeyInfo .journeyInfoDetail {
+  margin: auto;
+  width: 90%;
+  height: 10%;
+  border-bottom: 0.5px solid #e5e5e5;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.bookingMain .journeyInfo .journeyInfoDetail label {
+  min-width: 100px;
+  float: left;
+}
+
+.bookingMain .journeyInfo .journeyInfoDetail div {
+  height: 100%;
+  font-weight: bold;
+  font-size: 1em;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.bookingMain .journeyInfo img {
+  width: 40px;
+  height: 20px;
+  margin-right: 10px;
+}
+
+.bookingMain .journeyInfo i {
+  font-size: 1.5em;
+}
+
+.bookingMain .journeyInfo .fa-times {
+  font-size: 0.8em;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.bookingMain .journeyInfo .journeyInfoDetail:last-child {
+  border-bottom: none;
+}
+
+.bookingMain .journeyInfo .journeyInfoDetail:nth-child(7) {
+  background-color: #dedef8;
+  width: 100%;
+}
+
+.bookingMain .journeyInfo .journeyInfoDetail:nth-child(7) h2 {
+  margin-left: 5%;
+  font-size: 1.2em;
+}
+
+.bookingMain .userInfo {
+  width: 57%;
+  background-color: #ffffff;
+  float: right;
+  margin-top: 30px;
+}
+
+.bookingMain .userInfo .heading {
+  margin-bottom: 20px;
+}
+
+.bookingMain .userInfo .inputContainer {
+  width: 80%;
+  position: relative;
+  margin: auto;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.bookingMain .userInfo .inputContainer div label {
+  margin-bottom: 1px;
+  font-weight: bold;
+}
+
+#payment {
+  background-color: #dedef8;
+  margin-top: 40px;
+  padding: 10px;
+}
+
+#payment h2 {
+  font-size: 1.2em;
+}
+
+#payment .selectMethod {
+  padding: 0 10px;
+  background-color: #ffffff;
+  margin-top: 10px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  position: relative;
+}
+
+#payment .selectMethod input[type="radio"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 50%;
+  padding: 5px;
+  margin-right: 10px;
+  outline: none;
+  -webkit-box-shadow: 0px 0px 0px 2px #26292c;
+          box-shadow: 0px 0px 0px 2px #26292c;
+  border: 7px solid #ffffff;
+  background-color: #26292c;
+}
+
+#payment .selectMethod input[type="radio"]:checked {
+  border: 7px solid #0facf3;
+  background-color: #26292c;
+  -webkit-box-shadow: 0px 0px 0px 3px #26292c;
+          box-shadow: 0px 0px 0px 3px #26292c;
+}
+
+#payment .selectMethod input[type="radio"]:disabled {
+  border-color: #dddddd;
+}
+
+#payment .selectMethod .label {
+  float: right;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  width: 95%;
+}
+
+#payment .selectMethod i {
+  color: #7a7a7a;
+  font-size: 14px;
+  position: absolute;
+  right: 10px;
+}
+
+#payment .panel {
+  padding: 0px 10px;
+  background-color: white;
+  height: 0px;
+  overflow: hidden;
+  margin-top: 1px;
+  -webkit-transition: height 0.15s ease-out;
+  transition: height 0.15s ease-out;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.errorMsg {
+  background-color: #fce0e8;
+  padding: 6px 9px;
+  position: relative;
+  margin-top: 12px;
+  margin-bottom: 5px;
+  color: #e4134f;
+  display: none;
+}
+
+.errorMsg i {
+  font-size: 13px;
+  margin-right: 10px;
+  margin-top: 4px;
+  float: left;
+}
+
+::-webkit-calendar-picker-indicator {
+  color: #26292c;
+  background-color: #ffffff;
+  width: 13px;
+  height: 13px;
+}
+
+.errorMsg:before {
+  content: "";
+  position: absolute;
+  border: solid 8px transparent;
+  top: -15px;
+  left: 15px;
+  border-bottom-color: #fce0e8;
+}
+
+#phone {
+  padding-left: 62px;
+}
+
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+.countryCode {
+  position: absolute;
+  top: 25px;
+  left: 4px;
+  height: 42px;
+  width: 60px;
+  outline: none;
+  border-style: none;
+  text-align: center;
+}
+
+textarea {
+  resize: none;
+  height: 70px;
+  outline: none;
+  border: 2px solid #26292c;
+  margin-top: 1px;
+  margin-bottom: 1px;
+  padding: 5px;
+}
+
+textarea:focus {
+  outline: none;
+  border-style: none;
+  border: 3px solid #0facf3;
+  -webkit-box-shadow: 0px 0px 0px 3px #a1defa;
+          box-shadow: 0px 0px 0px 3px #a1defa;
+}
+
+.userInputBook {
+  height: 50px;
+  outline: none;
+  border: 2px solid #26292c;
+  margin-top: 2px;
+  margin-bottom: 15px;
+  padding-left: 5px;
+}
+
+.focus {
+  outline: none;
+  border-style: none;
+  border: 3px solid #0facf3;
+  -webkit-box-shadow: 0px 0px 0px 3px #a1defa;
+          box-shadow: 0px 0px 0px 3px #a1defa;
+}
+
+.error {
+  outline: none;
+  border-style: none;
+  border: 3px solid #e4134f;
+  -webkit-box-shadow: 0px 0px 0px 3px #fce0e8;
+          box-shadow: 0px 0px 0px 3px #fce0e8;
+}
+
+.heading {
+  height: 50px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  width: 100%;
+  background-color: #dedef8;
+}
+
+.heading h2 {
+  margin-left: 5%;
+  font-size: 1.2em;
+}
+
+.bookNowBtn {
+  margin: 30px auto;
+  display: block;
+  width: 60%;
+  height: 40px;
+}
+
+#paypal-button-container {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.sticky {
+  position: fixed;
+  top: 0;
+  margin-top: 0px;
+  z-index: 1;
+  background-color: #f3fbfe;
+  height: 75px;
+  left: 50%;
+  -webkit-transform: translate(-50%, 0);
+          transform: translate(-50%, 0);
+  -webkit-box-shadow: 0 8px 6px -9px #e5e5e5;
+          box-shadow: 0 8px 6px -9px #e5e5e5;
+  border-bottom: 0.5px solid #e5e5e5;
+}
+/*# sourceMappingURL=booking.css.map */

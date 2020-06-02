@@ -3,14 +3,17 @@ $colors: (
   primary-blue: #0facf3,
   primary-purple: #af81c9,
   primary-grey: #7a7a7a,
+  primary-input-grey: #26292c,
   primary-white: #ffffff,
   border-grey: #e5e5e5,
   background-color: #f3fbfe,
-  font-blue: #35424d,
+  font-blue: #162a3a,
   font-light-grey: #5d6b79,
   lightest-blue: lighten(#0facf3, 30%),
   lighter-blue: lighten(#0facf3, 15%),
-  light-purple: lighten(#af81c9, 25%)
+  light-purple: lighten(#af81c9, 25%),
+  warning-red: #e4134f,
+  light-red: lighten(#e4134f, 45%),
 );
 
 @function color($color-name) {
@@ -18,7 +21,7 @@ $colors: (
 }
 
 $shadows: (
-  main-shadow: 0 2px 8px rgba(0, 0, 0, 0.1)
+  main-shadow: 0 2px 8px rgba(0, 0, 0, 0.1),
 );
 
 @function shadow($shadow-name) {
@@ -42,13 +45,14 @@ $shadows: (
 }
 
 %button-style {
-  cursor: pointer;
+  border: 1px solid transparent;
   outline: none;
   background-color: color(primary-blue);
   border-style: none;
-  color: color(primary-white);
+  box-shadow: 0 5px color(font-blue);
+  cursor: pointer;
+  color: color(font-blue);
   font-weight: bold;
-  border-radius: 20px;
 }
 
 %align-center {
@@ -67,8 +71,8 @@ $shadows: (
 %journey-displays {
   width: 100%;
   margin: auto;
-  height: 15%;
-  border-bottom: 0.5px solid color(border-grey);
+  height: 16.66%;
+  // border-bottom: 0.5px solid color(border-grey);
   color: color(font-light-grey);
   @extend %flex-center;
 }
