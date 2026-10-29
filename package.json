@@ -1,24 +1,21 @@
 {
-  "name": "onlinetaxibooking",
-  "version": "1.0.0",
-  "description": "TaxiApp\r This is my taxi booking app...",
-  "main": "index.js",
+  "name": "heathrow-drive",
+  "private": true,
+  "version": "2.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Karan-Satha/taxi-booking-app.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Karan-Satha/taxi-booking-app/issues"
-  },
-  "homepage": "https://github.com/Karan-Satha/taxi-booking-app#readme",
-  "devDependencies": {
-    "babel-cli": "^6.26.0"
-  },
-  "dependencies": {}
+    "dev:api": "npm --prefix apps/api run dev",
+    "dev:web": "npm --prefix apps/web run dev",
+    "db:migrate": "npm --prefix apps/api run db:migrate",
+    "admin:provision": "npm --prefix apps/api run admin:provision",
+    "build": "npm run build:api && npm run build:web",
+    "build:api": "npm --prefix apps/api run build",
+    "build:web": "npm --prefix apps/web run build",
+    "test": "npm --prefix apps/api test",
+    "start": "npm --prefix apps/api start",
+    "preview:web": "npm --prefix apps/web run preview"
+  }
 }
