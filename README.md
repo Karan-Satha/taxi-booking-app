@@ -27,10 +27,9 @@ The included [Render Blueprint](render.yaml) deploys the Vite site, API, and Pos
   no persistent local filesystem. Render's free plan is intended for demos, not production. Render's setup guide says
   a payment method is not required; if no payment method is attached, exceeding included usage suspends service/builds
   rather than adding charges.
-- **Database:** Render Free PostgreSQL. This avoids a second account and is created by the Blueprint. It has 1 GB
-  storage, no backups, and **expires after 30 days**. For a portfolio that must keep its data longer, use Neon Free
-  instead (currently 1 GB storage and 100 compute hours/month per project, scaling to zero after five inactive minutes)
-  and replace the API's `DATABASE_URL` with Neon’s pooled connection string.
+- **Database:** Neon Free PostgreSQL, connected through the API's private `DATABASE_URL`. The current Free plan has
+  1 GB storage and 100 compute-hours/month per project, and scales to zero after five idle minutes. This avoids the
+  30-day expiry on Render Free Postgres.
 - **Images:** No external image host is needed for the existing static vehicle assets. Do not add runtime uploads to
   the Render API filesystem: that filesystem is ephemeral. If uploads are added later, select an object storage service
   and store object URLs in PostgreSQL.
@@ -40,11 +39,10 @@ The included [Render Blueprint](render.yaml) deploys the Vite site, API, and Pos
   mode off.
 
 Target hosting cost: **£0/month**, assuming usage stays within provider limits and you do not add paid services or a
-custom domain. The Blueprint's Render database will be deleted after its 30-day free period unless you upgrade or
-migrate first. Current limits can change. Render free services have cold starts. Don't use this deployment for real
+custom domain. Current limits can change. Render free services have cold starts. Don't use this deployment for real
 customer data.
 
-Provider references checked on 29 October 2026: [Render free services](https://render.com/docs/free),
+Provider references checked on 31 October 2026: [Render free services](https://render.com/docs/free),
 [Render static sites](https://render.com/docs/static-sites), [Render first deployment](https://render.com/docs/your-first-deploy),
 [Neon free plan](https://neon.com/pricing), [Neon free-tier update](https://neon.com/blog/neon-free-plan-1-gb-per-project),
 [Resend pricing](https://resend.com/pricing).
@@ -88,7 +86,7 @@ secrets into frontend variables: values prefixed with `VITE_` are embedded in pu
 | `NODE_ENV` | Hosting: yes | Set to `production` online. |
 | `PORT` | Usually supplied | HTTP port; the server uses the platform's value. |
 | `WEB_ORIGIN` | Hosting: yes | Exact public frontend origin, including `https://`, for CORS and trusted-origin checks. |
-| `DATABASE_URL` | Hosting: yes | PostgreSQL connection string. Use Neon’s pooled URL for the hosted API. |
+| `DATABASE_URL` | Hosting: yes | PostgreSQL connection string. Use the private Neon pooled URL. |
 | `PG_SSL` | Hosted database: yes | Set to `true` for Neon TLS; local PostgreSQL usually uses `false`. |
 | `SESSION_SECRET` | Production: yes | At least 32 random characters. Render Blueprint generates one. |
 | `DEMO_MODE` | Hosting: yes | `true` records notification events but disables outbound email. |
@@ -117,9 +115,9 @@ npm run db:migrate
 ```
 
 The Render Blueprint starts the API with the migration command before starting Express. Migrations are tracked and
-safe to rerun. For a longer-lived deployment, create a free Neon project and set the API's `DATABASE_URL` to Neon's
-**pooled** connection string and `PG_SSL=true`. Keep credentials only in Render's private service environment or an
-ignored local `apps/api/.env`; never commit them.
+safe to rerun. The Blueprint requests `DATABASE_URL` during setup; enter Neon’s **pooled** connection string. Keep
+credentials only in Render's private service environment or an ignored local `.env`; never commit them. `PG_SSL=true`
+is already configured for Neon.
 
 ```sh
 DATABASE_URL='paste-your-neon-pooled-url-here' PG_SSL=true npm run db:migrate
@@ -161,7 +159,7 @@ To reset a forgotten generated password, remove the old ignored credentials file
 
 1. A GitHub account/repository containing this project.
 2. A Render account connected to that repository.
-3. Optional: a Neon account if you want to replace Render's database before its free 30-day expiry.
+3. A Neon account with a Free PostgreSQL project.
 4. Optional: a Resend account and a sender domain you control, only if enabling real email later.
 
 The providers offer free tiers for this demo. Render's free setup tutorial says no payment method is required. Check
@@ -170,18 +168,19 @@ keep the monthly cost at zero.
 
 ### First deployment
 
-1. Push the prepared `codex/free-hosting-setup` branch to GitHub. In Render, select **New → Blueprint** and choose
+1. Create a Neon Free project and copy its pooled connection string. Keep it private.
+2. Push the prepared `codex/free-hosting-setup` branch to GitHub. In Render, select **New → Blueprint** and choose
    `Karan-Satha/taxi-booking-app`, branch `codex/free-hosting-setup`. The public repository can be used without linking
    a Git provider; connecting the provider enables auto-deploys.
-2. Apply `render.yaml`. It creates a free Node API, static site, and Render PostgreSQL database. If Render reports
-   service-name conflicts, rename them in the Blueprint and update the corresponding URLs before applying it.
-3. Keep the generated `SESSION_SECRET` and `DEMO_MODE=true`. The Blueprint references the database's private URL and
-   runs migrations before starting the API.
-4. Confirm the API and site URLs in Render. Set API `WEB_ORIGIN` to the exact site origin and frontend `VITE_API_URL`
+3. Apply `render.yaml`. It creates a free Node API and static site. Enter Neon’s pooled connection string when Render
+   asks for `DATABASE_URL`. If Render reports service-name conflicts, rename them in the Blueprint and update the
+   corresponding URLs before applying it.
+4. Keep the generated `SESSION_SECRET` and `DEMO_MODE=true`. The API runs migrations before starting Express.
+5. Confirm the API and site URLs in Render. Set API `WEB_ORIGIN` to the exact site origin and frontend `VITE_API_URL`
    to the exact API origin if the generated service names differ; rebuild the frontend after changing `VITE_API_URL`.
-5. Provision the fictional admin once using the database's external URL as described above. No admin password is
+6. Provision the fictional admin once using the Neon pooled connection string as described above. No admin password is
    committed or exposed in the frontend.
-6. Open the frontend, create a demo booking, then sign in at `/admin/login` to review and accept it. In demo mode,
+7. Open the frontend, create a demo booking, then sign in at `/admin/login` to review and accept it. In demo mode,
    acceptance notification state is recorded as “demo”; no customer email is sent.
 
 `render.yaml` provides the build/start commands, health check, API/website settings, TLS hosting, and SPA fallback. It
@@ -217,9 +216,9 @@ uploads are implemented. Vehicle images are static files deployed with the front
 
 ## Known free-hosting limitations
 
-- The free Render API sleeps after 15 minutes idle and may restart; the first request can be slow. The Blueprint's
-  Render Postgres expires after 30 days and has no backups. Migrate to Neon before then if you want a longer-lived demo.
-- Neon free storage, compute, and egress are limited and can change; the database may scale to zero.
+- The free Render API sleeps after 15 minutes idle and may restart; the first request can be slow. Neon Free has
+  limited storage, compute, and transfer quotas and its database scales to zero when idle.
+- Neon Free storage, compute, and network transfer are limited and can change.
 - Public Photon/OSRM demonstration endpoints can throttle, change, or be unavailable. The UI should show provider errors
   rather than inventing a route.
 - Email is deliberately disabled by default. The background abandoned-booking worker runs only while the free API

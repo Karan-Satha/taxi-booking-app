@@ -15,11 +15,9 @@ services:
       - key: WEB_ORIGIN
         value: https://heathrow-drive-web-demo.onrender.com
       - key: DATABASE_URL
-        fromDatabase:
-          name: heathrow-drive-db-demo
-          property: connectionString
+        sync: false
       - key: PG_SSL
-        value: 'false'
+        value: 'true'
       - key: SESSION_SECRET
         generateValue: true
       - key: DEMO_MODE
@@ -37,10 +35,3 @@ services:
     envVars:
       - key: VITE_API_URL
         value: https://heathrow-drive-api-demo.onrender.com
-
-databases:
-  - name: heathrow-drive-db-demo
-    plan: free
-    region: frankfurt
-    databaseName: taxi_booking
-    user: taxi_booking
