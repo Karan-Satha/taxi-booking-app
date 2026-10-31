@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     region: frankfurt
-    buildCommand: npm ci --prefix apps/api && npm run build:api
+    buildCommand: npm ci --include=dev --prefix apps/api && npm run build:api
     startCommand: npm run db:migrate --prefix apps/api && npm start --prefix apps/api
     healthCheckPath: /api/v1/health
     envVars:
@@ -26,7 +26,7 @@ services:
   - type: web
     name: heathrow-drive-web-demo
     runtime: static
-    buildCommand: npm ci --prefix apps/web && npm run build:web
+    buildCommand: npm ci --include=dev --prefix apps/web && npm run build:web
     staticPublishPath: apps/web/dist
     routes:
       - type: rewrite
