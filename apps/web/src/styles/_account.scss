@@ -1,0 +1,455 @@
+@use 'tokens' as *;
+
+.account-details__bookings-link {
+  display: flex;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.account-page {
+  min-height: calc(100vh - 84px);
+  padding: clamp(26px, 5vw, 62px) clamp(16px, 4vw, 48px);
+  background: $hero;
+}
+
+.account-dashboard {
+  width: min(100%, 1120px);
+  margin: 0 auto;
+  padding: clamp(20px, 3.5vw, 42px);
+  border: 1px solid rgba($ink, 0.08);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 20px 70px rgba(30, 27, 75, 0.08);
+}
+
+.account-dashboard__header,
+.account-dashboard__section-heading,
+.account-dashboard__actions,
+.account-dashboard__pagination,
+.account-dashboard__pagination > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.account-dashboard__header {
+  align-items: flex-start;
+  margin-bottom: 30px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid $line;
+}
+
+.account-dashboard__header .eyebrow {
+  margin: 0 0 8px;
+  color: $purple;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+}
+
+.account-dashboard__header h1 {
+  margin: 0;
+  color: $ink;
+  font: 800 clamp(28px, 4vw, 38px) / 1.15 'Manrope', sans-serif;
+  letter-spacing: -1.2px;
+}
+
+.account-dashboard__header > div:first-child > p:last-child {
+  margin: 9px 0 0;
+  color: $muted;
+  font-size: 14px;
+}
+
+.account-dashboard__actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.account-dashboard__link,
+.account-dashboard__pagination button {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 13px;
+  border: 1px solid $line;
+  border-radius: 8px;
+  background: #fff;
+  color: $blue;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.account-dashboard__link:hover,
+.account-dashboard__pagination button:hover:not(:disabled) {
+  background: $blue-light;
+}
+
+.account-dashboard__link:disabled,
+.account-dashboard__pagination button:disabled {
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.account-dashboard__section-heading {
+  margin-bottom: 15px;
+}
+
+.account-dashboard__section-heading h2 {
+  margin: 0;
+  color: $ink;
+  font: 700 21px / 1.3 'Manrope', sans-serif;
+}
+
+.account-dashboard__section-heading p {
+  margin: 4px 0 0;
+  color: $muted;
+  font-size: 12px;
+}
+
+.account-dashboard__empty {
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+  padding: 54px 20px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 13px;
+  background: #fbfcff;
+  color: $muted;
+  text-align: center;
+}
+
+.account-dashboard__empty h3 {
+  margin: 0;
+  color: $ink;
+  font-size: 18px;
+}
+
+.account-dashboard__empty p {
+  max-width: 400px;
+  margin: 0 0 8px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.account-dashboard__empty-icon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  margin-bottom: 4px;
+  border-radius: 50%;
+  background: $purple-light;
+  color: $purple;
+  font-size: 23px;
+}
+
+.my-bookings-list {
+  display: grid;
+  gap: 12px;
+}
+
+.my-booking {
+  overflow: hidden;
+  border: 1px solid #dce5f2;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(30, 27, 75, 0.045);
+}
+
+.my-booking[open] {
+  border-color: #b9c9fa;
+  box-shadow: 0 8px 23px rgba(49, 46, 129, 0.08);
+}
+
+.my-booking__summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto 20px;
+  align-items: center;
+  gap: 16px;
+  padding: 17px 19px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.my-booking__summary::-webkit-details-marker {
+  display: none;
+}
+
+.my-booking__main {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.my-booking__reference {
+  color: $purple;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.my-booking__main strong {
+  color: $ink;
+  font-size: 15px;
+}
+
+.my-booking__main > span:last-child {
+  color: $muted;
+  font-size: 12px;
+}
+
+.my-booking__status {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #fff7ed;
+  color: #9a3412;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.my-booking__status--accepted,
+.my-booking__status--confirmed,
+.my-booking__status--completed {
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.my-booking__status--rejected,
+.my-booking__status--cancelled {
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.my-booking__price {
+  color: $ink;
+  font-size: 17px;
+  white-space: nowrap;
+}
+
+.my-booking__expand {
+  color: $blue;
+  font-size: 20px;
+  transition: transform 150ms ease;
+}
+
+.my-booking[open] .my-booking__expand {
+  transform: rotate(180deg);
+}
+
+.my-booking__details {
+  padding: 0 19px 19px;
+  border-top: 1px solid #e8edf5;
+}
+
+.my-booking__notice {
+  margin: 14px 0;
+  padding: 11px 13px;
+  border: 1px solid #fed7aa;
+  border-radius: 8px;
+  background: #fff7ed;
+  color: #9a3412;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.my-booking__notice--accepted {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.my-booking__notice--rejected {
+  border-color: #fecdd3;
+  background: #fff1f2;
+  color: #9f1239;
+}
+
+.my-booking__route {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 16px 0;
+  border-bottom: 1px solid $line;
+}
+
+.my-booking__route > div,
+.my-booking__facts > div {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.my-booking__route > div > span,
+.my-booking__facts span {
+  color: $muted;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.my-booking__route strong,
+.my-booking__facts strong {
+  color: $ink;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.my-booking__route-arrow {
+  color: $purple;
+  font-size: 20px;
+  text-align: center;
+}
+
+.my-booking__facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 13px;
+  padding: 16px 0;
+}
+
+.my-booking__vehicle {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 11px;
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+  background: #f8fafc;
+}
+
+.my-booking__vehicle img {
+  width: 92px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.my-booking__vehicle > div {
+  display: grid;
+  gap: 4px;
+}
+
+.my-booking__vehicle strong {
+  color: $ink;
+  font-size: 13px;
+}
+
+.my-booking__vehicle span,
+.my-booking__instructions {
+  color: $muted;
+  font-size: 12px;
+}
+
+.my-booking__instructions {
+  margin: 13px 0 0;
+  line-height: 1.6;
+}
+
+.my-booking__instructions strong {
+  color: $ink;
+}
+
+.my-booking__lookup {
+  display: inline-flex;
+  margin-top: 13px;
+  color: $blue;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.account-dashboard__pagination {
+  margin-top: 18px;
+  color: $muted;
+  font-size: 12px;
+}
+
+.account-dashboard__privacy {
+  margin: 22px 0 0;
+  padding-top: 15px;
+  border-top: 1px solid $line;
+  color: $muted;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.account-dashboard__privacy a {
+  color: $blue;
+  font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  .account-page {
+    padding: 24px 12px 40px;
+  }
+
+  .account-dashboard {
+    padding: 20px 14px;
+    border-radius: 15px;
+  }
+
+  .account-dashboard__header {
+    flex-direction: column;
+  }
+
+  .account-dashboard__actions {
+    justify-content: flex-start;
+  }
+
+  .my-booking__summary {
+    grid-template-columns: minmax(0, 1fr) auto 20px;
+    gap: 9px;
+    padding: 14px;
+  }
+
+  .my-booking__status {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .my-booking__price {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .my-booking__expand {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+
+  .my-booking__details {
+    padding: 0 14px 15px;
+  }
+
+  .my-booking__facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 440px) {
+  .account-dashboard__section-heading {
+    align-items: flex-start;
+  }
+
+  .my-booking__route {
+    grid-template-columns: 1fr;
+  }
+
+  .my-booking__route-arrow {
+    transform: rotate(90deg);
+  }
+
+  .my-booking__facts {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .account-dashboard__pagination {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
