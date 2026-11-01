@@ -400,7 +400,12 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
       setProgressReady(true);
     }
 
-    bookingApi.restoreProgress(resumeToken).then((result) => {
+    let restoreTimeout = 0;
+    const timeoutResult = new Promise<Awaited<ReturnType<typeof bookingApi.restoreProgress>>>((_, reject) => {
+      restoreTimeout = window.setTimeout(() => reject(new Error('Booking restore timed out.')), 8000);
+    });
+
+    Promise.race([bookingApi.restoreProgress(resumeToken), timeoutResult]).then((result) => {
       if (cancelled) return;
       let progress = restored;
       if (result.progress && typeof result.progress === "object") {
@@ -423,12 +428,21 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
       if (progress) progress = applyProgress(progress);
       syncInitialStage(progress);
     }).catch(() => {
+      if (cancelled) return;
       if (restored) applyProgress(restored);
+      setMessage(
+        restored
+          ? 'We could not sync your saved journey. Your details from this browser are still available.'
+          : 'We could not restore a saved journey. You can start a new booking below.',
+      );
       syncInitialStage(restored);
+    }).finally(() => {
+      window.clearTimeout(restoreTimeout);
     });
 
     return () => {
       cancelled = true;
+      window.clearTimeout(restoreTimeout);
     };
   }, []);
 
@@ -876,7 +890,7 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
                 id="pickup"
                 name="pickup"
                 label="Pickup location"
-                placeholder="Enter or choose a pickup address"
+                placeholder="Enter pickup address"
                 value={pickup}
                 tone="start"
                 onChange={(value) => {
@@ -1433,7 +1447,15 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
           </p>
         </div>
       )}
-      <p className="booking-card__message" role="status" aria-live="polite">
+      <p
+        className={`booking-card__message${
+          message.startsWith('We could not sync') || message.startsWith('We could not restore')
+            ? ' booking-card__message--warning'
+            : ''
+        }`}
+        role="status"
+        aria-live="polite"
+      >
         {message || mapMessage}
       </p>
       {stage === 1 && (
@@ -1447,7 +1469,9 @@ function HomePage() {
   const [bookingStage, setBookingStage] = useState<BookingStage>(() => readSavedBookingProgress()?.stage ?? 1);
   return (
     <>
-      <section className={`hero${bookingStage === 2 ? " hero--vehicles" : ""}`}>
+      <section
+        className={`hero${bookingStage === 1 ? " hero--plan" : ""}${bookingStage === 2 ? " hero--vehicles" : ""}`}
+      >
         <div className="hero__copy" aria-hidden={bookingStage === 2}>
           <p className="hero__eyebrow">
             <span aria-hidden="true" /> Airport transfers &amp; local travel
@@ -1520,7 +1544,7 @@ function HomePage() {
             </li>
           </ul>
         </div>
-        <div className="hero__booking">
+        <div className={`hero__booking${bookingStage === 1 ? ' hero__booking--plan' : ''}`}>
           <BookingForm onStageChange={setBookingStage} />
         </div>
       </section>

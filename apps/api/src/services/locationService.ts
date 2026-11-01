@@ -70,6 +70,69 @@ function addressLabel(properties: NonNullable<PhotonFeature['properties']>) {
   return [...new Set([main, locality, properties.postcode].filter(Boolean))].join(', ');
 }
 
+function words(value: string): string[] {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('en-GB')
+    .match(/[\p{L}\p{N}]+/gu) ?? [];
+}
+
+function relevanceScore(query: string, properties: NonNullable<PhotonFeature['properties']>) {
+  const queryWords = words(query);
+  const firstQueryWord = query.trim().split(/\s+/)[0] ?? '';
+  const requestedHouseNumber = /^\d+[a-z]?$/i.test(firstQueryWord) ? words(firstQueryWord)[0] : null;
+  const streetWords = queryWords.filter((word) => word !== requestedHouseNumber);
+  const addressWords = words(
+    [
+      properties.name,
+      properties.street,
+      properties.housenumber,
+      properties.postcode,
+      properties.city,
+      properties.district,
+      properties.county,
+      properties.state,
+    ]
+      .filter(Boolean)
+      .join(' '),
+  );
+  const houseNumberWords = words(properties.housenumber ?? '');
+  const namedHouseNumberWords = words([properties.name, properties.street].filter(Boolean).join(' '));
+
+  if (
+    requestedHouseNumber &&
+    !houseNumberWords.includes(requestedHouseNumber) &&
+    !namedHouseNumberWords.includes(requestedHouseNumber)
+  ) {
+    return -1;
+  }
+
+  const matchedStreetWords = streetWords.filter((word) =>
+    addressWords.some((addressWord) => addressWord === word || addressWord.startsWith(word)),
+  );
+  const requiredMatches = Math.min(streetWords.length, streetWords.length > 1 ? 2 : 1);
+  if (matchedStreetWords.length < requiredMatches) return -1;
+
+  const labelPhrase = words(addressLabel(properties)).join(' ');
+  return matchedStreetWords.length * 10 + (labelPhrase.includes(queryWords.join(' ')) ? 5 : 0);
+}
+
+export function rankAddressSuggestions(query: string, features: PhotonFeature[]): AddressSuggestion[] {
+  return features
+    .flatMap((feature, index) => {
+      const properties = feature.properties;
+      const label = properties ? addressLabel(properties) : '';
+      if (!label || !properties) return [];
+      const score = relevanceScore(query, properties);
+      if (score < 0) return [];
+      const coordinates = feature.geometry?.coordinates?.join(',') ?? 'unknown';
+      return [{ id: String(properties.osm_id ?? `${coordinates}-${index}`), label, score }];
+    })
+    .sort((first, second) => second.score - first.score)
+    .map(({ id, label }) => ({ id, label }));
+}
+
 export async function searchAddresses(query: string): Promise<AddressSuggestion[]> {
   const key = `search:${query.toLocaleLowerCase('en-GB')}`;
   const fromCache = cached<AddressSuggestion[]>(key);
@@ -81,12 +144,7 @@ export async function searchAddresses(query: string): Promise<AddressSuggestion[
   url.searchParams.set('lang', 'en');
   url.searchParams.set('countrycode', 'gb');
   const result = await photon(url);
-  const suggestions = (result.features ?? []).flatMap((feature, index) => {
-    const label = feature.properties ? addressLabel(feature.properties) : '';
-    if (!label) return [];
-    const coordinates = feature.geometry?.coordinates?.join(',') ?? 'unknown';
-    return [{ id: String(feature.properties?.osm_id ?? `${coordinates}-${index}`), label }];
-  });
+  const suggestions = rankAddressSuggestions(query, result.features ?? []);
   storeCache(key, suggestions);
   return suggestions;
 }

@@ -210,9 +210,9 @@ input:focus-visible {
   max-width: 820px;
   margin: 27px 0 17px;
   font-weight: 800;
-  font-size: clamp(62px, 6.2vw, 91px);
+  font-size: clamp(58px, 5.5vw, 78px);
   line-height: 1.03;
-  letter-spacing: -5.4px;
+  letter-spacing: -4px;
 }
 .hero h1 em {
   font-style: normal;
@@ -1646,7 +1646,7 @@ input:focus-visible {
 .auth-card__copy {
   margin: 12px 0 28px;
   color: $muted;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.7;
 }
 .auth-form {
@@ -1657,7 +1657,7 @@ input:focus-visible {
   display: grid;
   gap: 8px;
   color: $ink;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
 }
 .auth-form__field input {
@@ -1668,7 +1668,7 @@ input:focus-visible {
   border-radius: 7px;
   background: white;
   color: $ink;
-  font-size: 14px;
+  font-size: 16px;
 }
 .auth-form__field input:focus {
   outline: none;
@@ -1677,7 +1677,7 @@ input:focus-visible {
 }
 .auth-form__field small {
   color: $muted;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
 }
 .auth-form__phone {
@@ -1722,7 +1722,7 @@ input:focus-visible {
   margin: 24px 0 0;
   color: $muted;
   text-align: center;
-  font-size: 12px;
+  font-size: 14px;
 }
 .auth-card__switch a {
   color: $blue;
@@ -4308,4 +4308,68 @@ input:focus-visible {
   .booking-confirmation__fare {
     grid-column: 2 / -1;
   }
+}
+
+@media (max-width: 1100px) {
+  .hero h1 {
+    font-size: clamp(48px, 7vw, 68px);
+    letter-spacing: -2.8px;
+  }
+}
+
+@media (max-width: 680px) {
+  .hero h1 {
+    font-size: clamp(39px, 10.5vw, 56px);
+    line-height: 1.08;
+    letter-spacing: -1.8px;
+  }
+
+  .hero__booking > .booking-card--plan {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .booking-card--plan .booking-card__submit {
+    width: 100%;
+    margin-bottom: 0;
+  }
+}
+
+.booking-card .location-field__feedback {
+  display: block;
+  margin-top: 7px;
+  color: $muted;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.hero__booking > .booking-card--plan {
+  height: auto;
+  max-height: none;
+  overflow: visible;
+}
+
+.hero__booking--plan {
+  align-self: start;
+}
+
+.hero--plan {
+  height: auto;
+  min-height: 738px;
+  grid-template-rows: auto;
+  overflow: visible;
+}
+
+.booking-card .location-suggestions button {
+  min-height: 44px;
+  font-size: 14px;
+}
+
+.booking-card__message:empty {
+  display: none;
+}
+
+.booking-card__message--warning {
+  color: $error;
 }

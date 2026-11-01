@@ -221,6 +221,42 @@ test('location search reports when the configured Photon service cannot be reach
   assert.equal(body.error.code, 'GEOCODER_UNAVAILABLE');
 });
 
+test('address suggestions reject fuzzy results that do not match the requested house number and street', async () => {
+  const { rankAddressSuggestions } = await import('../dist/services/locationService.js');
+  const suggestions = rankAddressSuggestions('141 Walton Avenue', [
+    {
+      properties: {
+        osm_id: 1,
+        name: 'Cook',
+        city: 'Tendring',
+        county: 'Essex',
+        postcode: 'CO13 9PS',
+      },
+    },
+    {
+      properties: {
+        osm_id: 2,
+        housenumber: '141',
+        street: 'Walton Avenue',
+        city: 'Harwich',
+        postcode: 'CO12 3AB',
+      },
+    },
+  ]);
+
+  assert.deepEqual(suggestions, [{ id: '2', label: '141 Walton Avenue, Harwich, CO12 3AB' }]);
+});
+
+test('address suggestions keep postcode-only searches usable', async () => {
+  const { rankAddressSuggestions } = await import('../dist/services/locationService.js');
+  const suggestions = rankAddressSuggestions('SW1A 1AA', [
+    { properties: { osm_id: 3, name: 'Buckingham Palace', city: 'London', postcode: 'SW1A 1AA' } },
+  ]);
+
+  assert.equal(suggestions.length, 1);
+  assert.match(suggestions[0].label, /SW1A 1AA/);
+});
+
 test('booking requests validate passenger details before database access', async () => {
   const response = await fetch(`${baseUrl}/api/v1/bookings`, {
     method: 'POST',

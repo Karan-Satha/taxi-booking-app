@@ -27,16 +27,20 @@ export function LocationInput({
   const [suggestions, setSuggestions] = useState<AddressSuggestion[]>([]);
   const [focused, setFocused] = useState(false);
   const [serviceError, setServiceError] = useState('');
+  const [searching, setSearching] = useState(false);
 
   useEffect(() => {
     const query = value.trim();
     if (!focused || query.length < 3) {
       setSuggestions([]);
+      setSearching(false);
+      setServiceError('');
       return;
     }
     let active = true;
     const controller = new AbortController();
     const timeout = window.setTimeout(async () => {
+      setSearching(true);
       try {
         const result = await searchAddresses(query, controller.signal);
         if (active) {
@@ -48,6 +52,8 @@ export function LocationInput({
           setSuggestions([]);
           setServiceError('Address suggestions are temporarily unavailable. Please try again.');
         }
+      } finally {
+        if (active) setSearching(false);
       }
     }, 450);
     return () => {
@@ -110,6 +116,16 @@ export function LocationInput({
             </button>
           ))}
         </div>
+      )}
+      {focused && searching && (
+        <small className="location-field__feedback" role="status" aria-live="polite">
+          Finding nearby addresses…
+        </small>
+      )}
+      {focused && !searching && !serviceError && value.trim().length >= 3 && suggestions.length === 0 && (
+        <small className="location-field__feedback" role="status" aria-live="polite">
+          No close address matches. Try adding a town or postcode.
+        </small>
       )}
       {error && <small className="field__error" id={`${id}-error`} role="alert">{error}</small>}
       {serviceError && (
