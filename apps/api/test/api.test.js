@@ -228,6 +228,9 @@ test('address suggestions reject fuzzy results that do not match the requested h
       properties: {
         osm_id: 1,
         name: 'Cook',
+        housenumber: '139-141',
+        street: 'Connaught Avenue',
+        district: 'Frinton and Walton',
         city: 'Tendring',
         county: 'Essex',
         postcode: 'CO13 9PS',

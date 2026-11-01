@@ -80,23 +80,17 @@ function words(value: string): string[] {
 
 function relevanceScore(query: string, properties: NonNullable<PhotonFeature['properties']>) {
   const queryWords = words(query);
+  const compactQuery = query.replace(/\s+/g, '').toLocaleUpperCase('en-GB');
+  const compactPostcode = properties.postcode?.replace(/\s+/g, '').toLocaleUpperCase('en-GB') ?? '';
+  const isFullPostcode = /^[A-Z]{1,2}\d[A-Z\d]?\d[A-Z]{2}$/i.test(compactQuery);
+  if (isFullPostcode) return compactPostcode === compactQuery ? 100 : -1;
+
+  const isPostcodeOutcode = /^[A-Z]{1,2}\d[A-Z\d]?$/i.test(compactQuery);
+  if (isPostcodeOutcode) return compactPostcode.startsWith(compactQuery) ? 100 : -1;
+
   const firstQueryWord = query.trim().split(/\s+/)[0] ?? '';
   const requestedHouseNumber = /^\d+[a-z]?$/i.test(firstQueryWord) ? words(firstQueryWord)[0] : null;
   const streetWords = queryWords.filter((word) => word !== requestedHouseNumber);
-  const addressWords = words(
-    [
-      properties.name,
-      properties.street,
-      properties.housenumber,
-      properties.postcode,
-      properties.city,
-      properties.district,
-      properties.county,
-      properties.state,
-    ]
-      .filter(Boolean)
-      .join(' '),
-  );
   const houseNumberWords = words(properties.housenumber ?? '');
   const namedHouseNumberWords = words([properties.name, properties.street].filter(Boolean).join(' '));
 
@@ -108,8 +102,9 @@ function relevanceScore(query: string, properties: NonNullable<PhotonFeature['pr
     return -1;
   }
 
+  const streetAndNameWords = words([properties.street, properties.name].filter(Boolean).join(' '));
   const matchedStreetWords = streetWords.filter((word) =>
-    addressWords.some((addressWord) => addressWord === word || addressWord.startsWith(word)),
+    streetAndNameWords.some((streetWord) => streetWord === word || streetWord.startsWith(word)),
   );
   const requiredMatches = Math.min(streetWords.length, streetWords.length > 1 ? 2 : 1);
   if (matchedStreetWords.length < requiredMatches) return -1;
