@@ -4373,3 +4373,141 @@ input:focus-visible {
 .booking-card__message--warning {
   color: $error;
 }
+
+// On phones, keep each booking stage as a normal page-flow card. This avoids
+// nested scroll areas and lets route summaries and vehicle choices use their
+// natural height instead of being compressed into a fixed viewport.
+@media (max-width: 680px) {
+  .hero__booking > .booking-card {
+    box-sizing: border-box;
+    height: auto;
+    min-height: calc(100svh - 100px);
+    max-height: none;
+    margin-block: auto;
+    overflow: visible;
+  }
+
+  .hero--stage-2,
+  .hero--stage-3,
+  .hero--stage-4 {
+    display: flex;
+    min-height: calc(100svh - 70px);
+    height: auto;
+    justify-content: center;
+    padding: 12px 14px 16px;
+    overflow: visible;
+  }
+
+  .hero--stage-2 .hero__copy,
+  .hero--stage-3 .hero__copy,
+  .hero--stage-4 .hero__copy {
+    display: none;
+  }
+
+  .hero--stage-2 .hero__booking,
+  .hero--stage-3 .hero__booking,
+  .hero--stage-4 .hero__booking {
+    display: flex;
+    flex: 1 1 auto;
+    align-self: stretch;
+    width: 100%;
+    margin: 0;
+  }
+
+  .hero--stage-2 .booking-card--vehicles,
+  .hero--stage-3 .booking-card--passenger {
+    min-height: calc(100svh - 98px);
+  }
+
+  .booking-card--vehicles {
+    height: auto;
+    overflow: visible;
+  }
+
+  .booking-card--vehicles .vehicle-route-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 12px 10px;
+    min-height: 0;
+    padding: 13px 12px;
+  }
+
+  .booking-card--vehicles .vehicle-route-summary__place {
+    grid-column: 1 / -1;
+    min-width: 0;
+  }
+
+  .booking-card--vehicles .vehicle-route-summary__place > span:last-child,
+  .booking-card--vehicles .vehicle-route-summary__metric > span:last-child {
+    min-width: 0;
+  }
+
+  .booking-card--vehicles .vehicle-route-summary__place strong,
+  .booking-card--vehicles .vehicle-route-summary__metric strong,
+  .booking-card--vehicles .vehicle-route-summary__place small,
+  .booking-card--vehicles .vehicle-route-summary__metric small {
+    overflow-wrap: anywhere;
+    line-height: 1.35;
+  }
+
+  .booking-card--vehicles .vehicle-route-summary__icon {
+    flex: 0 0 36px;
+  }
+
+  .booking-card--vehicles .vehicle-route-summary__metric:nth-of-type(3),
+  .booking-card--vehicles .vehicle-route-summary__metric:nth-of-type(4) {
+    grid-column: auto;
+  }
+
+  .booking-card--vehicles .vehicle-options {
+    flex: 0 0 auto;
+    max-height: none;
+    overflow: visible;
+    padding: 0 2px 2px;
+  }
+
+  .booking-card--passenger {
+    height: auto;
+    min-height: calc(100svh - 98px);
+    max-height: none;
+    overflow: visible;
+  }
+
+  .booking-card__stage-layout--passenger {
+    flex: 0 0 auto;
+    grid-template-rows: auto;
+  }
+
+  .booking-card--passenger .booking-flow--passenger {
+    margin-right: 0;
+    padding-right: 0;
+    overflow: visible;
+    overscroll-behavior: auto;
+  }
+
+  .booking-flow--passenger.booking-review {
+    overflow: visible;
+  }
+}
+
+@media (max-width: 380px) {
+  .hero--stage-2,
+  .hero--stage-3,
+  .hero--stage-4 {
+    padding-inline: 10px;
+  }
+
+  .hero__booking > .booking-card {
+    padding-inline: 14px;
+  }
+
+  .booking-card--vehicles .vehicle-route-summary {
+    gap: 10px 7px;
+    padding-inline: 9px;
+  }
+
+  .booking-card--vehicles .vehicle-route-summary__place,
+  .booking-card--vehicles .vehicle-route-summary__metric {
+    gap: 6px;
+  }
+}

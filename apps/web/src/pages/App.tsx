@@ -259,6 +259,8 @@ function readSavedBookingProgress(): SavedBookingProgress | null {
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const { account, adminAccount } = useAuth();
+  const { pathname } = useLocation();
+  const isBookingJourney = pathname === "/";
 
   return (
     <header className="site-header">
@@ -281,12 +283,16 @@ function Header() {
         <span />
       </button>
       <nav id="main-navigation" className={menuOpen ? "nav nav--open" : "nav"}>
-        <a href="#how-it-works" onClick={() => setMenuOpen(false)}>
-          How it works
-        </a>
-        <a href="#our-service" onClick={() => setMenuOpen(false)}>
-          Our service
-        </a>
+        {isBookingJourney && (
+          <>
+            <a href="#how-it-works" onClick={() => setMenuOpen(false)}>
+              How it works
+            </a>
+            <a href="#our-service" onClick={() => setMenuOpen(false)}>
+              Our service
+            </a>
+          </>
+        )}
         <Link to="/booking-details" onClick={() => setMenuOpen(false)}>
           Find a booking
         </Link>
@@ -1470,9 +1476,11 @@ function HomePage() {
   return (
     <>
       <section
-        className={`hero${bookingStage === 1 ? " hero--plan" : ""}${bookingStage === 2 ? " hero--vehicles" : ""}`}
+        className={`hero hero--stage-${bookingStage}${
+          bookingStage === 1 ? " hero--plan" : ""
+        }${bookingStage === 2 ? " hero--vehicles" : ""}`}
       >
-        <div className="hero__copy" aria-hidden={bookingStage === 2}>
+        <div className="hero__copy" aria-hidden={bookingStage > 1}>
           <p className="hero__eyebrow">
             <span aria-hidden="true" /> Airport transfers &amp; local travel
           </p>
