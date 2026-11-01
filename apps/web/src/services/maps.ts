@@ -6,7 +6,10 @@ export interface AddressSuggestion {
 }
 
 async function locationRequest<T>(path: string, params: URLSearchParams, signal?: AbortSignal): Promise<T> {
-  const response = await fetch(apiUrl(`/api/v1/locations/${path}?${params.toString()}`), { signal });
+  const response = await fetch(apiUrl(`/api/v1/locations/${path}?${params.toString()}`), {
+    signal,
+    cache: 'no-store',
+  });
   if (!response.ok) {
     const result = (await response.json().catch(() => ({}))) as { error?: { message?: string } };
     throw new Error(result.error?.message ?? 'Address service is temporarily unavailable.');
