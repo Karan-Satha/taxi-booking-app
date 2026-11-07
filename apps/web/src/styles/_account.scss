@@ -43,7 +43,7 @@
 .account-dashboard__header .eyebrow {
   margin: 0 0 8px;
   color: $purple;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 1.3px;
 }
@@ -51,14 +51,14 @@
 .account-dashboard__header h1 {
   margin: 0;
   color: $ink;
-  font: 800 clamp(28px, 4vw, 38px) / 1.15 'Manrope', sans-serif;
+  font: 800 calc(clamp(28px, 4vw, 38px) + 2px) / 1.15 'Manrope', sans-serif;
   letter-spacing: -1.2px;
 }
 
 .account-dashboard__header > div:first-child > p:last-child {
   margin: 9px 0 0;
   color: $muted;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .account-dashboard__actions {
@@ -78,7 +78,7 @@
   background: #fff;
   color: $blue;
   font: inherit;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   text-decoration: none;
   cursor: pointer;
@@ -102,13 +102,13 @@
 .account-dashboard__section-heading h2 {
   margin: 0;
   color: $ink;
-  font: 700 21px / 1.3 'Manrope', sans-serif;
+  font: 700 23px / 1.3 'Manrope', sans-serif;
 }
 
 .account-dashboard__section-heading p {
   margin: 4px 0 0;
   color: $muted;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .account-dashboard__empty {
@@ -126,13 +126,13 @@
 .account-dashboard__empty h3 {
   margin: 0;
   color: $ink;
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .account-dashboard__empty p {
   max-width: 400px;
   margin: 0 0 8px;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.6;
 }
 
@@ -145,7 +145,7 @@
   border-radius: 50%;
   background: $purple-light;
   color: $purple;
-  font-size: 23px;
+  font-size: 25px;
 }
 
 .my-bookings-list {
@@ -188,19 +188,19 @@
 
 .my-booking__reference {
   color: $purple;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.06em;
 }
 
 .my-booking__main strong {
   color: $ink;
-  font-size: 15px;
+  font-size: 17px;
 }
 
 .my-booking__main > span:last-child {
   color: $muted;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .my-booking__status {
@@ -208,7 +208,7 @@
   border-radius: 999px;
   background: #fff7ed;
   color: #9a3412;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -228,13 +228,13 @@
 
 .my-booking__price {
   color: $ink;
-  font-size: 17px;
+  font-size: 19px;
   white-space: nowrap;
 }
 
 .my-booking__expand {
   color: $blue;
-  font-size: 20px;
+  font-size: 22px;
   transition: transform 150ms ease;
 }
 
@@ -254,7 +254,7 @@
   border-radius: 8px;
   background: #fff7ed;
   color: #9a3412;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.5;
 }
 
@@ -289,21 +289,21 @@
 .my-booking__route > div > span,
 .my-booking__facts span {
   color: $muted;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
 }
 
 .my-booking__route strong,
 .my-booking__facts strong {
   color: $ink;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.5;
   overflow-wrap: anywhere;
 }
 
 .my-booking__route-arrow {
   color: $purple;
-  font-size: 20px;
+  font-size: 22px;
   text-align: center;
 }
 
@@ -337,13 +337,13 @@
 
 .my-booking__vehicle strong {
   color: $ink;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .my-booking__vehicle span,
 .my-booking__instructions {
   color: $muted;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .my-booking__instructions {
@@ -359,14 +359,14 @@
   display: inline-flex;
   margin-top: 13px;
   color: $blue;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
 }
 
 .account-dashboard__pagination {
   margin-top: 18px;
   color: $muted;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .account-dashboard__privacy {
@@ -374,7 +374,7 @@
   padding-top: 15px;
   border-top: 1px solid $line;
   color: $muted;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.6;
 }
 
