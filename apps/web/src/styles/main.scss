@@ -4508,10 +4508,10 @@ input:focus-visible {
 
 .hero--stage-2 .vehicle-option {
   grid-template-columns: 96px minmax(155px, 1.05fr) minmax(250px, 1.4fr) 95px 150px;
-  grid-template-rows: auto;
+  grid-template-rows: minmax(0, 1fr) auto;
   align-items: center;
   gap: 4px 10px;
-  min-height: 114px;
+  min-height: 134px;
   padding: 8px 12px;
   margin-bottom: 20px;
 }
@@ -4522,7 +4522,7 @@ input:focus-visible {
 
 .hero--stage-2 .vehicle-option__artwork {
   grid-column: 1;
-  grid-row: 1;
+  grid-row: 1 / 3;
   width: 100px;
   height: 60px;
 }
@@ -4548,9 +4548,13 @@ input:focus-visible {
 }
 
 .hero--stage-2 .vehicle-option__action {
-  grid-column: 4;
-  grid-row: 1;
-  justify-items: start;
+  grid-column: 2 / 5;
+  grid-row: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-width: 0;
   align-self: center;
 }
 
@@ -4560,10 +4564,11 @@ input:focus-visible {
 
 .hero--stage-2 .vehicle-option__choose {
   grid-column: 5;
-  grid-row: 1;
-  min-height: 38px;
+  grid-row: 2;
+  min-height: 52px;
   margin-top: 0;
-  font-size: 14px;
+  padding: 0 16px;
+  font-size: 16px;
 }
 
 .hero--stage-2 .vehicle-options__note {
@@ -4614,7 +4619,7 @@ input:focus-visible {
   }
 
   .hero--stage-2 .vehicle-option {
-    min-height: 106px;
+    min-height: 126px;
     padding: 6px 10px;
   }
 
@@ -4632,7 +4637,7 @@ input:focus-visible {
   }
 
   .hero--stage-2 .vehicle-option__choose {
-    min-height: 32px;
+    min-height: 52px;
   }
 
   .hero--stage-2 .vehicle-options__note {
@@ -4764,10 +4769,11 @@ input:focus-visible {
 
   .hero--stage-2 .vehicle-option {
     grid-template-columns: 82px minmax(0, 1fr);
-    grid-template-rows: auto auto auto auto;
+    grid-template-rows: auto auto auto;
     align-content: start;
     gap: 7px 10px;
     min-width: 0;
+    min-height: 134px;
     padding: 12px;
   }
 
@@ -4795,16 +4801,20 @@ input:focus-visible {
   }
 
   .hero--stage-2 .vehicle-option__action {
-    grid-column: 1 / -1;
+    grid-column: 1;
     grid-row: 3;
-    grid-template-columns: auto 1fr;
-    align-items: baseline;
-    gap: 8px;
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: 2px;
   }
 
   .hero--stage-2 .vehicle-option__choose {
-    grid-column: 1 / -1;
-    grid-row: 4;
+    grid-column: 2;
+    grid-row: 3;
+    min-height: 52px;
+    padding-inline: 10px;
+    font-size: 15px;
   }
 
   .hero--stage-3 .booking-card__stage-layout--passenger {
@@ -4886,22 +4896,41 @@ input:focus-visible {
   }
 
   .hero--stage-2 .vehicle-option {
-    grid-template-columns: 72px minmax(0, 1fr);
-    grid-template-rows: auto auto auto auto;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    grid-template-rows: auto auto auto;
+    min-height: 134px;
   }
 
   .hero--stage-2 .vehicle-option__artwork {
+    grid-column: 1;
+    grid-row: 1;
     width: 72px;
     height: 54px;
   }
 
+  .hero--stage-2 .vehicle-option__copy {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
   .hero--stage-2 .vehicle-option__details {
+    grid-column: 1 / -1;
+    grid-row: 2;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     padding: 7px;
   }
 
+  .hero--stage-2 .vehicle-option__action {
+    grid-column: 1;
+    grid-row: 3;
+  }
+
   .hero--stage-2 .vehicle-option__choose {
-    min-height: 40px;
+    grid-column: 2;
+    grid-row: 3;
+    min-height: 52px;
+    padding-inline: 8px;
+    font-size: 14px;
   }
 
   .hero--stage-3 .booking-card--passenger {
@@ -4968,4 +4997,36 @@ input:focus-visible {
   .hero--stage-2 .vehicle-option__details {
     grid-template-columns: 1fr;
   }
+}
+
+// Keep booking controls consistent with the larger Stage 1 journey fields.
+.booking-card .field {
+  margin-bottom: 8px;
+}
+
+.booking-card .field__label {
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.booking-card .field input,
+.booking-card .field select {
+  box-sizing: border-box;
+  width: 100%;
+  height: 58px;
+  min-height: 52px;
+  padding: 0 14px;
+  font-size: 18px;
+}
+
+.booking-card .field textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 58px;
+  padding: 12px 14px;
+  font-size: 18px;
+}
+
+.booking-card .field__control input {
+  padding-left: 44px;
 }
