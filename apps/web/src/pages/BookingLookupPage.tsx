@@ -197,7 +197,12 @@ export function BookingLookupPage() {
   return (
     <main className="booking-lookup-page">
       <div className="booking-lookup-page__inner">
-        <Link className="booking-lookup-page__back" to="/">← Back to Heathrow Drive</Link>
+        <Link className="booking-lookup-page__back" to="/">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="m12 19-7-7 7-7M19 12H5" />
+          </svg>
+          Back to Heathrow Drive
+        </Link>
         <section className="booking-lookup" aria-labelledby="booking-lookup-title">
           <div className="booking-lookup__intro">
             <p className="eyebrow">YOUR JOURNEY</p>

@@ -80,7 +80,7 @@ function getDefaultCountryCode() {
 
 function BookingFieldIcon({ name }: { name: BookingFieldIconName }) {
   const icons: Record<BookingFieldIconName, ReactNode> = {
-    passengers: <><circle cx="12" cy="8" r="3" /><path d="M5.5 20v-1.5a6.5 6.5 0 0 1 13 0V20" /></>,
+    passengers: <><circle cx="9" cy="8" r="3" /><path d="M3 20v-1.5a6 6 0 0 1 12 0V20M16 5.2a3 3 0 0 1 0 5.6M18 14a5 5 0 0 1 3 4.5V20" /></>,
     bags: <><rect x="5" y="7" width="14" height="14" rx="2" /><path d="M9 7V5a3 3 0 0 1 6 0v2M9 11v6m6-6v6" /></>,
     name: <><circle cx="12" cy="8" r="3" /><path d="M5.5 20v-1.5a6.5 6.5 0 0 1 13 0V20" /></>,
     email: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m4 7 8 6 8-6" /></>,
@@ -352,6 +352,14 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
     onStageChange?.(stage);
   }, [onStageChange, stage]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    document.querySelectorAll<HTMLElement>(".booking-card, .booking-flow").forEach((element) => {
+      element.scrollTop = 0;
+      element.scrollLeft = 0;
+    });
+  }, [stage]);
+
   function moveToStage(nextStage: BookingStage, replace = false) {
     setStage(nextStage);
     const params = new URLSearchParams(location.search);
@@ -395,7 +403,10 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
       if (cancelled) return;
       const requested = parseBookingStage(params.get("bookingStep"));
       const target = progress
-        ? (requested === progress.stage ? requested : progress.stage)
+        ? requested === progress.stage ||
+          (requested === 3 && !!progress.quote && !!progress.vehicle)
+          ? requested
+          : progress.stage
         : 1;
       setStage(target);
       initialLocation.current = false;
@@ -415,14 +426,32 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
       if (cancelled) return;
       let progress = restored;
       if (result.progress && typeof result.progress === "object") {
-        try {
-          sessionStorage.setItem(
-            BOOKING_STORAGE_KEY,
-            JSON.stringify({ ...(result.progress as object), lastActivityAt: Date.now() }),
-          );
-          progress = readSavedBookingProgress();
-        } catch {
+        const serverProgress = result.progress as Partial<SavedBookingProgress>;
+        const serverStage = Number(serverProgress.stage ?? 0);
+        const localVehicleDiffers = !!restored?.vehicle &&
+          restored.stage >= serverStage &&
+          restored.vehicle.id !== serverProgress.vehicle?.id;
+        const localProgressIsNewer = !!restored && (
+          restored.stage > serverStage ||
+          localVehicleDiffers ||
+          (typeof serverProgress.lastActivityAt === "number" &&
+            restored.lastActivityAt >= serverProgress.lastActivityAt)
+        );
+        if (localProgressIsNewer) {
           progress = restored;
+        } else {
+          try {
+            const serverActivity = typeof serverProgress.lastActivityAt === "number"
+              ? serverProgress.lastActivityAt
+              : Date.now();
+            sessionStorage.setItem(
+              BOOKING_STORAGE_KEY,
+              JSON.stringify({ ...serverProgress, lastActivityAt: serverActivity }),
+            );
+            progress = readSavedBookingProgress();
+          } catch {
+            progress = restored;
+          }
         }
       } else if (result.completed) {
         progress = restored?.confirmation ? restored : null;
@@ -583,7 +612,9 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
       const result = await bookingApi.quote({ pickup, dropoff, date, time });
       setQuote(result);
       setQuoteSavedAt(Date.now());
-      setVehicle(null);
+      setVehicle(result.quote.vehicles[0] ?? null);
+      setPassengers(0);
+      setLuggage(-1);
       setConfirmation(null);
       moveToStage(2);
     } catch (error) {
@@ -815,6 +846,7 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
 
   return (
     <section
+      id="booking-card"
       className={`booking-card${stage === 1 ? " booking-card--plan" : ""}${stage === 2 ? " booking-card--vehicles" : ""}${stage === 3 ? " booking-card--passenger" : ""}`}
     >
       <ol className="booking-progress" aria-label={`Booking progress, step ${stage} of 4`}>
@@ -870,7 +902,7 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
               : stage === 3
                 ? "Complete your booking"
                 : stage === 2
-                  ? "Select the right ride"
+                  ? "Choose your ride"
                   : "Where can we take you?"}
           </h2>
           <p className="booking-card__intro">
@@ -878,8 +910,8 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
               ? "Check your route, ride, fare, and passenger details before confirming."
               : stage === 3
                 ? "Add your contact details so we can confirm the journey request."
-                : stage === 2
-                  ? "Compare the available vehicles, capacity, and estimated fares."
+                  : stage === 2
+                    ? "Compare the available vehicles, capacity, and estimated fares."
                   : "Enter your route and time to compare vehicles and fares."}
           </p>
         </div>
@@ -896,7 +928,7 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
                 id="pickup"
                 name="pickup"
                 label="Pickup location"
-                placeholder="Enter pickup address"
+                placeholder="Enter or choose a pickup address"
                 value={pickup}
                 tone="start"
                 onChange={(value) => {
@@ -906,10 +938,31 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
                 onSelect={setPickup}
                 error={fieldErrors.pickup}
               />
-              <button type="button" className="location-button" onClick={useCurrentLocation}>
-                <span aria-hidden="true">◎</span> Use my current location
-              </button>
-              <div className="route-line" aria-hidden="true" />
+              <div className="current-location-row">
+                <span className="current-location-row__target" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false">
+                    <circle cx="12" cy="12" r="8.5" />
+                    <circle cx="12" cy="12" r="3.5" />
+                  </svg>
+                </span>
+                <button type="button" className="location-button" onClick={useCurrentLocation}>
+                  <svg
+                    className="location-button__navigation"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                    focusable="false"
+                  >
+                    <polygon points="3 11 22 2 13 21 11 13 3 11" />
+                  </svg>
+                  <span>Use my current location</span>
+                </button>
+                <div className="route-line" aria-hidden="true" />
+              </div>
               <LocationInput
                 id="dropoff"
                 name="dropoff"
@@ -1011,9 +1064,13 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
               moveToStage(1);
             }}
           >
-            <span aria-hidden="true">←</span> Back to journey details
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="m12 19-7-7 7-7M19 12H5" />
+            </svg>
+            Back to Journey details
           </button>
           <div className="vehicle-route-summary" aria-label="Journey summary">
+            <div className="vehicle-route-summary__route">
             <div className="vehicle-route-summary__place">
               <span className="vehicle-route-summary__icon vehicle-route-summary__icon--pickup" aria-hidden="true">
                 <svg
@@ -1031,10 +1088,19 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
               <span>
                 <strong>{quote.quote.pickup}</strong>
                 <small>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <rect x="3" y="5" width="18" height="16" rx="2" />
+                    <path d="M16 3v4M8 3v4M3 10h18" />
+                  </svg>
                   {quote.quote.date} · {quote.quote.time}
                 </small>
               </span>
             </div>
+            <span className="vehicle-route-summary__connector" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14m-7-7 7 7-7 7" />
+              </svg>
+            </span>
             <div className="vehicle-route-summary__place">
               <span className="vehicle-route-summary__icon vehicle-route-summary__icon--destination" aria-hidden="true">
                 <svg
@@ -1054,6 +1120,7 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
                 <small>Destination</small>
               </span>
             </div>
+            </div>
             <div className="vehicle-route-summary__metric">
               <span className="vehicle-route-summary__icon" aria-hidden="true">
                 <svg
@@ -1064,9 +1131,9 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <circle cx="6" cy="17" r="2.2" />
-                  <circle cx="18" cy="7" r="2.2" />
-                  <path d="M8.2 17h3a4 4 0 0 0 4-4V11a4 4 0 0 1 4-4" />
+                  <circle cx="6" cy="19" r="3" />
+                  <path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" />
+                  <circle cx="18" cy="5" r="3" />
                 </svg>
               </span>
               <span>
@@ -1099,11 +1166,27 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
               <h3>Available vehicles</h3>
               <p>Choose the option that best suits your journey.</p>
             </div>
-            <span>{quote.quote.vehicles.length} options</span>
+              <span>{quote.quote.vehicles.length} options · fares in GBP</span>
           </div>
           <div className="vehicle-options">
             {quote.quote.vehicles.map((option, index) => (
-              <article className="vehicle-option" key={option.id}>
+              <label
+                className={`vehicle-option${vehicle?.id === option.id ? " vehicle-option--selected" : ""}`}
+                key={option.id}
+              >
+                <input
+                  className="vehicle-option__input"
+                  type="radio"
+                  name="vehicle-option"
+                  value={option.id}
+                  checked={vehicle?.id === option.id}
+                  onChange={() => {
+                    setVehicle(option);
+                    setPassengers(0);
+                    setLuggage(-1);
+                  }}
+                  aria-label={`Select ${option.name}, estimated fare ${money(option.fare)}`}
+                />
                 {index === 0 && <span className="vehicle-option__badge">Popular</span>}
                 <div className="vehicle-option__artwork">
                   <VehicleArtwork name={option.name} passengers={option.passengers} />
@@ -1135,36 +1218,76 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
                     <span>{option.passengers > 4 ? "Spacious group travel" : "Ideal for airport transfers"}</span>
                   </span>
                 </div>
-                <div className="vehicle-option__action">
+                <span className="vehicle-option__side">
+                  <span className="vehicle-option__price">
                   <strong>{money(option.fare)}</strong>
                   <small>Estimated fare · GBP</small>
-                </div>
-                <button
-                  type="button"
-                  className="button button--primary vehicle-option__choose"
-                  onClick={() => {
-                    setVehicle(option);
-                    setPassengers(Math.min(option.passengers, 1));
-                    setLuggage(0);
-                    moveToStage(3);
-                  }}
-                >
-                  Choose this vehicle <span aria-hidden="true">→</span>
-                </button>
-              </article>
+                  </span>
+                  <span className="vehicle-option__tick" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                  </span>
+                </span>
+                {vehicle?.id === option.id && (
+                  <span className="vehicle-option__selected-label" aria-hidden="true">
+                    Selected
+                  </span>
+                )}
+              </label>
             ))}
           </div>
           <p className="vehicle-options__note">
             Your fare is estimated from the selected route and vehicle. No online payment is taken at this stage.
           </p>
+          <div className="vehicle-confirm-bar">
+            <div className="vehicle-confirm-bar__inner">
+              <div className="vehicle-confirm-bar__selected" aria-live="polite">
+                <span className="vehicle-confirm-bar__label">
+                  {vehicle ? "Selected vehicle" : "Your selection"}
+                </span>
+                <strong>
+                  {vehicle ? (
+                    <>
+                      {vehicle.name} <span>·</span> {money(vehicle.fare)}
+                    </>
+                  ) : "Choose a vehicle to continue"}
+                </strong>
+              </div>
+              <button
+                className="button button--primary vehicle-confirm-bar__continue"
+                type="button"
+                disabled={!vehicle}
+                onClick={() => moveToStage(3)}
+              >
+                Continue
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M5 12h14m-7-7 7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
         </>
       )}
       {stage === 3 && quote && vehicle && (
         <div className="booking-card__stage-layout booking-card__stage-layout--passenger">
           <button type="button" className="text-button booking-card__back" onClick={() => moveToStage(2)}>
-            <span aria-hidden="true">←</span> Back to vehicle options
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="m12 19-7-7 7-7M19 12H5" />
+            </svg>
+            Back to vehicle options
           </button>
           <div className="booking-card__journey-vehicle">
+            <div className="booking-selected__vehicle">
+              <VehicleArtwork name={vehicle.name} passengers={vehicle.passengers} priority />
+              <span>
+                <strong>{vehicle.name}</strong>
+                <small className="booking-selected__vehicle-capacity">
+                  <span><PassengerIcon />Up to {vehicle.passengers} passengers</span>
+                  <span><LuggageIcon />Up to {vehicle.luggage} bags</span>
+                </small>
+              </span>
+            </div>
             <div className="selected-journey" aria-label="Journey summary">
               <p>
                 <span className="field__pin field__pin--start" aria-hidden="true" />
@@ -1181,28 +1304,19 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
                 <span><BookingFieldIcon name="duration" />{quote.quote.durationText}</span>
               </small>
             </div>
-            <div className="booking-selected booking-selected--passenger">
-              <div className="booking-selected__vehicle">
-                <VehicleArtwork name={vehicle.name} passengers={vehicle.passengers} />
-                <span>
-                  <strong>{vehicle.name}</strong>
-                  <small>Up to {vehicle.passengers} passengers · {vehicle.luggage} bags</small>
-                </span>
-                <button
-                  type="button"
-                  className="button button--primary booking-selected__change"
-                  onClick={() => {
-                    setVehicle(null);
-                    moveToStage(2);
-                  }}
-                >
-                  Change vehicle
-                </button>
-              </div>
-              <div className="booking-selected__stage-fare">
-                <strong>{money(vehicle.fare)}</strong>
-                <small>Estimated fare</small>
-              </div>
+            <div className="booking-selected__stage-fare">
+              <strong>{money(vehicle.fare)}</strong>
+              <small>Estimated fare</small>
+              <button
+                type="button"
+                className="button button--primary booking-selected__change"
+                onClick={() => {
+                  setVehicle(null);
+                  moveToStage(2);
+                }}
+              >
+                Change vehicle
+              </button>
             </div>
           </div>
           <form
@@ -1211,23 +1325,51 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
             noValidate
             onSubmit={handleReview}
           >
-            <div className="booking-card__section-heading">
-              <h3>Who’s travelling?</h3>
-              <p>Choose your group size and add the lead passenger’s contact details.</p>
+            <div className="booking-card__section-heading passenger-details-banner">
+              <span className="passenger-details-banner__icon" aria-hidden="true">
+                <PassengerIcon />
+              </span>
+              <div className="passenger-details-banner__copy">
+                <h3>Passenger Details</h3>
+                <p>Tell us about your journey and how to contact you.</p>
+              </div>
+              <svg className="passenger-details-banner__art" viewBox="0 0 560 160" aria-hidden="true" focusable="false">
+                <path d="M0 126c54-22 85-12 132-29 54-20 82-4 131-15 50-12 76-4 120-19 63-21 111-5 177-29v126H0Z" fill="#e8f1ff" />
+                <path d="M0 141c69-23 105-10 158-21 57-12 91-2 145-17 57-16 98-3 142-18 51-17 79-13 115-31" fill="none" stroke="#c8dcff" strokeWidth="2" />
+                <g fill="#d4e5ff">
+                  <path d="M294 77h22V48h12V35l13 13v29h13V56h10V40l12 16v21h15V43h12V25l13 18v34h15V55h13V39l12 16v22h25V63h12V51l12 12v14h37v23H294Z" />
+                  <path d="M58 57c0-9 8-16 17-16 5-11 22-11 27 1 10 0 15 6 15 15H58ZM443 31c0-7 6-12 13-12 4-9 18-9 22 1 8 0 12 5 12 11h-47Z" />
+                </g>
+                <path d="M326 106c42-20 78-7 112 2 47 12 84 5 127-11" fill="none" stroke="#2563eb" strokeWidth="3" strokeDasharray="8 7" />
+                <g fill="#2563eb">
+                  <path d="M322 89c0-10 8-18 18-18s18 8 18 18c0 13-18 31-18 31s-18-18-18-31Z" />
+                  <circle cx="340" cy="89" r="5" fill="#fff" />
+                  <path d="M540 89c0-10 8-18 18-18s18 8 18 18c0 13-18 31-18 31s-18-18-18-31Z" />
+                  <circle cx="558" cy="89" r="5" fill="#fff" />
+                </g>
+                <g transform="translate(176 74)">
+                  <path d="M8 35V15c0-5 4-9 9-9h54c5 0 9 4 11 8l10 8h14c5 0 9 4 9 9v12H8Z" fill="#1760c8" />
+                  <path d="M22 11h19v16H18V15c0-2 2-4 4-4ZM47 11h20c4 0 7 3 9 7l4 9H47Z" fill="#eaf3ff" />
+                  <circle cx="29" cy="43" r="10" fill="#17366d" /><circle cx="29" cy="43" r="5" fill="#dbe9ff" />
+                  <circle cx="87" cy="43" r="10" fill="#17366d" /><circle cx="87" cy="43" r="5" fill="#dbe9ff" />
+                </g>
+              </svg>
             </div>
             <div className="booking-card__details booking-card__details--three">
               <label className="field field--compact">
                 <span className="field__label">Passengers</span>
                 <IconFieldControl name="passengers">
                   <select
-                    value={passengers}
+                    value={passengers || ""}
                     onChange={(event) => {
                       setPassengers(Number(event.target.value));
                       clearFieldError("passengers");
                     }}
                     aria-invalid={Boolean(fieldErrors.passengers)}
                     aria-describedby={fieldErrors.passengers ? "passengers-error" : undefined}
+                    required
                   >
+                    <option value="" disabled>Select number of passengers</option>
                     {Array.from({ length: vehicle.passengers }, (_, i) => i + 1).map((count) => (
                       <option key={count} value={count}>
                         {count}
@@ -1241,14 +1383,16 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
                 <span className="field__label">Bags</span>
                 <IconFieldControl name="bags">
                   <select
-                    value={luggage}
+                    value={luggage < 0 ? "" : luggage}
                     onChange={(event) => {
-                      setLuggage(Number(event.target.value));
+                      setLuggage(event.target.value === "" ? -1 : Number(event.target.value));
                       clearFieldError("luggage");
                     }}
                     aria-invalid={Boolean(fieldErrors.luggage)}
                     aria-describedby={fieldErrors.luggage ? "luggage-error" : undefined}
+                    required
                   >
+                    <option value="" disabled>Select number of bags</option>
                     {Array.from({ length: vehicle.luggage + 1 }, (_, i) => i).map((count) => (
                       <option key={count} value={count}>
                         {count}
@@ -1375,7 +1519,10 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
       {stage === 4 && quote && vehicle && (
         <div className="booking-flow booking-flow--passenger booking-review" aria-label="Review booking">
           <button type="button" className="text-button booking-card__back" onClick={() => moveToStage(3)}>
-            <span aria-hidden="true">←</span> Back to passenger details
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="m12 19-7-7 7-7M19 12H5" />
+            </svg>
+            Back to passenger details
           </button>
           <div className="selected-journey" aria-label="Journey summary">
             <p>
@@ -1500,12 +1647,13 @@ function HomePage() {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="1.8"
+                  strokeWidth="1.75"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <path d="m5 11 1.5-4h11L19 11" />
-                  <path d="M4 11h16v7H4zM7 18v2m10-2v2M7 14h.01M17 14h.01" />
+                  <rect x="3" y="4" width="18" height="17" rx="2" />
+                  <path d="M8 2v4M16 2v4M3 9h18" />
+                  <path d="M8.5 15l2.5 2.5 4.5-5" />
                 </svg>
               </span>
               <span>
@@ -1519,11 +1667,15 @@ function HomePage() {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="1.8"
+                  strokeWidth="1.75"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <path d="M12 3v18m5-14.5C16.2 5.5 14.5 5 12 5c-2.8 0-4.5 1-4.5 3s1.7 3 4.5 3 4.5 1 4.5 3-1.7 3-4.5 3c-2.4 0-4.1-.6-5-1.5" />
+                  <path d="M2 17V13l2-4h9l3 4h4a2 2 0 0 1 2 2v2h-2" />
+                  <path d="M2 17h2M9 17h6" />
+                  <circle cx="6.5" cy="17" r="2" />
+                  <circle cx="17.5" cy="17" r="2" />
+                  <path d="M4 13h14M9 9v4" />
                 </svg>
               </span>
               <span>
@@ -1537,12 +1689,13 @@ function HomePage() {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="1.8"
+                  strokeWidth="1.75"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <rect x="4" y="5" width="16" height="16" rx="2" />
-                  <path d="M8 3v4m8-4v4M4 10h16" />
+                  <path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" />
+                  <circle cx="7.5" cy="7.5" r="1.5" />
+                  <path d="M13.5 10.5h-2a1.25 1.25 0 0 0 0 2.5h1a1.25 1.25 0 0 1 0 2.5h-2M12 9.5v1M12 15.5v1" />
                 </svg>
               </span>
               <span>
@@ -1665,18 +1818,189 @@ function HomePage() {
           </article>
         </div>
       </section>
-      <section id="our-service" className="service-strip">
-        <div>
-          <span className="service-strip__spark" aria-hidden="true">
-            ✳
-          </span>
-          <p>
-            Thoughtful travel,
-            <br />
-            <strong>from door to door.</strong>
-          </p>
+      <section id="our-service" className="services">
+        <div className="services__lines" aria-hidden="true" />
+        <div className="services__glow" aria-hidden="true" />
+        <div className="services__inner">
+          <div className="services__head">
+            <div>
+              <span className="services__eyebrow">
+                <span className="services__eyebrow-dot" aria-hidden="true" />
+                Our services
+              </span>
+              <h2 className="services__title">
+                Journeys for every <span className="services__text-gradient">part of your day.</span>
+              </h2>
+            </div>
+            <p className="services__lede">
+              Choose the ride that fits your plans, then compare vehicle options and estimated fares —
+              all before you book.
+            </p>
+          </div>
+          <div className="services__grid">
+            <a className="services__card" href="#booking-card">
+              <span className="services__card-glow" aria-hidden="true" />
+              <span className="services__card-top">
+                <span className="services__card-icon" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z" />
+                  </svg>
+                </span>
+                <span className="services__card-number">01</span>
+              </span>
+              <span className="services__card-body">
+                <span className="services__card-tag">Most booked</span>
+                <span className="services__card-title">Airport transfers</span>
+                <span className="services__card-text">
+                  Plan a ride to or from the airport with your route and estimated fare shown before you book.
+                </span>
+                <span className="services__card-cta">
+                  Plan this ride
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M7 7h10v10M7 17 17 7" />
+                  </svg>
+                </span>
+              </span>
+            </a>
+            <a className="services__card" href="#booking-card">
+              <span className="services__card-glow" aria-hidden="true" />
+              <span className="services__card-top">
+                <span className="services__card-icon" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0Z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                </span>
+                <span className="services__card-number">02</span>
+              </span>
+              <span className="services__card-body">
+                <span className="services__card-tag">Arrivals &amp; departures</span>
+                <span className="services__card-title">Airport pick-up &amp; drop-off</span>
+                <span className="services__card-text">
+                  Set your collection point and destination for an airport arrival or departure.
+                </span>
+                <span className="services__card-cta">
+                  Plan this ride
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M7 7h10v10M7 17 17 7" />
+                  </svg>
+                </span>
+              </span>
+            </a>
+            <a className="services__card" href="#booking-card">
+              <span className="services__card-glow" aria-hidden="true" />
+              <span className="services__card-top">
+                <span className="services__card-icon" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z" />
+                    <path d="M22 10v6M6 12.5V16a6 3 0 0 0 12 0v-3.5" />
+                  </svg>
+                </span>
+                <span className="services__card-number">03</span>
+              </span>
+              <span className="services__card-body">
+                <span className="services__card-tag">Scheduled journeys</span>
+                <span className="services__card-title">School runs</span>
+                <span className="services__card-text">
+                  Arrange a school journey by entering the pick-up, destination and travel time.
+                </span>
+                <span className="services__card-cta">
+                  Plan this ride
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M7 7h10v10M7 17 17 7" />
+                  </svg>
+                </span>
+              </span>
+            </a>
+            <a className="services__card" href="#booking-card">
+              <span className="services__card-glow" aria-hidden="true" />
+              <span className="services__card-top">
+                <span className="services__card-icon" aria-hidden="true">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2" />
+                    <circle cx="7" cy="17" r="2" />
+                    <path d="M9 17h6" />
+                    <circle cx="17" cy="17" r="2" />
+                  </svg>
+                </span>
+                <span className="services__card-number">04</span>
+              </span>
+              <span className="services__card-body">
+                <span className="services__card-tag">Around town</span>
+                <span className="services__card-title">Local travel</span>
+                <span className="services__card-text">
+                  Book a ride around town for everyday trips, appointments or meeting friends.
+                </span>
+                <span className="services__card-cta">
+                  Plan this ride
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M7 7h10v10M7 17 17 7" />
+                  </svg>
+                </span>
+              </span>
+            </a>
+          </div>
         </div>
-        <span className="service-strip__note">Built around your journey</span>
       </section>
       <footer className="site-footer">
         <Link className="brand" to="/">

@@ -63,8 +63,17 @@ export function LocationInput({
     };
   }, [focused, value]);
 
+  const feedback = error || serviceError || (
+    focused && searching
+      ? 'Finding nearby addresses…'
+      : focused && value.trim().length >= 3 && suggestions.length === 0
+        ? 'No close address matches. Try adding a town or postcode.'
+        : ''
+  );
+  const hasError = Boolean(error || serviceError);
+
   return (
-    <label className="field location-field" htmlFor={id}>
+    <label className={`field location-field location-field--${tone}`} htmlFor={id}>
       <span className="field__label">
         {label} <span className="field__required" aria-hidden="true">*</span>
       </span>
@@ -89,7 +98,7 @@ export function LocationInput({
           onChange={(event) => onChange(event.target.value)}
           required
           aria-invalid={Boolean(error)}
-          aria-describedby={error ? `${id}-error` : undefined}
+          aria-describedby={error ? `${id}-feedback` : undefined}
           aria-autocomplete="list"
           aria-expanded={focused && suggestions.length > 0}
           aria-controls={`${id}-suggestions`}
@@ -117,22 +126,14 @@ export function LocationInput({
           ))}
         </div>
       )}
-      {focused && searching && (
-        <small className="location-field__feedback" role="status" aria-live="polite">
-          Finding nearby addresses…
-        </small>
-      )}
-      {focused && !searching && !serviceError && value.trim().length >= 3 && suggestions.length === 0 && (
-        <small className="location-field__feedback" role="status" aria-live="polite">
-          No close address matches. Try adding a town or postcode.
-        </small>
-      )}
-      {error && <small className="field__error" id={`${id}-error`} role="alert">{error}</small>}
-      {serviceError && (
-        <small className="location-field__error" role="status">
-          {serviceError}
-        </small>
-      )}
+      <small
+        className={`location-field__feedback${hasError ? ' location-field__feedback--error' : ''}`}
+        id={`${id}-feedback`}
+        role={error ? 'alert' : 'status'}
+        aria-live={error ? 'assertive' : 'polite'}
+      >
+        {feedback}
+      </small>
     </label>
   );
 }

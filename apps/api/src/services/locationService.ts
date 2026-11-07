@@ -94,6 +94,8 @@ function relevanceScore(query: string, properties: NonNullable<PhotonFeature['pr
   const houseNumberWords = words(properties.housenumber ?? '');
   const namedHouseNumberWords = words([properties.name, properties.street].filter(Boolean).join(' '));
 
+  // A geocoder may return a nearby/fuzzy result for a numbered address. Never
+  // offer it unless the returned house number actually matches the request.
   if (
     requestedHouseNumber &&
     !houseNumberWords.includes(requestedHouseNumber) &&
@@ -109,8 +111,10 @@ function relevanceScore(query: string, properties: NonNullable<PhotonFeature['pr
   const requiredMatches = Math.min(streetWords.length, streetWords.length > 1 ? 2 : 1);
   if (matchedStreetWords.length < requiredMatches) return -1;
 
-  const labelPhrase = words(addressLabel(properties)).join(' ');
-  return matchedStreetWords.length * 10 + (labelPhrase.includes(queryWords.join(' ')) ? 5 : 0);
+  const labelWords = words(addressLabel(properties));
+  const queryPhrase = queryWords.join(' ');
+  const labelPhrase = labelWords.join(' ');
+  return matchedStreetWords.length * 10 + (labelPhrase.includes(queryPhrase) ? 5 : 0);
 }
 
 export function rankAddressSuggestions(query: string, features: PhotonFeature[]): AddressSuggestion[] {

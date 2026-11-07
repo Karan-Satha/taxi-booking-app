@@ -1,6 +1,7 @@
 interface VehicleArtworkProps {
   name: string;
   passengers: number;
+  priority?: boolean;
 }
 
 function vehicleCategory(name: string, passengers: number) {
@@ -14,7 +15,7 @@ function vehicleCategory(name: string, passengers: number) {
   return 'saloon';
 }
 
-export function VehicleArtwork({ name, passengers }: VehicleArtworkProps) {
+export function VehicleArtwork({ name, passengers, priority = false }: VehicleArtworkProps) {
   const category = vehicleCategory(name, passengers);
   const labels = {
     saloon: 'Standard saloon',
@@ -29,25 +30,51 @@ export function VehicleArtwork({ name, passengers }: VehicleArtworkProps) {
       className={`vehicle-option__image vehicle-option__image--${category}`}
       src={`/images/vehicles/${category}.webp`}
       alt={`${labels[category]} vehicle`}
-      loading="lazy"
-      decoding="async"
+      loading={priority ? "eager" : "lazy"}
+      decoding={priority ? "sync" : "async"}
+      fetchPriority={priority ? "high" : "auto"}
     />
   );
 }
 
 export function PassengerIcon() {
   return (
-    <svg className="vehicle-option__icon--passenger" viewBox="0 0 20 20" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <circle cx="10" cy="6" r="3" />
-      <path d="M4 17v-1.5a6 6 0 0 1 12 0V17z" />
+    <svg
+      className="vehicle-option__icon--passenger"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <path d="M16 3.128a4 4 0 0 1 0 7.744" />
+      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+      <circle cx="9" cy="7" r="4" />
     </svg>
   );
 }
 
 export function LuggageIcon() {
   return (
-    <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-      <path d="M5.5 3.2V2.5A1.5 1.5 0 0 1 7 1h2a1.5 1.5 0 0 1 1.5 1.5v.7h1.8A1.7 1.7 0 0 1 14 4.9v7.4a1.7 1.7 0 0 1-1.7 1.7H3.7A1.7 1.7 0 0 1 2 12.3V4.9a1.7 1.7 0 0 1 1.7-1.7h1.8Zm1.5 0h2v-.7a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v.7ZM5 5v7h1V5H5Zm5 0v7h1V5h-1Z" />
+    <svg
+      className="vehicle-option__icon--luggage"
+      viewBox="0 0 24 24"
+      width="24"
+      height="24"
+      aria-hidden="true"
+      focusable="false"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect x="5" y="7" width="14" height="14" rx="2" />
+      <path d="M9 7V5a3 3 0 0 1 6 0v2M9 11v6m6-6v6" />
     </svg>
   );
 }

@@ -1,6 +1,80 @@
 import { env } from '../config/env.js';
 import type { JourneyQuote } from '../types/booking.js';
 
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function validateRecipient(value: string, workflow: string) {
+  const email = value.trim();
+  if (email.length > 254 || !emailPattern.test(email)) {
+    throw new Error(`Cannot send ${workflow} email: customer email address is invalid.`);
+  }
+  return email;
+}
+
+async function sendResendEmail(input: {
+  workflow: string;
+  recipient: string;
+  subject: string;
+  text: string;
+  html: string;
+  idempotencyKey?: string;
+}) {
+  const recipient = validateRecipient(input.recipient, input.workflow);
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${env.RESEND_API_KEY}`,
+    'Content-Type': 'application/json',
+  };
+  if (input.idempotencyKey) headers['Idempotency-Key'] = input.idempotencyKey;
+
+  let response: Response;
+  try {
+    response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      signal: AbortSignal.timeout(8000),
+      headers,
+      body: JSON.stringify({
+        from: env.EMAIL_FROM,
+        to: [recipient],
+        subject: input.subject,
+        text: input.text,
+        html: input.html,
+      }),
+    });
+  } catch (error) {
+    console.error('Resend request failed', {
+      workflow: input.workflow,
+      recipientDomain: recipient.split('@')[1],
+      error: error instanceof Error ? error.message : 'Unknown network error',
+    });
+    throw new Error(`Resend request failed for ${input.workflow} email.`);
+  }
+
+  const result = await response.json().catch(() => ({})) as {
+    id?: string;
+    name?: string;
+    message?: string;
+  };
+  if (!response.ok) {
+    console.error('Resend rejected an email', {
+      workflow: input.workflow,
+      status: response.status,
+      errorName: result.name,
+      errorMessage: result.message?.slice(0, 300),
+      recipientDomain: recipient.split('@')[1],
+    });
+    throw new Error(
+      `Resend rejected ${input.workflow} email (${response.status}): ${result.message || result.name || 'provider error'}`,
+    );
+  }
+
+  console.info('Resend accepted an email', {
+    workflow: input.workflow,
+    messageId: result.id,
+    recipientDomain: recipient.split('@')[1],
+  });
+  return true;
+}
+
 interface FareLine {
   label: string;
   amount: number;
@@ -104,6 +178,7 @@ function supportFooter() {
 }
 
 export async function sendBookingConfirmationEmail(booking: BookingConfirmationEmail) {
+  const recipient = validateRecipient(booking.customerEmail, 'booking confirmation');
   if (env.DEMO_MODE === 'true' || !env.RESEND_API_KEY || !env.EMAIL_FROM) {
     console.info('Demo notification recorded', { type: 'booking_confirmation' });
     return false;
@@ -118,7 +193,7 @@ export async function sendBookingConfirmationEmail(booking: BookingConfirmationE
   const date = escapeHtml(formatDate(booking.quote.date));
   const time = escapeHtml(booking.quote.time);
   const phone = escapeHtml(booking.customerPhone);
-  const email = escapeHtml(booking.customerEmail);
+  const email = escapeHtml(recipient);
   const fare = formatMoney(booking.fare, booking.quote.currency);
   const distance = `${booking.quote.distanceMiles.toFixed(1)} miles`;
   const duration = escapeHtml(booking.quote.durationText);
@@ -132,16 +207,9 @@ export async function sendBookingConfirmationEmail(booking: BookingConfirmationE
     : '';
   const itemizedFare = fareRows(booking.fareLines, booking.quote.currency);
 
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    signal: AbortSignal.timeout(8000),
-    headers: {
-      Authorization: `Bearer ${env.RESEND_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: env.EMAIL_FROM,
-      to: [booking.customerEmail],
+  return sendResendEmail({
+      workflow: 'booking confirmation',
+      recipient,
       subject: `Booking request received — ${booking.bookingReference}`,
       text: [
         `Heathrow Drive — Booking request received`,
@@ -387,13 +455,7 @@ export async function sendBookingConfirmationEmail(booking: BookingConfirmationE
             </table>
           </body>
         </html>`,
-    }),
   });
-
-  if (!response.ok) {
-    throw new Error(`Email provider returned HTTP ${response.status}.`);
-  }
-  return true;
 }
 
 export async function sendAbandonedBookingEmail(input: {
@@ -403,6 +465,7 @@ export async function sendAbandonedBookingEmail(input: {
   dropoff: string;
   resumeUrl: string;
 }) {
+  const recipient = validateRecipient(input.email, 'abandoned booking');
   if (env.DEMO_MODE === 'true' || !env.RESEND_API_KEY || !env.EMAIL_FROM) {
     console.info('Demo notification recorded', { type: 'abandoned_booking_reminder' });
     return false;
@@ -411,16 +474,9 @@ export async function sendAbandonedBookingEmail(input: {
   const pickup = escapeHtml(input.pickup || 'Your selected pickup');
   const dropoff = escapeHtml(input.dropoff || 'Your selected destination');
   const resumeUrl = escapeHtml(input.resumeUrl);
-  const result = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    signal: AbortSignal.timeout(8000),
-    headers: {
-      Authorization: `Bearer ${env.RESEND_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      from: env.EMAIL_FROM,
-      to: [input.email],
+  return sendResendEmail({
+      workflow: 'abandoned booking',
+      recipient,
       subject: 'Continue planning your Heathrow Drive journey',
       text: [
         `Hello ${input.name || 'there'},`,
@@ -470,10 +526,7 @@ export async function sendAbandonedBookingEmail(input: {
             <tr><td style="padding:18px 32px;background:#f8fafc;color:#64748b;font-size:12px">Heathrow Drive · A more comfortable way to travel.</td></tr>
           </table></td></tr>
         </table></body></html>`,
-    }),
   });
-  if (!result.ok) throw new Error(`Email provider returned ${result.status}`);
-  return true;
 }
 
 export async function sendBookingAcceptedEmail(input: {
@@ -491,6 +544,7 @@ export async function sendBookingAcceptedEmail(input: {
   fare: number;
   currency: string;
 }) {
+  const recipient = validateRecipient(input.customerEmail, 'booking accepted');
   if (env.DEMO_MODE === 'true' || !env.RESEND_API_KEY || !env.EMAIL_FROM) {
     console.info('Demo notification recorded', { type: 'booking_accepted' });
     return false;
@@ -508,17 +562,10 @@ export async function sendBookingAcceptedEmail(input: {
     : `${Math.floor(input.durationSeconds / 3600)} hr ${Math.round((input.durationSeconds % 3600) / 60)} min`;
   const fare = formatMoney(input.fare, input.currency);
   const lookupUrl = escapeHtml(new URL('/booking-details', env.WEB_ORIGIN).toString());
-  const response = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    signal: AbortSignal.timeout(8000),
-    headers: {
-      Authorization: `Bearer ${env.RESEND_API_KEY}`,
-      'Content-Type': 'application/json',
-      'Idempotency-Key': `booking-accepted-${input.bookingReference}`,
-    },
-    body: JSON.stringify({
-      from: env.EMAIL_FROM,
-      to: [input.customerEmail],
+  return sendResendEmail({
+      workflow: 'booking accepted',
+      recipient,
+      idempotencyKey: `booking-accepted-${input.bookingReference}`,
       subject: `Your booking is accepted — ${input.bookingReference}`,
       text: [
         `Hello ${input.customerName},`,
@@ -553,8 +600,5 @@ export async function sendBookingAcceptedEmail(input: {
         <tr><td style="padding:0 15px 14px;color:#64748b;font-size:13px">Estimated fare</td><td style="padding:0 15px 14px;color:#312e81;font-size:18px;font-weight:bold">${safe(fare)} ${safe(input.currency)}</td></tr>
         </table><a href="${lookupUrl}" style="display:inline-block;padding:13px 20px;border-radius:8px;background:#3b82f6;background-image:linear-gradient(100deg,#6d28d9,#2563eb);color:#fff;font-size:15px;font-weight:bold;text-decoration:none">View Booking Details</a>
         <p style="margin:22px 0 0;color:#64748b;font-size:12px">Heathrow Drive · A more comfortable way to travel.</p></td></tr></table></td></tr></table></body></html>`,
-    }),
   });
-  if (!response.ok) throw new Error(`Email provider returned HTTP ${response.status}.`);
-  return true;
 }
