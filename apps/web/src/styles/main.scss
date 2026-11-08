@@ -8164,3 +8164,15 @@ input:focus-visible {
     font-size: 16px;
   }
 }
+
+// iOS 14's native date/time inputs can add their own padding beyond `width: 100%`.
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 760px) {
+    .booking-card--plan .field--compact input[type='date'],
+    .booking-card--plan .field--compact input[type='time'] {
+      box-sizing: content-box;
+      width: calc(100% - 26px);
+      max-width: calc(100% - 26px);
+    }
+  }
+}
