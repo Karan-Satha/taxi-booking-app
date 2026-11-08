@@ -8137,3 +8137,30 @@ input:focus-visible {
   outline: 3px solid rgba(59, 130, 246, 0.35);
   outline-offset: 2px;
 }
+
+// Keep Safari's native date and time controls inside the Stage 1 card on iOS.
+@media (max-width: 680px) {
+  .booking-card--plan .booking-card__form-section,
+  .booking-card--plan .booking-card__details,
+  .booking-card--plan .field--compact {
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .booking-card--plan .booking-card__details {
+    width: 100%;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .booking-card--plan .field--compact input[type='date'],
+  .booking-card--plan .field--compact input[type='time'] {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    padding-inline: 12px;
+    font-size: 16px;
+  }
+}
