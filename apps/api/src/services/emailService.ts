@@ -136,6 +136,24 @@ function webAssetUrl(path: string) {
   }
 }
 
+function emailVehicleImageUrl(path: string) {
+  if (!path) return '';
+  try {
+    const imageUrl = new URL(path, env.WEB_ORIGIN);
+    const webOrigin = new URL(env.WEB_ORIGIN).origin;
+    const vehicleImage = imageUrl.pathname.match(/^\/images\/vehicles\/([a-z0-9_-]+)\.webp$/i);
+
+    if (imageUrl.origin === webOrigin && vehicleImage) {
+      imageUrl.pathname = `/images/vehicles/email/${vehicleImage[1]}.png`;
+      return escapeHtml(imageUrl.toString());
+    }
+
+    return webAssetUrl(path);
+  } catch {
+    return '';
+  }
+}
+
 function fareRows(lines: FareLine[], currency: string) {
   return lines
     .filter((line) => Math.abs(line.amount) >= 0.005)
@@ -199,7 +217,7 @@ export async function sendBookingConfirmationEmail(booking: BookingConfirmationE
   const duration = escapeHtml(booking.quote.durationText);
   const status = escapeHtml(formatStatus(booking.bookingStatus));
   const paymentStatus = escapeHtml(formatStatus(booking.paymentStatus));
-  const imageUrl = webAssetUrl(booking.vehicleImageUrl);
+  const imageUrl = emailVehicleImageUrl(booking.vehicleImageUrl);
   const bookingLookupUrl = escapeHtml(new URL('/booking-details', env.WEB_ORIGIN).toString());
   const imageMarkup = imageUrl
     ? `<img src="${imageUrl}" width="180" alt="${vehicleName} vehicle" 
