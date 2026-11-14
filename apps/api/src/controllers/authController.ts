@@ -1,8 +1,12 @@
 import type { NextFunction, Request, Response } from 'express';
 import { HttpError } from '../middleware/errors.js';
-import { authenticateAccount, registerAccount } from '../services/authService.js';
+import { authenticateAccount, createPasswordReset, registerAccount, resetCustomerPassword } from '../services/authService.js';
+import { sendPasswordResetEmail } from '../services/emailService.js';
+import { logServerError } from '../middleware/errors.js';
 import type { Account } from '../types/auth.js';
-import { loginSchema, registerSchema } from '../validation/auth.js';
+import { loginSchema, passwordResetRequestSchema, passwordResetSchema, registerSchema } from '../validation/auth.js';
+import { friendlyValidationFields } from '../validation/messages.js';
+import { env } from '../config/env.js';
 
 function establishSession(request: Request, account: Account): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -25,7 +29,7 @@ export async function register(request: Request, response: Response, next: NextF
       error: {
         code: 'VALIDATION_ERROR',
         message: 'Check the highlighted fields and try again.',
-        fields: parsed.error.flatten().fieldErrors,
+        fields: friendlyValidationFields(parsed.error.issues),
       },
     });
     return;
@@ -47,7 +51,7 @@ export async function login(request: Request, response: Response, next: NextFunc
       error: {
         code: 'VALIDATION_ERROR',
         message: 'Enter a valid email and password.',
-        fields: parsed.error.flatten().fieldErrors,
+        fields: friendlyValidationFields(parsed.error.issues),
       },
     });
     return;
@@ -83,4 +87,57 @@ export async function logout(request: Request, response: Response, next: NextFun
     });
     response.status(204).end();
   });
+}
+
+export async function requestPasswordReset(request: Request, response: Response, next: NextFunction) {
+  const parsed = passwordResetRequestSchema.safeParse(request.body);
+  if (!parsed.success) {
+    response.status(400).json({
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Enter a valid email address.',
+        fields: friendlyValidationFields(parsed.error.issues),
+      },
+    });
+    return;
+  }
+  try {
+    const demoMode = env.DEMO_MODE === 'true' || !env.RESEND_API_KEY || !env.EMAIL_FROM;
+    if (!demoMode) {
+      const reset = await createPasswordReset(parsed.data.email);
+      if (reset) {
+        try {
+          await sendPasswordResetEmail(reset);
+        } catch (error) {
+          logServerError('Password reset email could not be sent', error);
+        }
+      }
+    }
+    response.status(202).json({
+      message: 'If an active account matches that email, a reset link has been sent.',
+      demoMode,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function resetPassword(request: Request, response: Response, next: NextFunction) {
+  const parsed = passwordResetSchema.safeParse(request.body);
+  if (!parsed.success) {
+    response.status(400).json({
+      error: {
+        code: 'VALIDATION_ERROR',
+        message: 'Check your new password and try again.',
+        fields: friendlyValidationFields(parsed.error.issues),
+      },
+    });
+    return;
+  }
+  try {
+    await resetCustomerPassword(parsed.data.token, parsed.data.password);
+    response.json({ message: 'Your password has been updated. You can now sign in.' });
+  } catch (error) {
+    next(error);
+  }
 }

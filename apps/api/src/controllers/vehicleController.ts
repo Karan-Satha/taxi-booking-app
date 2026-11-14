@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { HttpError } from '../middleware/errors.js';
 import { createVehicle, disableVehicle, getVehicle, listVehicles, updateVehicle } from '../services/vehicleService.js';
 import { uuidParamSchema, vehiclePatchSchema, vehicleSchema } from '../validation/vehicles.js';
+import { friendlyValidationFields } from '../validation/messages.js';
 
 function invalid(response: Response, fields: unknown) {
   response.status(400).json({
@@ -47,7 +48,7 @@ export async function getManagedVehicle(request: Request, response: Response, ne
 
 export async function createManagedVehicle(request: Request, response: Response, next: NextFunction) {
   const parsed = vehicleSchema.safeParse(request.body);
-  if (!parsed.success) return invalid(response, parsed.error.flatten().fieldErrors);
+  if (!parsed.success) return invalid(response, friendlyValidationFields(parsed.error.issues));
   try {
     response.status(201).json({ vehicle: await createVehicle(parsed.data) });
   } catch (error) {
@@ -63,7 +64,7 @@ export async function updateManagedVehicle(request: Request, response: Response,
   const id = uuidParamSchema.safeParse(request.params.id);
   const parsed = vehiclePatchSchema.safeParse(request.body);
   if (!id.success || !parsed.success) {
-    const fields = parsed.success ? { id: ['Enter a valid vehicle ID.'] } : parsed.error.flatten().fieldErrors;
+    const fields = parsed.success ? { id: ['Enter a valid vehicle ID.'] } : friendlyValidationFields(parsed.error.issues);
     invalid(response, fields);
     return;
   }

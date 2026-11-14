@@ -17,3 +17,4 @@ apps/**/node_modules/
 apps/**/dist/
 apps/**/tsconfig.tsbuildinfo
 apps/api/.temporary-admin-credentials
+.neon

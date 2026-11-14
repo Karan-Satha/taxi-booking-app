@@ -1,5 +1,7 @@
+import { createHash } from 'node:crypto';
 import { env } from '../config/env.js';
 import { HttpError } from '../middleware/errors.js';
+import { getSharedCache, setSharedCache } from './sharedCache.js';
 
 interface PhotonFeature {
   geometry?: { coordinates?: [number, number] };
@@ -25,26 +27,8 @@ export interface AddressSuggestion {
   label: string;
 }
 
-const cache = new Map<string, { expiresAt: number; value: unknown }>();
-const cacheLifetime = 5 * 60 * 1000;
-
 function serviceUrl(path: string) {
   return `${env.GEOCODER_BASE_URL.replace(/\/$/, '')}${path}`;
-}
-
-function cached<T>(key: string): T | undefined {
-  const item = cache.get(key);
-  if (!item) return undefined;
-  if (item.expiresAt < Date.now()) {
-    cache.delete(key);
-    return undefined;
-  }
-  return item.value as T;
-}
-
-function storeCache(key: string, value: unknown) {
-  if (cache.size >= 300) cache.delete(cache.keys().next().value as string);
-  cache.set(key, { expiresAt: Date.now() + cacheLifetime, value });
 }
 
 async function photon(url: URL): Promise<PhotonResponse> {
@@ -118,7 +102,7 @@ function relevanceScore(query: string, properties: NonNullable<PhotonFeature['pr
 }
 
 export function rankAddressSuggestions(query: string, features: PhotonFeature[]): AddressSuggestion[] {
-  return features
+  const ranked = features
     .flatMap((feature, index) => {
       const properties = feature.properties;
       const label = properties ? addressLabel(properties) : '';
@@ -128,29 +112,38 @@ export function rankAddressSuggestions(query: string, features: PhotonFeature[])
       const coordinates = feature.geometry?.coordinates?.join(',') ?? 'unknown';
       return [{ id: String(properties.osm_id ?? `${coordinates}-${index}`), label, score }];
     })
-    .sort((first, second) => second.score - first.score)
-    .map(({ id, label }) => ({ id, label }));
+    .sort((first, second) => second.score - first.score);
+  const unique = new Map<string, AddressSuggestion>();
+  for (const { id, label } of ranked) {
+    const normalized = label.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').toLocaleLowerCase('en-GB');
+    if (!unique.has(normalized)) unique.set(normalized, { id, label });
+  }
+  return [...unique.values()].slice(0, 5);
 }
 
 export async function searchAddresses(query: string): Promise<AddressSuggestion[]> {
-  const key = `search:${query.toLocaleLowerCase('en-GB')}`;
-  const fromCache = cached<AddressSuggestion[]>(key);
+  const queryHash = createHash('sha256').update(query.trim().replace(/\s+/g, ' ').toLocaleLowerCase('en-GB')).digest('hex');
+  const key = `search:${queryHash}`;
+  const fromCache = await getSharedCache<AddressSuggestion[]>(key);
   if (fromCache) return fromCache;
 
   const url = new URL(serviceUrl('/api'));
   url.searchParams.set('q', query);
-  url.searchParams.set('limit', '5');
+  url.searchParams.set('limit', '15');
   url.searchParams.set('lang', 'en');
   url.searchParams.set('countrycode', 'gb');
+  url.searchParams.set('lat', '51.5072');
+  url.searchParams.set('lon', '-0.1276');
+  url.searchParams.set('zoom', '8');
   const result = await photon(url);
   const suggestions = rankAddressSuggestions(query, result.features ?? []);
-  storeCache(key, suggestions);
+  await setSharedCache(key, suggestions, 3600);
   return suggestions;
 }
 
 export async function reverseGeocode(latitude: number, longitude: number): Promise<string> {
   const key = `reverse:${latitude.toFixed(5)},${longitude.toFixed(5)}`;
-  const fromCache = cached<string>(key);
+  const fromCache = await getSharedCache<string>(key);
   if (fromCache) return fromCache;
 
   const url = new URL(serviceUrl('/reverse'));
@@ -162,6 +155,6 @@ export async function reverseGeocode(latitude: number, longitude: number): Promi
   const label = properties ? addressLabel(properties) : '';
   if (!label)
     throw new HttpError(404, 'ADDRESS_NOT_FOUND', 'We could not find an address for your location.');
-  storeCache(key, label);
+  await setSharedCache(key, label, 24 * 60 * 60);
   return label;
 }

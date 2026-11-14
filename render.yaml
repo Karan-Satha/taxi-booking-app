@@ -4,34 +4,56 @@ services:
     runtime: node
     plan: free
     region: frankfurt
-    buildCommand: npm ci --include=dev --prefix apps/api && npm run build:api
+    buildCommand: npm ci --prefix apps/api && npm run build:api
     startCommand: npm run db:migrate --prefix apps/api && npm start --prefix apps/api
     healthCheckPath: /api/v1/health
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: '10000'
+        value: "10000"
       - key: WEB_ORIGIN
         value: https://heathrow-drive-web-demo.onrender.com
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: heathrow-drive-db-demo
+          property: connectionString
       - key: PG_SSL
-        value: 'true'
+        value: "false"
       - key: SESSION_SECRET
         generateValue: true
       - key: DEMO_MODE
-        value: 'true'
+        value: "true"
 
   - type: web
     name: heathrow-drive-web-demo
     runtime: static
-    buildCommand: npm ci --include=dev --prefix apps/web && npm run build:web
+    buildCommand: npm ci --prefix apps/web && npm run build:web
     staticPublishPath: apps/web/dist
     routes:
       - type: rewrite
         source: /*
         destination: /index.html
+    headers:
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self'; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self'; connect-src 'self' https://heathrow-drive-api-demo.onrender.com https://photon.komoot.io https://router.project-osrm.org"
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: Permissions-Policy
+        value: "geolocation=(self), camera=(), microphone=()"
     envVars:
       - key: VITE_API_URL
         value: https://heathrow-drive-api-demo.onrender.com
+
+databases:
+  - name: heathrow-drive-db-demo
+    plan: free
+    region: frankfurt
+    databaseName: taxi_booking
+    user: taxi_booking

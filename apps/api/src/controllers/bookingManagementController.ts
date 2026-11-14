@@ -15,6 +15,7 @@ import {
   retryAcceptanceEmail,
 } from '../services/bookingManagementService.js';
 import { uuidParamSchema } from '../validation/vehicles.js';
+import { friendlyValidationFields } from '../validation/messages.js';
 
 const statusSchema = z.object({
   status: z.enum(['pending', 'confirmed', 'in_progress', 'completed', 'cancelled']).optional(),
@@ -74,7 +75,7 @@ export async function lookupBooking(request: Request, response: Response, next: 
       error: {
         code: 'VALIDATION_ERROR',
         message: 'Enter a valid booking reference and email address.',
-        fields: parsed.error.flatten().fieldErrors,
+        fields: friendlyValidationFields(parsed.error.issues),
       },
     });
   }
@@ -178,7 +179,7 @@ export async function updateBookingAdmin(request: Request, response: Response, n
   const id = uuidParamSchema.safeParse(request.params.id);
   const parsed = statusSchema.safeParse(request.body);
   if (!id.success || !parsed.success) {
-    const fields = parsed.success ? { id: ['Enter a valid booking ID.'] } : parsed.error.flatten().fieldErrors;
+    const fields = parsed.success ? { id: ['Enter a valid booking ID.'] } : friendlyValidationFields(parsed.error.issues);
     return invalid(response, fields);
   }
   try {

@@ -15,6 +15,7 @@ import {
 } from '../controllers/bookingProgressController.js';
 import { requireAccount } from '../middleware/authorization.js';
 import { requireTrustedOrigin } from '../middleware/trustedOrigin.js';
+import { PostgresRateLimitStore } from '../middleware/postgresRateLimitStore.js';
 
 export const bookingsRouter = Router();
 
@@ -23,18 +24,21 @@ const bookingLimiter = rateLimit({
   limit: 8,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
+  store: new PostgresRateLimitStore('booking-create'),
 });
 const quoteLimiter = rateLimit({
   windowMs: 60 * 1000,
   limit: 20,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
+  store: new PostgresRateLimitStore('booking-quote'),
 });
 const lookupLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 5,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
+  store: new PostgresRateLimitStore('booking-lookup'),
   message: {
     error: {
       code: 'LOOKUP_RATE_LIMITED',
@@ -47,6 +51,7 @@ const progressLimiter = rateLimit({
   limit: 60,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
+  store: new PostgresRateLimitStore('booking-progress'),
 });
 
 bookingsRouter.get('/', requireAccount, listOwnBookings);

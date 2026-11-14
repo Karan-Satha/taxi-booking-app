@@ -4,6 +4,8 @@ import { pool } from '../config/database.js';
 import { HttpError } from '../middleware/errors.js';
 import type { JourneyQuote, QuoteInput, VehicleOption } from '../types/booking.js';
 import { calculateFare } from './fareCalculator.js';
+import { getSharedCache, setSharedCache } from './sharedCache.js';
+import { quoteSchema } from '../validation/booking.js';
 
 interface FarePlan {
   id: string | number;
@@ -57,11 +59,19 @@ function numberFromCapacity(value: string | number): number {
 }
 
 async function geocode(address: string): Promise<[number, number]> {
+  const normalizedAddress = address.trim().replace(/\s+/g, ' ').toLowerCase();
+  const addressHash = createHmac('sha256', env.SESSION_SECRET).update(normalizedAddress).digest('hex');
+  const cacheKey = `quote-geocode:${addressHash}`;
+  const cached = await getSharedCache<[number, number]>(cacheKey);
+  if (cached) return cached;
   const url = new URL(serviceUrl(env.GEOCODER_BASE_URL, '/api'));
   url.searchParams.set('q', address);
-  url.searchParams.set('limit', '1');
+  url.searchParams.set('limit', '5');
   url.searchParams.set('lang', 'en');
   url.searchParams.set('countrycode', 'gb');
+  url.searchParams.set('lat', '51.5072');
+  url.searchParams.set('lon', '-0.1276');
+  url.searchParams.set('zoom', '8');
 
   let response: Response;
   try {
@@ -74,7 +84,18 @@ async function geocode(address: string): Promise<[number, number]> {
   }
   if (!response.ok) throw new HttpError(502, 'GEOCODER_ERROR', 'Address lookup is temporarily unavailable.');
   const data = (await response.json()) as PhotonResponse;
-  const coordinates = data.features?.[0]?.geometry?.coordinates;
+  const queryParts = address.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(Boolean);
+  const features = (data.features ?? []).filter((feature) =>
+    feature.geometry?.coordinates?.every(Number.isFinite),
+  );
+  const ranked = features.sort((first, second) => {
+    const score = (feature: (typeof features)[number]) => {
+      const fields = Object.values(feature.properties ?? {}).join(' ').toLowerCase();
+      return queryParts.reduce((total, part) => total + (fields.includes(part) ? 10 : 0), 0);
+    };
+    return score(second) - score(first);
+  });
+  const coordinates = ranked[0]?.geometry?.coordinates;
   if (!coordinates || !coordinates.every(Number.isFinite)) {
     throw new HttpError(
       422,
@@ -82,11 +103,21 @@ async function geocode(address: string): Promise<[number, number]> {
       'We could not locate one of those addresses. Please choose a suggestion.',
     );
   }
+  await setSharedCache(cacheKey, coordinates, 6 * 60 * 60);
   return coordinates;
 }
 
 async function getRoute(input: QuoteInput) {
   const [origin, destination] = await Promise.all([geocode(input.pickup), geocode(input.dropoff)]);
+  const routeHash = createHmac('sha256', env.SESSION_SECRET).update(`${origin.join(',')}:${destination.join(',')}`).digest('hex');
+  const routeCacheKey = `quote-route:${routeHash}`;
+  const cachedRoute = await getSharedCache<{
+    distanceMetres: number;
+    durationSeconds: number;
+    pickupCoordinates: [number, number];
+    dropoffCoordinates: [number, number];
+  }>(routeCacheKey);
+  if (cachedRoute) return cachedRoute;
   const points = [origin, destination].map(([longitude, latitude]) => `${longitude},${latitude}`).join(';');
   const url = new URL(serviceUrl(env.ROUTER_BASE_URL, `/route/v1/driving/${points}`));
   url.searchParams.set('overview', 'false');
@@ -109,13 +140,15 @@ async function getRoute(input: QuoteInput) {
   if (result.code !== 'Ok' || !route?.distance || !route.duration || route.duration <= 0) {
     throw new HttpError(422, 'ROUTE_NOT_FOUND', 'No driving route was found for those locations.');
   }
-  return {
+  const routeResult = {
     distanceMetres: route.distance,
     // OSRM may return fractional seconds, while bookings store whole seconds in PostgreSQL.
     durationSeconds: Math.round(route.duration),
     pickupCoordinates: origin,
     dropoffCoordinates: destination,
   };
+  await setSharedCache(routeCacheKey, routeResult, 6 * 60 * 60);
+  return routeResult;
 }
 
 async function getFareCatalog(): Promise<FarePlan[]> {
@@ -220,6 +253,7 @@ export function renewQuoteToken(token: string): { quote: JourneyQuote; quoteToke
   try {
     const parsed = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8')) as SignedQuote;
     if (!parsed.quote || !Array.isArray(parsed.quote.vehicles)) return null;
+    if (!quoteSchema.safeParse(parsed.quote).success) return null;
     return { quote: parsed.quote, quoteToken: signQuote(parsed.quote) };
   } catch {
     return null;

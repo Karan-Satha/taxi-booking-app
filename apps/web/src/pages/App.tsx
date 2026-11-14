@@ -1,12 +1,13 @@
 import { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { Link, Route, Routes, useLocation, useNavigate, useNavigationType } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
+import { getCountries, getCountryCallingCode, parsePhoneNumberFromString } from "libphonenumber-js";
 import { LocationInput } from "../components/LocationInput";
 import { LuggageIcon, PassengerIcon, VehicleArtwork } from "../components/VehicleArtwork";
-import { bookingApi, type BookingConfirmation, type QuoteResponse } from "../services/bookings";
+import { bookingApi, BookingRequestError, type BookingConfirmation, type QuoteResponse } from "../services/bookings";
 import { reverseGeocode } from "../services/maps";
 import type { VehicleOption } from "../types/booking";
-import { AccountPage, LoginPage, MyBookingsPage, RegisterPage } from "./AuthPages";
+import { AccountPage, ForgotPasswordPage, LoginPage, MyBookingsPage, RegisterPage, ResetPasswordPage } from "./AuthPages";
 import { BookingLookupPage } from "./BookingLookupPage";
 import { AdminBookingsPage } from "./AdminBookingsPage";
 
@@ -147,6 +148,58 @@ function serialiseBookingQuery(params: URLSearchParams) {
   return params.toString().replace(/%2F/gi, "/");
 }
 
+function londonDateString(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/London",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date);
+  return `${parts.find((part) => part.type === "year")?.value}-${parts.find((part) => part.type === "month")?.value}-${parts.find((part) => part.type === "day")?.value}`;
+}
+
+function maxBookingDate() {
+  const date = new Date(`${londonDateString()}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + 365);
+  return date.toISOString().slice(0, 10);
+}
+
+function isPickupDateTimeValid(date: string, time: string) {
+  const parsedDate = new Date(`${date}T00:00:00Z`);
+  if (Number.isNaN(parsedDate.valueOf()) || parsedDate.toISOString().slice(0, 10) !== date) return false;
+  const today = londonDateString();
+  if (date < today || date > maxBookingDate()) return false;
+  if (date > today) return true;
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/London",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date());
+  const currentTime = `${parts.find((part) => part.type === "hour")?.value}:${parts.find((part) => part.type === "minute")?.value}`;
+  return time > currentTime;
+}
+
+function countryForCallingCode(callingCode: string) {
+  return getCountries().find((country) => `+${getCountryCallingCode(country)}` === callingCode) ?? "GB";
+}
+
+function formatJourneyDate(value: string) {
+  const date = new Date(`${value}T12:00:00Z`);
+  if (Number.isNaN(date.valueOf())) return value;
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    timeZone: "UTC",
+  }).formatToParts(date);
+  return ["weekday", "day", "month"].map((type) => parts.find((part) => part.type === type)?.value).join(" ");
+}
+
+function plural(count: number, singular: string, pluralForm = `${singular}s`) {
+  return `${count} ${count === 1 ? singular : pluralForm}`;
+}
+
 function isVehicleOption(value: unknown): value is VehicleOption {
   if (!value || typeof value !== "object") return false;
   const option = value as Partial<VehicleOption>;
@@ -200,7 +253,8 @@ function readSavedBookingProgress(): SavedBookingProgress | null {
       typeof saved.date === "string" &&
       /^\d{4}-\d{2}-\d{2}$/.test(saved.date) &&
       typeof saved.time === "string" &&
-      /^\d{2}:\d{2}$/.test(saved.time);
+      /^\d{2}:\d{2}$/.test(saved.time) &&
+      isPickupDateTimeValid(saved.date, saved.time);
     const validQuote = routeIsComplete && isQuoteResponse(saved.quote) ? saved.quote : null;
     const quoteIsFresh =
       validQuote && typeof saved.quoteSavedAt === "number" && Date.now() - saved.quoteSavedAt < 30 * 60 * 1000;
@@ -209,6 +263,13 @@ function readSavedBookingProgress(): SavedBookingProgress | null {
       quote && isVehicleOption(saved.vehicle)
         ? (quote.quote.vehicles.find((option) => option.id === saved.vehicle?.id) ?? null)
         : null;
+    const savedPhone = parsePhoneNumberFromString(`${saved.countryCode ?? ""}${saved.phone ?? ""}`);
+    const passengerDetailsComplete =
+      typeof saved.passengerName === "string" && saved.passengerName.trim().length >= 2 &&
+      typeof saved.email === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(saved.email) &&
+      !!savedPhone?.isValid() &&
+      Number(saved.passengers) >= 1 && Number(saved.passengers) <= (vehicle?.passengers ?? 0) &&
+      Number(saved.luggage) >= 0 && Number(saved.luggage) <= (vehicle?.luggage ?? 0);
     const confirmation =
       saved.confirmation &&
       typeof saved.confirmation === "object" &&
@@ -220,8 +281,10 @@ function readSavedBookingProgress(): SavedBookingProgress | null {
         : null;
     const stage: BookingStage = confirmation
       ? 1
-      : quote && vehicle && (saved.stage === 3 || saved.stage === 4)
-        ? saved.stage
+      : quote && vehicle && saved.stage === 4 && passengerDetailsComplete
+        ? 4
+        : quote && vehicle && saved.stage === 3
+          ? 3
         : quote && (saved.stage === 2 || saved.stage === 3 || saved.stage === 4)
           ? 2
           : 1;
@@ -264,7 +327,7 @@ function Header() {
 
   return (
     <header className="site-header">
-      <Link className="brand" to="/" aria-label="Northstar home">
+      <Link className="brand" to="/" aria-label="Heathrow Drive home">
         <span className="brand__mark" aria-hidden="true">
           H
         </span>
@@ -316,6 +379,7 @@ function Header() {
 function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) => void }) {
   const { account } = useAuth();
   const [restored] = useState(readSavedBookingProgress);
+  const accountPhone = account?.phone ? parsePhoneNumberFromString(account.phone) : undefined;
   const [pickup, setPickup] = useState(restored?.pickup ?? "");
   const [dropoff, setDropoff] = useState(restored?.dropoff ?? "");
   const [date, setDate] = useState(restored?.date ?? "");
@@ -336,9 +400,9 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
   const [passengerName, setPassengerName] = useState(restored?.passengerName ?? account?.name ?? "");
   const [email, setEmail] = useState(restored?.email ?? account?.email ?? "");
   const [countryCode, setCountryCode] = useState(
-    restored?.countryCode ?? account?.phone.match(/^\+\d{1,4}/)?.[0] ?? getDefaultCountryCode(),
+    restored?.countryCode ?? (accountPhone ? `+${accountPhone.countryCallingCode}` : getDefaultCountryCode()),
   );
-  const [phone, setPhone] = useState(restored?.phone ?? account?.phone.replace(/^\+\d{1,4}-?/, "") ?? "");
+  const [phone, setPhone] = useState(restored?.phone ?? accountPhone?.nationalNumber ?? "");
   const [phoneInput, setPhoneInput] = useState(() => [countryCode, phone].filter(Boolean).join(" "));
   const [note, setNote] = useState(restored?.note ?? "");
   const navigate = useNavigate();
@@ -386,8 +450,9 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
       setLuggage(progress.luggage);
       const restoredName = progress.passengerName || account?.name || "";
       const restoredEmail = progress.email || account?.email || "";
-      const restoredCountryCode = progress.countryCode || account?.phone.match(/^\+\d{1,4}/)?.[0] || getDefaultCountryCode();
-      const restoredPhone = progress.phone || account?.phone.replace(/^\+\d{1,4}-?/, "") || "";
+      const accountCallingCode = accountPhone ? `+${accountPhone.countryCallingCode}` : getDefaultCountryCode();
+      const restoredCountryCode = progress.countryCode || accountCallingCode;
+      const restoredPhone = progress.phone || accountPhone?.nationalNumber || "";
       setPassengerName(restoredName);
       setEmail(restoredEmail);
       setCountryCode(restoredCountryCode);
@@ -401,13 +466,7 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
 
     function syncInitialStage(progress: SavedBookingProgress | null) {
       if (cancelled) return;
-      const requested = parseBookingStage(params.get("bookingStep"));
-      const target = progress
-        ? requested === progress.stage ||
-          (requested === 3 && !!progress.quote && !!progress.vehicle)
-          ? requested
-          : progress.stage
-        : 1;
+      const target = progress?.stage ?? 1;
       setStage(target);
       initialLocation.current = false;
       const nextParams = new URLSearchParams(location.search);
@@ -419,7 +478,7 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
 
     let restoreTimeout = 0;
     const timeoutResult = new Promise<Awaited<ReturnType<typeof bookingApi.restoreProgress>>>((_, reject) => {
-      restoreTimeout = window.setTimeout(() => reject(new Error('Booking restore timed out.')), 8000);
+      restoreTimeout = window.setTimeout(() => reject(new Error('Booking restore timed out.')), 45000);
     });
 
     Promise.race([bookingApi.restoreProgress(resumeToken), timeoutResult]).then((result) => {
@@ -443,7 +502,9 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
           try {
             const serverActivity = typeof serverProgress.lastActivityAt === "number"
               ? serverProgress.lastActivityAt
-              : Date.now();
+              : typeof serverProgress.lastActivityAt === "string"
+                ? Date.parse(serverProgress.lastActivityAt)
+                : Date.now();
             sessionStorage.setItem(
               BOOKING_STORAGE_KEY,
               JSON.stringify({ ...serverProgress, lastActivityAt: serverActivity }),
@@ -465,11 +526,9 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
     }).catch(() => {
       if (cancelled) return;
       if (restored) applyProgress(restored);
-      setMessage(
-        restored
-          ? 'We could not sync your saved journey. Your details from this browser are still available.'
-          : 'We could not restore a saved journey. You can start a new booking below.',
-      );
+      setMessage(restored
+        ? 'We could not sync your saved journey. Your details from this browser are still available.'
+        : '');
       syncInitialStage(restored);
     }).finally(() => {
       window.clearTimeout(restoreTimeout);
@@ -527,8 +586,11 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
       void bookingApi.completeProgress().catch(() => undefined);
       return;
     }
+    const apiProgress = recoveryConsent
+      ? progress
+      : { ...progress, passengerName: '', email: '', countryCode: '', phone: '', note: '' };
     const timeout = window.setTimeout(() => {
-      void bookingApi.saveProgress(progress).catch(() => undefined);
+      void bookingApi.saveProgress(apiProgress).catch(() => undefined);
     }, 1200);
     return () => window.clearTimeout(timeout);
   }, [
@@ -556,8 +618,11 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
     if (!account || (restored && (restored.passengerName || restored.email || restored.phone))) return;
     setPassengerName(account.name);
     setEmail(account.email);
-    const accountPhone = account.phone.replace(/^\+\d{1,4}-?/, "");
-    const accountCountryCode = account.phone.match(/^\+\d{1,4}/)?.[0] ?? getDefaultCountryCode();
+    const parsedAccountPhone = parsePhoneNumberFromString(account.phone);
+    const accountPhone = parsedAccountPhone?.nationalNumber ?? "";
+    const accountCountryCode = parsedAccountPhone
+      ? `+${parsedAccountPhone.countryCallingCode}`
+      : getDefaultCountryCode();
     setCountryCode(accountCountryCode);
     setPhone(accountPhone);
     setPhoneInput([accountCountryCode, accountPhone].filter(Boolean).join(" "));
@@ -597,11 +662,11 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
     if (pickup.trim() && dropoff.trim() && pickup.trim().toLowerCase() === dropoff.trim().toLowerCase()) {
       errors.dropoff = "Choose a destination different from your pickup location.";
     }
-    const today = new Date();
-    const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    const todayString = londonDateString();
     if (!date) errors.date = "Please choose your pickup date.";
     else if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) errors.date = "Enter a valid pickup date.";
     else if (date < todayString) errors.date = "Choose a date that is today or later.";
+    else if (date > maxBookingDate()) errors.date = "Bookings can be made up to 12 months in advance.";
     if (!time || !/^\d{2}:\d{2}$/.test(time)) errors.time = "Please choose a valid pickup time.";
     setFieldErrors(errors);
     if (Object.keys(errors).length) return;
@@ -618,7 +683,15 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
       setConfirmation(null);
       moveToStage(2);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "We could not estimate this journey. Please try again.");
+      if (error instanceof BookingRequestError && error.fields) {
+        const apiFields = Object.fromEntries(
+          Object.entries(error.fields).map(([name, messages]) => [name, messages[0] ?? "Please check this field."]),
+        );
+        setFieldErrors((current) => ({ ...current, ...apiFields }));
+        setMessage("");
+      } else {
+        setMessage(error instanceof Error ? error.message : "We could not estimate this journey. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -627,17 +700,12 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
   function handleReview(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const enteredPhone = phoneInput.trim();
-    const phoneWithCode = enteredPhone.match(/^(\+\d{1,4})[\s-]+(.+)$/);
-    let nextCountryCode = countryCode;
-    let nextPhone = phone;
-    if (enteredPhone.startsWith(countryCode)) {
-      nextPhone = enteredPhone.slice(countryCode.length).replace(/^[\s()-]+/, "").trim();
-    } else if (phoneWithCode) {
-      nextCountryCode = phoneWithCode[1];
-      nextPhone = phoneWithCode[2].trim();
-    } else {
-      nextPhone = enteredPhone;
-    }
+    const parsedPhone = parsePhoneNumberFromString(
+      enteredPhone,
+      enteredPhone.startsWith("+") ? undefined : countryForCallingCode(countryCode),
+    );
+    const nextCountryCode = parsedPhone ? `+${parsedPhone.countryCallingCode}` : countryCode;
+    const nextPhone = parsedPhone?.nationalNumber ?? phone;
     const errors: Record<string, string> = {};
     const trimmedName = passengerName.trim();
     if (!trimmedName) errors.name = "Please enter the passenger’s full name.";
@@ -645,10 +713,8 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
     else if (!/^[\p{L}][\p{L}\p{M}\s'.-]*$/u.test(trimmedName)) errors.name = "Use letters and common name punctuation only.";
     if (!email.trim()) errors.email = "Please enter an email address.";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim())) errors.email = "Enter a valid email address, such as name@example.com.";
-    if (!/^\+\d{1,4}$/.test(nextCountryCode)) errors.phone = "Choose a valid country calling code.";
-    const phoneDigits = nextPhone.replace(/\D/g, "");
     if (!enteredPhone) errors.phone = "Please enter a phone number with its country code.";
-    else if (phoneDigits.length < 6 || phoneDigits.length > 15) errors.phone = "Enter a phone number with 6 to 15 digits.";
+    else if (!parsedPhone?.isValid()) errors.phone = "Enter a valid phone number with its country code.";
     if (!Number.isInteger(passengers) || passengers < 1 || passengers > (vehicle?.passengers ?? 0)) {
       errors.passengers = "Choose a passenger count within this vehicle’s capacity.";
     }
@@ -675,35 +741,17 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
 
   function handlePhoneInput(value: string) {
     setPhoneInput(value);
-    const trimmedValue = value.trimStart();
-    if (trimmedValue.startsWith(countryCode)) {
-      setPhone(trimmedValue.slice(countryCode.length).replace(/^[\s()-]+/, ""));
-      return;
+    const parsedPhone = parsePhoneNumberFromString(
+      value.trim(),
+      value.trim().startsWith("+") ? undefined : countryForCallingCode(countryCode),
+    );
+    if (parsedPhone) {
+      setCountryCode(`+${parsedPhone.countryCallingCode}`);
+      setPhone(parsedPhone.nationalNumber);
+    } else {
+      setPhone(value.trim());
     }
-
-    const recognizedCode = Object.values(callingCodes)
-      .sort((a, b) => b.length - a.length)
-      .find((code) => trimmedValue.startsWith(code));
-    if (recognizedCode && trimmedValue.length > recognizedCode.length) {
-      setCountryCode(recognizedCode);
-      setPhone(trimmedValue.slice(recognizedCode.length).replace(/^[\s()-]+/, ""));
-      return;
-    }
-
-    const splitPhone = trimmedValue.match(/^(\+\d{1,4})\s+(.+)$/);
-    if (splitPhone) {
-      setCountryCode(splitPhone[1]);
-      setPhone(splitPhone[2].trim());
-      return;
-    }
-
-    if (/^\+\d{1,4}$/.test(trimmedValue)) {
-      setCountryCode(trimmedValue);
-      setPhone("");
-      return;
-    }
-
-    setPhone(trimmedValue);
+    clearFieldError("phone");
   }
 
   async function handleBooking() {
@@ -808,12 +856,12 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
           </p>
           <p>
             <strong>
-              {confirmation.quote.date} · {confirmation.quote.time}
+              {formatJourneyDate(confirmation.quote.date)} · {confirmation.quote.time}
             </strong>
             <span>Journey time</span>
           </p>
           <p>
-            <strong>{confirmation.vehicle.passengers} passengers · {confirmation.vehicle.luggage} bags</strong>
+            <strong>{plural(confirmation.vehicle.passengers, "passenger")} · {plural(confirmation.vehicle.luggage, "bag")}</strong>
             <span>Selected vehicle capacity</span>
           </p>
         </div>
@@ -995,7 +1043,8 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
                 <input
                   type="date"
                   name="date"
-                  min={new Date().toLocaleDateString("en-CA")}
+                  min={londonDateString()}
+                  max={maxBookingDate()}
                   value={date}
                   onClick={(event) => event.currentTarget.showPicker?.()}
                   onChange={(event) => {
@@ -1092,7 +1141,7 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
                     <rect x="3" y="5" width="18" height="16" rx="2" />
                     <path d="M16 3v4M8 3v4M3 10h18" />
                   </svg>
-                  {quote.quote.date} · {quote.quote.time}
+                  {formatJourneyDate(quote.quote.date)} · {quote.quote.time}
                 </small>
               </span>
             </div>
@@ -1202,7 +1251,7 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
                   </span>
                   <span className="vehicle-option__capacity">
                     <LuggageIcon />
-                    <span>Up to {option.luggage} bags</span>
+                    <span>Up to {plural(option.luggage, "bag")}</span>
                   </span>
                   <span className="vehicle-option__capacity vehicle-option__capacity--fit">
                     <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" fill="none">
@@ -1284,7 +1333,7 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
                 <strong>{vehicle.name}</strong>
                 <small className="booking-selected__vehicle-capacity">
                   <span><PassengerIcon />Up to {vehicle.passengers} passengers</span>
-                  <span><LuggageIcon />Up to {vehicle.luggage} bags</span>
+                  <span><LuggageIcon />Up to {plural(vehicle.luggage, "bag")}</span>
                 </small>
               </span>
             </div>
@@ -1298,7 +1347,7 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
                 <strong>{quote.quote.dropoff}</strong>
               </p>
               <small className="selected-journey__metrics" aria-label="Journey date, time, distance, and duration">
-                <span><BookingFieldIcon name="date" />{quote.quote.date}</span>
+                  <span><BookingFieldIcon name="date" />{formatJourneyDate(quote.quote.date)}</span>
                 <span><BookingFieldIcon name="time" />{quote.quote.time}</span>
                 <span><BookingFieldIcon name="route" />{quote.quote.distanceMiles.toFixed(1)} miles</span>
                 <span><BookingFieldIcon name="duration" />{quote.quote.durationText}</span>
@@ -1534,7 +1583,7 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
               <strong>{quote.quote.dropoff}</strong>
             </p>
             <small className="selected-journey__metrics">
-              <span><BookingFieldIcon name="date" />{quote.quote.date}</span>
+                  <span><BookingFieldIcon name="date" />{formatJourneyDate(quote.quote.date)}</span>
               <span><BookingFieldIcon name="time" />{quote.quote.time}</span>
               <span><BookingFieldIcon name="route" />{quote.quote.distanceMiles.toFixed(1)} mi · {quote.quote.durationText}</span>
             </small>
@@ -1543,7 +1592,7 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
             <VehicleArtwork name={vehicle.name} passengers={vehicle.passengers} />
             <span className="booking-selected__review-copy">
               <strong>{vehicle.name}</strong>
-              <small>Up to {vehicle.passengers} passengers · {vehicle.luggage} bags</small>
+              <small>Up to {plural(vehicle.passengers, "passenger")} · {plural(vehicle.luggage, "bag")}</small>
             </span>
             <span className="booking-selected__review-fare">
               <strong>{money(vehicle.fare)}</strong>
@@ -1573,7 +1622,7 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
               <p>
                 <span className="booking-review-grid__label"><BookingFieldIcon name="passengers" />Passengers and bags</span>
                 <strong>
-                  {passengers} passengers · {luggage} bags
+                  {plural(passengers, "passenger")} · {plural(luggage, "bag")}
                 </strong>
               </p>
             </div>
@@ -1604,12 +1653,14 @@ function BookingForm({ onStageChange }: { onStageChange?: (stage: BookingStage) 
         className={`booking-card__message${
           message.startsWith('We could not sync') || message.startsWith('We could not restore')
             ? ' booking-card__message--warning'
-            : ''
+            : !progressReady && !message
+              ? ' booking-card__message--loading'
+              : ''
         }`}
         role="status"
         aria-live="polite"
       >
-        {message || mapMessage}
+        {!progressReady && !message ? 'Checking for a saved journey…' : message || mapMessage}
       </p>
       {stage === 1 && (
         <p className="booking-card__fine">Fare and route estimates are calculated for your selected journey.</p>
@@ -1695,7 +1746,7 @@ function HomePage() {
                 >
                   <path d="M20.6 13.4l-7.2 7.2a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z" />
                   <circle cx="7.5" cy="7.5" r="1.5" />
-                  <path d="M13.5 10.5h-2a1.25 1.25 0 0 0 0 2.5h1a1.25 1.25 0 0 1 0 2.5h-2M12 9.5v1M12 15.5v1" />
+                  <path d="M14.5 10h-3a2 2 0 0 0 0 4h1a2 2 0 0 1 0 4h-4m3-11v9" />
                 </svg>
               </span>
               <span>
@@ -2023,6 +2074,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/admin/login" element={<LoginPage adminOnly />} />
         <Route path="/admin" element={<AdminBookingsPage />} />
         <Route path="/register" element={<RegisterPage />} />

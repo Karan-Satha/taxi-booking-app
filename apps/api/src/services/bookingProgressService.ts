@@ -1,5 +1,6 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto';
 import { z } from 'zod';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import type { PoolClient } from 'pg';
 import { env } from '../config/env.js';
 import { pool } from '../config/database.js';
@@ -87,28 +88,35 @@ function sanitiseProgress(input: z.infer<typeof progressSchema>) {
   if (stage >= 3 && (input.passengers > (vehicle?.passengers ?? 0) || input.luggage > (vehicle?.luggage ?? 0))) {
     stage = 2;
   }
+  const phone = parsePhoneNumberFromString(`${input.countryCode}${input.phone}`);
   const hasPassengerDetails =
     input.passengerName.trim().length >= 2 &&
     /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(input.email.trim()) &&
-    input.phone.replace(/\D/g, '').length >= 6 &&
+    !!phone?.isValid() &&
     input.passengers <= (vehicle?.passengers ?? 0) &&
     input.luggage <= (vehicle?.luggage ?? 0);
   if (stage === 4 && !hasPassengerDetails) stage = 3;
 
   const validEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(input.email.trim());
   const route = quote?.quote;
+  const recoveryConsent = input.recoveryConsent && validEmail && stage >= 3;
+  const resumableStage = stage === 4 && !recoveryConsent ? 3 : stage;
   return {
     ...input,
     pickup: route?.pickup ?? input.pickup.trim(),
     dropoff: route?.dropoff ?? input.dropoff.trim(),
     date: route?.date ?? input.date,
     time: route?.time ?? input.time,
-    stage,
+    stage: resumableStage,
     quote,
     vehicle: vehicle ? { ...vehicle } : null,
     quoteSavedAt: quote ? Date.now() : null,
-    email: input.email.trim(),
-    recoveryConsent: input.recoveryConsent && validEmail && stage >= 3,
+    passengerName: recoveryConsent ? input.passengerName.trim() : '',
+    email: recoveryConsent ? input.email.trim() : '',
+    countryCode: recoveryConsent ? input.countryCode : '',
+    phone: recoveryConsent ? input.phone : '',
+    note: recoveryConsent ? input.note : '',
+    recoveryConsent,
   } satisfies ProgressPayload;
 }
 
@@ -177,6 +185,7 @@ export async function getBookingProgress(sessionId: string, recoveryToken?: stri
     await pool.query(`DELETE FROM booking_progress WHERE session_key = $1`, [row.session_key]);
     return { expired: true as const };
   }
+  const savedActivityAt = row.last_activity_at.toISOString();
   const payload = decrypt(row);
   const parsed = progressSchema.safeParse(payload);
   if (!parsed.success) {
@@ -201,7 +210,7 @@ export async function getBookingProgress(sessionId: string, recoveryToken?: stri
   }
   return {
     progress: valid,
-    lastActivityAt: new Date().toISOString(),
+    lastActivityAt: savedActivityAt,
     expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
   };
 }

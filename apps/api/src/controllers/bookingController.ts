@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { saveBooking } from '../services/bookingService.js';
 import { createQuote, signQuote } from '../services/quoteService.js';
 import { bookingSchema, quoteSchema } from '../validation/booking.js';
+import { friendlyValidationFields } from '../validation/messages.js';
 
 export async function quoteJourney(request: Request, response: Response, next: NextFunction) {
   const parsed = quoteSchema.safeParse(request.body);
@@ -12,7 +13,7 @@ export async function quoteJourney(request: Request, response: Response, next: N
         error: {
           code: 'VALIDATION_ERROR',
           message: 'Enter valid pickup, destination, date and time.',
-          fields: parsed.error.flatten().fieldErrors,
+          fields: friendlyValidationFields(parsed.error.issues),
         },
       });
     return;
@@ -34,7 +35,7 @@ export async function createBooking(request: Request, response: Response, next: 
         error: {
           code: 'VALIDATION_ERROR',
           message: 'Check your passenger details and try again.',
-          fields: parsed.error.flatten().fieldErrors,
+          fields: friendlyValidationFields(parsed.error.issues),
         },
       });
     return;

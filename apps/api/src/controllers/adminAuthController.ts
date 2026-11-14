@@ -3,6 +3,7 @@ import { HttpError } from '../middleware/errors.js';
 import { authenticateAdmin } from '../services/adminAuthService.js';
 import type { AdminAccount } from '../types/auth.js';
 import { loginSchema } from '../validation/auth.js';
+import { friendlyValidationFields } from '../validation/messages.js';
 
 function establishAdminSession(request: Request, admin: AdminAccount) {
   return new Promise<void>((resolve, reject) => {
@@ -21,7 +22,7 @@ export async function adminLogin(request: Request, response: Response, next: Nex
       error: {
         code: 'VALIDATION_ERROR',
         message: 'Enter a valid email and password.',
-        fields: parsed.error.flatten().fieldErrors,
+        fields: friendlyValidationFields(parsed.error.issues),
       },
     });
     return;

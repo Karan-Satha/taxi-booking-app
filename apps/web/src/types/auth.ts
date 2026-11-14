@@ -59,6 +59,8 @@ export const authApi = {
   current: () => request<{ user: Account }>('/me'),
   login: (email: string, password: string) => request<{ user: Account }>('/login', { email, password }),
   register: (details: RegistrationDetails) => request<{ user: Account }>('/register', details),
+  requestPasswordReset: (email: string) => request<{ message: string; demoMode: boolean }>('/password/forgot', { email }),
+  resetPassword: (token: string, password: string) => request<{ message: string }>('/password/reset', { token, password }),
   logout: () => request<void>('/logout', {}),
 };
 

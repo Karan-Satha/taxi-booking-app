@@ -1,4 +1,5 @@
 import { randomBytes } from 'node:crypto';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { pool } from '../config/database.js';
 import { HttpError } from '../middleware/errors.js';
 import type { BookingInput, VehicleOption } from '../types/booking.js';
@@ -8,6 +9,7 @@ import { calculateFare } from './fareCalculator.js';
 import { sendBookingConfirmationEmail } from './emailService.js';
 import { logServerError } from '../middleware/errors.js';
 import { completeBookingProgress } from './bookingProgressService.js';
+import { quoteSchema } from '../validation/booking.js';
 
 interface VehiclePricingRow {
   id: string;
@@ -42,6 +44,10 @@ export async function saveBooking(input: BookingInput, account: Account | undefi
   }
 
   const quote = verifyQuote(input.quoteToken);
+  const validJourney = quoteSchema.safeParse(quote);
+  if (!validJourney.success) {
+    throw new HttpError(400, 'JOURNEY_INVALID', validJourney.error.issues[0]?.message ?? 'Request a valid journey estimate.');
+  }
   const quotedVehicle = quote.vehicles.find((option) => option.id === input.vehicleId);
   if (!quotedVehicle) {
     throw new HttpError(400, 'VEHICLE_NOT_IN_QUOTE', 'Choose one of the vehicles in your current estimate.');
@@ -80,7 +86,12 @@ export async function saveBooking(input: BookingInput, account: Account | undefi
     throw new HttpError(409, 'FARE_CHANGED', 'The vehicle fare has changed. Please review a fresh estimate.');
   }
   const vehicle = toVehicleOption(vehicleRow, finalFare);
-  const customerPhone = `${input.customer.countryCode}-${input.customer.phone}`;
+  const customerPhone = parsePhoneNumberFromString(
+    `${input.customer.countryCode}${input.customer.phone}`,
+  )?.number;
+  if (!customerPhone) {
+    throw new HttpError(400, 'PHONE_INVALID', 'Enter a valid phone number with country code.');
+  }
   const roundMoney = (amount: number) => Math.round((amount + Number.EPSILON) * 100) / 100;
   const baseFare = roundMoney(Number(vehicleRow.base_fare));
   const distanceFare = roundMoney(Number(vehicleRow.price_per_mile) * quote.distanceMiles);

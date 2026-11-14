@@ -88,6 +88,13 @@ export interface AccountBooking {
   updatedAt: string;
 }
 
+export class BookingRequestError extends Error {
+  constructor(message: string, readonly fields?: Record<string, string[]>) {
+    super(message);
+    this.name = 'BookingRequestError';
+  }
+}
+
 async function post<T>(path: string, body: unknown): Promise<T> {
   const response = await fetch(apiUrl(`/api/v1/bookings${path}`), {
     method: 'POST',
@@ -96,8 +103,13 @@ async function post<T>(path: string, body: unknown): Promise<T> {
     body: JSON.stringify(body),
   });
   if (!response.ok) {
-    const result = (await response.json().catch(() => ({}))) as { error?: { message?: string } };
-    throw new Error(result.error?.message ?? 'We could not complete that request.');
+    const result = (await response.json().catch(() => ({}))) as {
+      error?: { message?: string; fields?: Record<string, string[]> };
+    };
+    throw new BookingRequestError(
+      result.error?.message ?? 'We could not complete that request.',
+      result.error?.fields,
+    );
   }
   return (await response.json()) as T;
 }
@@ -110,8 +122,13 @@ async function send<T>(path: string, method: 'GET' | 'PUT' | 'POST', body?: unkn
     body: body === undefined ? undefined : JSON.stringify(body),
   });
   if (!response.ok && response.status !== 410) {
-    const result = (await response.json().catch(() => ({}))) as { error?: { message?: string } };
-    const error = new Error(result.error?.message ?? 'We could not complete that request.') as Error & { status?: number };
+    const result = (await response.json().catch(() => ({}))) as {
+      error?: { message?: string; fields?: Record<string, string[]> };
+    };
+    const error = new BookingRequestError(
+      result.error?.message ?? 'We could not complete that request.',
+      result.error?.fields,
+    ) as BookingRequestError & { status?: number };
     error.status = response.status;
     throw error;
   }

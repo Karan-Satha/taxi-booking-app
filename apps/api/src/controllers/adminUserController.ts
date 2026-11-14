@@ -9,6 +9,7 @@ import {
   updateManagedUser,
 } from '../services/adminUserService.js';
 import { uuidParamSchema } from '../validation/vehicles.js';
+import { friendlyValidationFields } from '../validation/messages.js';
 
 const passwordSchema = z
   .string()
@@ -52,7 +53,7 @@ export async function listUsers(request: Request, response: Response, next: Next
 
 export async function createUser(request: Request, response: Response, next: NextFunction) {
   const parsed = createSchema.safeParse(request.body);
-  if (!parsed.success) return invalid(response, parsed.error.flatten().fieldErrors);
+  if (!parsed.success) return invalid(response, friendlyValidationFields(parsed.error.issues));
   try {
     response.status(201).json({ user: await createManagedUser(parsed.data) });
   } catch (error) {
@@ -74,7 +75,7 @@ export async function updateUser(request: Request, response: Response, next: Nex
   const id = uuidParamSchema.safeParse(request.params.id);
   const parsed = patchSchema.safeParse(request.body);
   if (!id.success || !parsed.success) {
-    const fields = parsed.success ? { id: ['Enter a valid user ID.'] } : parsed.error.flatten().fieldErrors;
+    const fields = parsed.success ? { id: ['Enter a valid user ID.'] } : friendlyValidationFields(parsed.error.issues);
     return invalid(response, fields);
   }
   try {

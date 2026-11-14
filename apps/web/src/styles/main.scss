@@ -65,6 +65,9 @@ input:focus-visible {
     sans-serif;
   letter-spacing: -1.2px;
 }
+.brand:focus:not(:focus-visible) {
+  outline: none;
+}
 .brand__mark {
   display: grid;
   place-items: center;
@@ -462,7 +465,7 @@ input:focus-visible {
 .booking-card__form-section {
   padding: 17px 18px 18px;
   border: 1px solid #dfe7f5;
-  border-radius: 14px;
+  border-radius: $booking-section-radius;
   background: linear-gradient(135deg, rgba($blue-light, 0.46), rgba($purple-light, 0.34));
 }
 .booking-card .eyebrow {
@@ -610,6 +613,7 @@ input:focus-visible {
 .field textarea {
   resize: vertical;
   line-height: 1.5;
+  font-family: inherit;
 }
 .field__control input {
   padding-left: 44px;
@@ -1179,8 +1183,11 @@ input:focus-visible {
   height: 58px;
   min-height: 52px;
   padding-left: 60px;
-  border-radius: 14px;
   font-size: 18px;
+}
+
+.booking-card--plan .location-field .field__control input {
+  border-radius: $booking-section-radius;
 }
 
 .booking-card--plan .location-field--start .field__pin-icon {
@@ -2546,6 +2553,12 @@ input:focus-visible {
   color: $error;
   font-size: 14px;
   line-height: 1.5;
+}
+.auth-form__success {
+  margin: 0;
+  color: $success;
+  font-size: 16px;
+  line-height: 1.6;
 }
 .form-validation-message {
   display: flex;
@@ -5235,6 +5248,10 @@ input:focus-visible {
 
 .booking-card__message--warning {
   color: $error;
+}
+
+.booking-card__message--loading {
+  color: $muted;
 }
 
 // Later booking stages use the full page width while preserving the homepage

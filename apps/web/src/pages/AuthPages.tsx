@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
-import { AuthRequestError } from '../types/auth';
+import { AuthRequestError, authApi } from '../types/auth';
 import { bookingApi, type AccountBooking } from '../services/bookings';
 
 function AuthFrame({
@@ -101,7 +101,128 @@ export function LoginPage({ adminOnly = false }: { adminOnly?: boolean }) {
           {busy ? 'Signing in…' : 'Sign in'} <span aria-hidden="true">→</span>
         </button>
       </form>
+      {!adminOnly && <p className="auth-card__switch"><Link to="/forgot-password">Forgot password?</Link></p>}
       {!adminOnly && <p className="auth-card__switch">New here? <Link to="/register">Create an account</Link></p>}
+    </AuthFrame>
+  );
+}
+
+export function ForgotPasswordPage() {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [demoMode, setDemoMode] = useState(false);
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setBusy(true);
+    setError('');
+    const email = String(new FormData(event.currentTarget).get('email') ?? '').trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('Enter a valid email address.');
+      setBusy(false);
+      return;
+    }
+    try {
+      const result = await authApi.requestPasswordReset(email);
+      setDemoMode(result.demoMode);
+      setSubmitted(true);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'We could not request a password reset.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <AuthFrame eyebrow="ACCOUNT RECOVERY" title="Reset your password" copy="Enter the email address linked to your account.">
+      {submitted ? (
+        <p className="auth-form__success" role="status">
+          {demoMode
+            ? 'This demo deployment does not send password reset emails. The reset flow will deliver when the server email service is enabled.'
+            : 'If an active account matches that email, a reset link has been sent. Check your inbox and spam folder.'}
+        </p>
+      ) : (
+        <form className="auth-form" onSubmit={submit} noValidate>
+          <label className="auth-form__field">
+            <span>Email address</span>
+            <input type="email" name="email" autoComplete="email" required />
+          </label>
+          {error && <p className="auth-form__error form-validation-message" role="alert">{error}</p>}
+          <button className="button button--primary auth-form__submit" disabled={busy}>
+            {busy ? 'Sending…' : 'Email reset link'} <span aria-hidden="true">→</span>
+          </button>
+        </form>
+      )}
+      <p className="auth-card__switch"><Link to="/login">Back to sign in</Link></p>
+    </AuthFrame>
+  );
+}
+
+export function ResetPasswordPage() {
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token') ?? '';
+  const navigate = useNavigate();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError('');
+    const data = new FormData(event.currentTarget);
+    const password = String(data.get('password') ?? '');
+    const confirmation = String(data.get('confirmation') ?? '');
+    if (!token) {
+      setError('This password reset link is missing or invalid. Request a new one.');
+      return;
+    }
+    if (password.length < 8 || !/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+      setError('Use at least 8 characters, including a letter and a number.');
+      return;
+    }
+    if (password !== confirmation) {
+      setError('Please make sure both passwords match.');
+      return;
+    }
+    setBusy(true);
+    try {
+      await authApi.resetPassword(token, password);
+      setSuccess(true);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'We could not update your password.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <AuthFrame eyebrow="ACCOUNT SECURITY" title="Choose a new password" copy="Your reset link is valid for 20 minutes and can only be used once.">
+      {success ? (
+        <div>
+          <p className="auth-form__success" role="status">Your password has been updated. You can now sign in.</p>
+          <button className="button button--primary auth-form__submit" type="button" onClick={() => navigate('/login')}>
+            Go to sign in <span aria-hidden="true">→</span>
+          </button>
+        </div>
+      ) : (
+        <form className="auth-form" onSubmit={submit} noValidate>
+          <label className="auth-form__field">
+            <span>New password</span>
+            <input type="password" name="password" autoComplete="new-password" required />
+            <small>At least 8 characters, including a letter and a number.</small>
+          </label>
+          <label className="auth-form__field">
+            <span>Confirm new password</span>
+            <input type="password" name="confirmation" autoComplete="new-password" required />
+          </label>
+          {error && <p className="auth-form__error form-validation-message" role="alert">{error}</p>}
+          <button className="button button--primary auth-form__submit" disabled={busy || !token}>
+            {busy ? 'Updating…' : 'Update password'} <span aria-hidden="true">→</span>
+          </button>
+        </form>
+      )}
+      <p className="auth-card__switch"><Link to="/login">Back to sign in</Link></p>
     </AuthFrame>
   );
 }
@@ -304,6 +425,10 @@ function accountFare(booking: AccountBooking) {
   }).format(booking.fare.amount);
 }
 
+function countLabel(count: number, singular: string, plural = `${singular}s`) {
+  return `${count} ${count === 1 ? singular : plural}`;
+}
+
 function MyBookingCard({ booking }: { booking: AccountBooking }) {
   const statusClass = booking.status.toLowerCase().replaceAll('_', '-');
   return (
@@ -333,7 +458,7 @@ function MyBookingCard({ booking }: { booking: AccountBooking }) {
           <div><span>Distance</span><strong>{booking.distanceMiles === null ? 'Not available' : `${booking.distanceMiles.toFixed(1)} miles`}</strong></div>
           <div><span>Estimated duration</span><strong>{booking.durationSeconds === null ? 'Not available' : `${Math.floor(booking.durationSeconds / 3600)} hr ${Math.round((booking.durationSeconds % 3600) / 60)} min`}</strong></div>
           <div><span>Passengers</span><strong>{booking.passengers} of {booking.vehicle.passengerCapacity ?? '—'}</strong></div>
-          <div><span>Luggage</span><strong>{booking.luggage} of {booking.vehicle.luggageCapacity ?? '—'} bags</strong></div>
+          <div><span>Luggage</span><strong>{booking.luggage} of {booking.vehicle.luggageCapacity ?? '—'} {countLabel(booking.vehicle.luggageCapacity ?? 0, 'bag')}</strong></div>
           <div><span>Payment</span><strong>{accountStatus(booking.paymentStatus)}</strong></div>
           <div><span>Fare</span><strong>{accountFare(booking)}</strong></div>
         </div>

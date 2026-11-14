@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { env } from '../config/env.js';
 import type { JourneyQuote } from '../types/booking.js';
 
@@ -73,6 +74,46 @@ async function sendResendEmail(input: {
     recipientDomain: recipient.split('@')[1],
   });
   return true;
+}
+
+export async function sendPasswordResetEmail(input: { email: string; name: string; token: string }) {
+  const recipient = validateRecipient(input.email, 'password reset');
+  if (env.DEMO_MODE === 'true' || !env.RESEND_API_KEY || !env.EMAIL_FROM) {
+    console.info('Demo notification recorded', { type: 'password_reset' });
+    return false;
+  }
+  const resetUrl = new URL('/reset-password', env.WEB_ORIGIN);
+  resetUrl.searchParams.set('token', input.token);
+  const name = escapeHtml(input.name || 'there');
+  const actionUrl = escapeHtml(resetUrl.toString());
+  const html = `<!doctype html><html lang="en"><body style="margin:0;background:#f8fafc;color:#111b49;font-family:Arial,Helvetica,sans-serif">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:32px 12px"><tr><td align="center">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#fff;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden">
+        <tr><td style="padding:22px 28px;border-bottom:1px solid #e2e8f0">
+          <span style="display:inline-block;width:36px;height:36px;line-height:36px;text-align:center;border-radius:10px;background:#6d28d9;color:#fff;font-weight:bold">H</span>
+          <strong style="margin-left:10px;color:#111b49;font-size:20px">heathrow drive<span style="color:#6d28d9">.</span></strong>
+        </td></tr>
+        <tr><td style="padding:32px 28px">
+          <p style="margin:0 0 10px;color:#6d28d9;font-size:12px;font-weight:bold;letter-spacing:2px">ACCOUNT SECURITY</p>
+          <h1 style="margin:0 0 14px;font-size:26px;line-height:1.2;color:#111b49">Reset your password</h1>
+          <p style="margin:0 0 22px;color:#475569;font-size:16px;line-height:1.6">Hello ${name}, we received a request to reset your Heathrow Drive password. Use the button below to choose a new one.</p>
+          <p style="margin:0 0 22px"><a href="${actionUrl}" style="display:inline-block;padding:14px 22px;border-radius:10px;background:#6d28d9;color:#fff;text-decoration:none;font-weight:bold">Reset password</a></p>
+          <p style="margin:0 0 12px;color:#64748b;font-size:14px;line-height:1.5">This link expires in 20 minutes and can only be used once. If you did not request a reset, you can ignore this email.</p>
+          <p style="margin:0;color:#64748b;font-size:12px;line-height:1.5;word-break:break-all">If the button does not work, copy this link:<br><a href="${actionUrl}" style="color:#2563eb">${actionUrl}</a></p>
+        </td></tr>
+        <tr><td style="padding:18px 28px;background:#f8fafc;color:#64748b;font-size:12px">Heathrow Drive · A more comfortable way to travel.</td></tr>
+      </table>
+    </td></tr></table></body></html>`;
+  const text = `Hello ${input.name || 'there'},\n\nReset your Heathrow Drive password using this link: ${resetUrl}\n\nThe link expires in 20 minutes and can only be used once. If you did not request this, ignore this email.`;
+  const idempotencyKey = `password-reset-${createHash('sha256').update(input.token).digest('hex')}`;
+  return sendResendEmail({
+    workflow: 'password reset',
+    recipient,
+    subject: 'Reset your Heathrow Drive password',
+    text,
+    html,
+    idempotencyKey,
+  });
 }
 
 interface FareLine {

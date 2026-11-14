@@ -1,5 +1,6 @@
 import { rateLimit } from 'express-rate-limit';
 import { Router } from 'express';
+import { PostgresRateLimitStore } from '../middleware/postgresRateLimitStore.js';
 import {
   reverseLocation,
   suggestLocations,
@@ -13,6 +14,7 @@ const locationLimiter = rateLimit({
   limit: 45,
   standardHeaders: 'draft-8',
   legacyHeaders: false,
+  store: new PostgresRateLimitStore('location-search'),
 });
 
 locationsRouter.use(locationLimiter, validateLocationOrigin);
