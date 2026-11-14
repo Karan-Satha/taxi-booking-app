@@ -12,6 +12,24 @@ function validateRecipient(value: string, workflow: string) {
   return email;
 }
 
+function emailDeliveryDisabled(workflow: string) {
+  const disabled = env.DEMO_MODE === 'true' || !env.RESEND_API_KEY || !env.EMAIL_FROM;
+  if (disabled) {
+    console.warn('Email notification suppressed', {
+      workflow,
+      demoMode: env.DEMO_MODE === 'true',
+      resendApiKeyConfigured: Boolean(env.RESEND_API_KEY),
+      senderConfigured: Boolean(env.EMAIL_FROM),
+    });
+  }
+  return disabled;
+}
+
+export function logEmailDeliveryReadiness() {
+  const disabled = emailDeliveryDisabled('configuration check');
+  console.info('Transactional email readiness', { enabled: !disabled });
+}
+
 async function sendResendEmail(input: {
   workflow: string;
   recipient: string;
@@ -27,35 +45,55 @@ async function sendResendEmail(input: {
   };
   if (input.idempotencyKey) headers['Idempotency-Key'] = input.idempotencyKey;
 
-  let response: Response;
-  try {
-    response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      signal: AbortSignal.timeout(8000),
-      headers,
-      body: JSON.stringify({
-        from: env.EMAIL_FROM,
-        to: [recipient],
-        subject: input.subject,
-        text: input.text,
-        html: input.html,
-      }),
-    });
-  } catch (error) {
-    console.error('Resend request failed', {
-      workflow: input.workflow,
-      recipientDomain: recipient.split('@')[1],
-      error: error instanceof Error ? error.message : 'Unknown network error',
-    });
-    throw new Error(`Resend request failed for ${input.workflow} email.`);
-  }
+  const body = JSON.stringify({
+    from: env.EMAIL_FROM,
+    to: [recipient],
+    subject: input.subject,
+    text: input.text,
+    html: input.html,
+  });
 
-  const result = await response.json().catch(() => ({})) as {
-    id?: string;
-    name?: string;
-    message?: string;
-  };
-  if (!response.ok) {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    let response: Response;
+    try {
+      response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        signal: AbortSignal.timeout(8000),
+        headers,
+        body,
+      });
+    } catch (error) {
+      if (attempt < 2) {
+        await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)));
+        continue;
+      }
+      console.error('Resend request failed', {
+        workflow: input.workflow,
+        recipientDomain: recipient.split('@')[1],
+        error: error instanceof Error ? error.message : 'Unknown network error',
+      });
+      throw new Error(`Resend request failed for ${input.workflow} email.`);
+    }
+
+    const result = await response.json().catch(() => ({})) as {
+      id?: string;
+      name?: string;
+      message?: string;
+    };
+    if (response.ok) {
+      console.info('Resend accepted an email', {
+        workflow: input.workflow,
+        messageId: result.id,
+        recipientDomain: recipient.split('@')[1],
+      });
+      return true;
+    }
+
+    if ((response.status === 429 || response.status >= 500) && attempt < 2) {
+      await new Promise((resolve) => setTimeout(resolve, 500 * (attempt + 1)));
+      continue;
+    }
+
     console.error('Resend rejected an email', {
       workflow: input.workflow,
       status: response.status,
@@ -67,21 +105,12 @@ async function sendResendEmail(input: {
       `Resend rejected ${input.workflow} email (${response.status}): ${result.message || result.name || 'provider error'}`,
     );
   }
-
-  console.info('Resend accepted an email', {
-    workflow: input.workflow,
-    messageId: result.id,
-    recipientDomain: recipient.split('@')[1],
-  });
-  return true;
+  throw new Error(`Resend could not send ${input.workflow} email after multiple attempts.`);
 }
 
 export async function sendPasswordResetEmail(input: { email: string; name: string; token: string }) {
   const recipient = validateRecipient(input.email, 'password reset');
-  if (env.DEMO_MODE === 'true' || !env.RESEND_API_KEY || !env.EMAIL_FROM) {
-    console.info('Demo notification recorded', { type: 'password_reset' });
-    return false;
-  }
+  if (emailDeliveryDisabled('password reset')) return false;
   const resetUrl = new URL('/reset-password', env.WEB_ORIGIN);
   resetUrl.searchParams.set('token', input.token);
   const name = escapeHtml(input.name || 'there');
@@ -238,10 +267,7 @@ function supportFooter() {
 
 export async function sendBookingConfirmationEmail(booking: BookingConfirmationEmail) {
   const recipient = validateRecipient(booking.customerEmail, 'booking confirmation');
-  if (env.DEMO_MODE === 'true' || !env.RESEND_API_KEY || !env.EMAIL_FROM) {
-    console.info('Demo notification recorded', { type: 'booking_confirmation' });
-    return false;
-  }
+  if (emailDeliveryDisabled('booking confirmation')) return false;
 
   const name = escapeHtml(booking.customerName);
   const reference = escapeHtml(booking.bookingReference);
@@ -269,6 +295,7 @@ export async function sendBookingConfirmationEmail(booking: BookingConfirmationE
   return sendResendEmail({
       workflow: 'booking confirmation',
       recipient,
+      idempotencyKey: `booking-confirmation-${createHash('sha256').update(booking.bookingReference).digest('hex')}`,
       subject: `Booking request received — ${booking.bookingReference}`,
       text: [
         `Heathrow Drive — Booking request received`,
@@ -523,12 +550,10 @@ export async function sendAbandonedBookingEmail(input: {
   pickup: string;
   dropoff: string;
   resumeUrl: string;
+  recoveryToken: string;
 }) {
   const recipient = validateRecipient(input.email, 'abandoned booking');
-  if (env.DEMO_MODE === 'true' || !env.RESEND_API_KEY || !env.EMAIL_FROM) {
-    console.info('Demo notification recorded', { type: 'abandoned_booking_reminder' });
-    return false;
-  }
+  if (emailDeliveryDisabled('abandoned booking')) return false;
   const name = escapeHtml(input.name || 'there');
   const pickup = escapeHtml(input.pickup || 'Your selected pickup');
   const dropoff = escapeHtml(input.dropoff || 'Your selected destination');
@@ -536,6 +561,7 @@ export async function sendAbandonedBookingEmail(input: {
   return sendResendEmail({
       workflow: 'abandoned booking',
       recipient,
+      idempotencyKey: `abandoned-booking-${createHash('sha256').update(input.recoveryToken).digest('hex')}`,
       subject: 'Continue planning your Heathrow Drive journey',
       text: [
         `Hello ${input.name || 'there'},`,
@@ -604,10 +630,7 @@ export async function sendBookingAcceptedEmail(input: {
   currency: string;
 }) {
   const recipient = validateRecipient(input.customerEmail, 'booking accepted');
-  if (env.DEMO_MODE === 'true' || !env.RESEND_API_KEY || !env.EMAIL_FROM) {
-    console.info('Demo notification recorded', { type: 'booking_accepted' });
-    return false;
-  }
+  if (emailDeliveryDisabled('booking accepted')) return false;
   const safe = (value: string) => escapeHtml(value);
   const pickupDate = new Intl.DateTimeFormat('en-GB', {
     dateStyle: 'long', timeZone: input.timezone,

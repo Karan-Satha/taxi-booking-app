@@ -34,10 +34,10 @@ The included [Render Blueprint](render.yaml) deploys the Vite site, API, and Pos
 - **Images:** No external image host is needed for the existing static vehicle assets. Do not add runtime uploads to
   the Render API filesystem: that filesystem is ephemeral. If uploads are added later, select an object storage service
   and store object URLs in PostgreSQL.
-- **Email:** The hosted Blueprint sets `DEMO_MODE=true`, so no email is sent, and it does not require an email key.
-  Notification events are recorded without logging customer details. To test real transactional email later, use
-  Resend Free (currently 3,000 emails/month and a 100/day limit), verify a sender domain, and deliberately switch demo
-  mode off.
+- **Email:** The hosted Blueprint enables Resend delivery (`DEMO_MODE=false`). It requires the API service to have a
+  valid `RESEND_API_KEY` and a verified-domain `EMAIL_FROM`; otherwise notifications are safely suppressed and the
+  API logs configuration status without exposing credentials. Booking confirmations go to the submitted customer
+  address. Abandoned-booking reminders require consent and are sent after five minutes of inactivity.
 
 Target hosting cost: **£0/month**, assuming usage stays within provider limits and you do not add paid services or a
 custom domain. The Blueprint's Render database will be deleted after its 30-day free period unless you upgrade or
@@ -91,7 +91,7 @@ secrets into frontend variables: values prefixed with `VITE_` are embedded in pu
 | `DATABASE_URL` | Hosting: yes | PostgreSQL connection string. Use Neon’s pooled URL for the hosted API. |
 | `PG_SSL` | Hosted database: yes | Set to `true` for Neon TLS; local PostgreSQL usually uses `false`. |
 | `SESSION_SECRET` | Production: yes | At least 32 random characters. Render Blueprint generates one. |
-| `DEMO_MODE` | Hosting: yes | `true` records notification events but disables outbound email. |
+| `DEMO_MODE` | Hosting: yes | Set `false` to send email; `true` safely suppresses outbound messages. |
 | `RESEND_API_KEY` | Optional | Backend-only key, used only when demo mode is off. |
 | `EMAIL_FROM` | Optional | Sender on your verified Resend domain, e.g. `Heathrow Drive <bookings@karan-satha.com>`. |
 | `SUPPORT_EMAIL`, `SUPPORT_PHONE` | Optional | Contact details displayed in email templates. |
@@ -162,7 +162,7 @@ To reset a forgotten generated password, remove the old ignored credentials file
 1. A GitHub account/repository containing this project.
 2. A Render account connected to that repository.
 3. Optional: a Neon account if you want to replace Render's database before its free 30-day expiry.
-4. Optional: a Resend account and a sender domain you control, only if enabling real email later.
+4. A Resend account and a verified sender domain for live email notifications.
 
 The providers offer free tiers for this demo. Render's free setup tutorial says no payment method is required. Check
 the provider's current signup and plan screens before proceeding; don't select a paid plan or add a card if you want to
@@ -175,14 +175,15 @@ keep the monthly cost at zero.
    a Git provider; connecting the provider enables auto-deploys.
 2. Apply `render.yaml`. It creates a free Node API, static site, and Render PostgreSQL database. If Render reports
    service-name conflicts, rename them in the Blueprint and update the corresponding URLs before applying it.
-3. Keep the generated `SESSION_SECRET` and `DEMO_MODE=true`. The Blueprint references the database's private URL and
+3. Keep the generated `SESSION_SECRET`. Set `RESEND_API_KEY` and `EMAIL_FROM` in the API service's private
+   environment, and leave `DEMO_MODE=false` to enable customer email. The Blueprint references the database URL and
    runs migrations before starting the API.
 4. Confirm the API and site URLs in Render. Set API `WEB_ORIGIN` to the exact site origin and frontend `VITE_API_URL`
    to the exact API origin if the generated service names differ; rebuild the frontend after changing `VITE_API_URL`.
 5. Provision the fictional admin once using the database's external URL as described above. No admin password is
    committed or exposed in the frontend.
-6. Open the frontend, create a demo booking, then sign in at `/admin/login` to review and accept it. In demo mode,
-   acceptance notification state is recorded as “demo”; no customer email is sent.
+6. Open the frontend, create a demo booking, then sign in at `/admin/login` to review and accept it. When Resend is
+   configured, customers receive a booking confirmation and acceptance email.
 
 `render.yaml` provides the build/start commands, health check, API/website settings, TLS hosting, and SPA fallback. It
 uses fixed service URLs so the static frontend can bake in its API origin; if Render assigns different names, update
@@ -191,13 +192,13 @@ manual one-time step.
 
 ### Email delivery later
 
-By default `DEMO_MODE=true`; outbound email functions are suppressed and record generic notification types without
-including customer data in logs. To enable delivery, add `karan-satha.com` in Resend, publish the exact DNS records
-Resend displays at the domain's DNS provider, and wait until Resend marks the domain verified. Then set `RESEND_API_KEY`
-and `EMAIL_FROM=Heathrow Drive <bookings@karan-satha.com>` only in the API service's private environment. Keep
-`DEMO_MODE=false` and redeploy the API. The backend validates each customer recipient and sends booking confirmations,
-acceptance notices, and consented recovery reminders to the email supplied for that booking. The sender remains the
-configured `EMAIL_FROM`. Contact-form and order-confirmation workflows are not present in this taxi booking project.
+The hosted Blueprint sets `DEMO_MODE=false`. Add `karan-satha.com` in Resend, publish the exact DNS records Resend
+displays at your domain's DNS provider, and wait until Resend marks the domain verified. Set `RESEND_API_KEY` and
+`EMAIL_FROM=Heathrow Drive <bookings@karan-satha.com>` only in the API service's private environment. The backend
+validates each customer recipient and sends booking confirmations, acceptance notices, and consented recovery
+reminders to the address supplied for that booking. The sender remains the configured `EMAIL_FROM`. Contact-form and
+order-confirmation workflows are not present in this taxi booking project. Set `DEMO_MODE=true` to suppress delivery
+while retaining the rest of the demo.
 Resend Free is
 currently limited to 3,000 emails/month and 100/day; do not use the sample project to send unsolicited messages.
 
@@ -212,11 +213,13 @@ uploads are implemented. Vehicle images are static files deployed with the front
 - [ ] The deployed homepage loads and vehicle images resolve.
 - [ ] Refresh nested routes such as `/admin/login` and `/booking-details`; the static rewrite should serve `index.html`.
 - [ ] Search for a pickup and destination; route distance/time and database-backed vehicle fares appear.
-- [ ] Submit a demo booking; it is saved in PostgreSQL and confirmation appears without requiring email delivery.
+- [ ] Submit a demo booking; confirm it is saved in PostgreSQL and the confirmation email is accepted by Resend.
+- [ ] On passenger details, opt in to one reminder, leave the booking idle, and confirm the recovery email arrives after
+  the inactivity delay. Without opt-in, no reminder is sent.
 - [ ] Register/sign in as a customer and confirm only that customer's bookings are shown.
 - [ ] Sign in through `/admin/login`; confirm admin booking management works.
 - [ ] Try customer credentials at admin login and verify they are rejected; try a customer session against admin APIs and verify it is unauthorized.
-- [ ] Accept a booking; it is updated in PostgreSQL and the dashboard shows a demo notification recorded, not an email sent.
+- [ ] Accept a booking; it is updated in PostgreSQL and the customer receives an acceptance email.
 - [ ] Confirm the first API request after inactivity may take about a minute due to Render's free cold start.
 - [ ] Check Neon storage/compute and Render bandwidth/build usage periodically. Export or reset demo data as needed; free plans do not promise backups.
 
@@ -227,8 +230,8 @@ uploads are implemented. Vehicle images are static files deployed with the front
 - Neon free storage, compute, and egress are limited and can change; the database may scale to zero.
 - Public Photon/OSRM demonstration endpoints can throttle, change, or be unavailable. The UI should show provider errors
   rather than inventing a route.
-- Email is deliberately disabled by default. The background abandoned-booking worker runs only while the free API
-  process is awake, so timed reminders are not guaranteed on a sleeping demo service.
+- Abandoned-booking reminders depend on explicit customer consent and the API worker being awake. The free API can
+  sleep, so reminder timing is not guaranteed.
 - The database is for fictional portfolio data only. Do not put real customer or payment information into the demo.
 
 ## Reset demo data

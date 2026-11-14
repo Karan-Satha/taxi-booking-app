@@ -37,6 +37,8 @@ interface StoredProgress {
   payload_auth_tag: string;
   recovery_token_hash: string;
   recovery_consent: boolean;
+  recovery_email_claimed_at: Date | null;
+  recovery_email_attempts: number;
   last_activity_at: Date;
   expires_at: Date;
   completed_at: Date | null;
@@ -161,6 +163,14 @@ export async function saveBookingProgress(sessionId: string, value: unknown) {
          WHEN booking_progress.completed_at IS NOT NULL OR booking_progress.expires_at <= now() THEN NULL
          ELSE booking_progress.recovery_email_sent_at
        END,
+       recovery_email_claimed_at = CASE
+         WHEN booking_progress.completed_at IS NOT NULL OR booking_progress.expires_at <= now() THEN NULL
+         ELSE booking_progress.recovery_email_claimed_at
+       END,
+       recovery_email_attempts = CASE
+         WHEN booking_progress.completed_at IS NOT NULL OR booking_progress.expires_at <= now() THEN 0
+         ELSE booking_progress.recovery_email_attempts
+       END,
        completed_at = NULL,
        updated_at = now()`,
     [key, encrypted.ciphertext, encrypted.iv, encrypted.authTag, recoveryHash, payload.recoveryConsent],
@@ -219,7 +229,8 @@ export async function completeBookingProgress(sessionId: string, connection?: Po
   const database = connection ?? pool;
   if (!database) return;
   await database.query(
-    `UPDATE booking_progress SET completed_at = now(), recovery_consent = false, updated_at = now()
+    `UPDATE booking_progress SET completed_at = now(), recovery_consent = false,
+       recovery_email_claimed_at = NULL, updated_at = now()
      WHERE session_key = $1`,
     [sessionKey(sessionId)],
   );
@@ -234,6 +245,9 @@ async function claimRecoveryCandidates() {
        SELECT session_key FROM booking_progress
        WHERE recovery_consent = true
          AND recovery_email_sent_at IS NULL
+         AND recovery_email_attempts < 5
+         AND (recovery_email_claimed_at IS NULL
+           OR recovery_email_claimed_at < now() - interval '2 minutes')
          AND completed_at IS NULL
          AND expires_at > now()
          AND last_activity_at < now() - interval '5 minutes'
@@ -242,12 +256,32 @@ async function claimRecoveryCandidates() {
        FOR UPDATE SKIP LOCKED
      )
      UPDATE booking_progress AS progress
-     SET recovery_email_sent_at = now(), updated_at = now()
+     SET recovery_email_claimed_at = now(), recovery_email_attempts = recovery_email_attempts + 1,
+         updated_at = now()
      FROM candidates
      WHERE progress.session_key = candidates.session_key
      RETURNING progress.*`,
   );
   return result.rows;
+}
+
+async function releaseRecoveryEmailClaim(sessionKey: string) {
+  if (!pool) return;
+  await pool.query(
+    `UPDATE booking_progress SET recovery_email_claimed_at = NULL, updated_at = now()
+     WHERE session_key = $1 AND recovery_email_sent_at IS NULL`,
+    [sessionKey],
+  );
+}
+
+async function markRecoveryEmailSent(sessionKey: string) {
+  if (!pool) return;
+  await pool.query(
+    `UPDATE booking_progress SET recovery_email_sent_at = now(), recovery_email_claimed_at = NULL,
+       updated_at = now()
+     WHERE session_key = $1 AND recovery_email_sent_at IS NULL`,
+    [sessionKey],
+  );
 }
 
 export async function sendDueRecoveryEmails() {
@@ -257,7 +291,10 @@ export async function sendDueRecoveryEmails() {
     try {
       const payload = decrypt(row);
       const email = payload.email.trim();
-      if (!row.recovery_consent || !payload.recoveryConsent || !payload.recoveryToken || !email) continue;
+      if (!row.recovery_consent || !payload.recoveryConsent || !payload.recoveryToken || !email) {
+        await releaseRecoveryEmailClaim(row.session_key);
+        continue;
+      }
       const stillAbandoned = await pool.query<{ active: boolean }>(
         `SELECT (completed_at IS NULL
            AND recovery_consent = true
@@ -266,7 +303,10 @@ export async function sendDueRecoveryEmails() {
          FROM booking_progress WHERE session_key = $1`,
         [row.session_key],
       );
-      if (!stillAbandoned.rows[0]?.active) continue;
+      if (!stillAbandoned.rows[0]?.active) {
+        await releaseRecoveryEmailClaim(row.session_key);
+        continue;
+      }
       const url = new URL('/', env.WEB_ORIGIN);
       url.searchParams.set('bookingResume', payload.recoveryToken);
       const stageNames: Record<number, string> = {
@@ -277,16 +317,21 @@ export async function sendDueRecoveryEmails() {
       };
       const stage = stageNames[payload.stage] ? payload.stage : 1;
       url.searchParams.set('bookingStep', `${stage}/${stageNames[stage]}`);
-      await sendAbandonedBookingEmail({
+      const sent = await sendAbandonedBookingEmail({
         email,
         name: payload.passengerName.trim(),
         pickup: payload.pickup,
         dropoff: payload.dropoff,
         resumeUrl: url.toString().replace(/%2F/gi, '/'),
+        recoveryToken: payload.recoveryToken,
       });
+      if (sent) await markRecoveryEmailSent(row.session_key);
+      else await releaseRecoveryEmailClaim(row.session_key);
     } catch (error) {
-      // The email is claimed before dispatch so a transient failure cannot produce duplicate reminders.
       logServerError('Abandoned booking email could not be sent', error);
+      await releaseRecoveryEmailClaim(row.session_key).catch((releaseError) => {
+        logServerError('Abandoned booking email claim could not be released', releaseError);
+      });
     }
   }
 }
@@ -298,6 +343,11 @@ async function cleanupExpiredProgress() {
 
 export function startBookingRecoveryWorker() {
   if (!pool) return;
+  console.info('Booking recovery worker started', {
+    pollIntervalSeconds: 60,
+    reminderDelayMinutes: 5,
+    maxEmailAttempts: 5,
+  });
   const timer = setInterval(() => {
     void cleanupExpiredProgress()
       .then(() => sendDueRecoveryEmails())

@@ -8214,3 +8214,38 @@ input:focus-visible {
     }
   }
 }
+
+/* Keep form input corners consistent across booking stages. */
+.booking-card .field input,
+.booking-card .field select,
+.booking-card .field textarea {
+  border-radius: 7px;
+}
+
+.booking-card--plan .location-field .field__control input {
+  border-radius: 7px;
+}
+
+.booking-card--plan .field input[type='date'],
+.booking-card--plan .field input[type='time'] {
+  color-scheme: light;
+}
+
+.booking-card--plan .field input[type='date']::-webkit-calendar-picker-indicator,
+.booking-card--plan .field input[type='time']::-webkit-calendar-picker-indicator {
+  opacity: 1;
+  filter: invert(36%) sepia(99%) saturate(1864%) hue-rotate(205deg) brightness(101%) contrast(101%);
+  cursor: pointer;
+}
+
+@media (max-width: 680px) {
+  .hero--stage-2 .vehicle-option__details {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero--stage-2 .vehicle-option__copy h3 {
+    margin-top: 14px;
+  }
+}

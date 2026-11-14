@@ -23,7 +23,7 @@ services:
       - key: SESSION_SECRET
         generateValue: true
       - key: DEMO_MODE
-        value: "true"
+        value: "false"
 
   - type: web
     name: heathrow-drive-web-demo
